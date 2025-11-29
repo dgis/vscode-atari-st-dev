@@ -1,0 +1,40 @@
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	display: flex;
+    flex-direction: column;
+	background-color: transparent;
+	padding: 0px 5px;
+}
+
+.memory-toolbar {
+	display: flex;
+}
+
+.memory-address-input {
+	flex: 1 1 auto;
+	width: auto;
+}
+
+.memory-dump {
+	flex: 1 1 auto;
+	overflow: hidden;
+	font-family: var(--vscode-editor-font-family);
+	white-space: nowrap;
+}
+
+fieldset {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+fieldset:disabled {
+	opacity: 0.4;
+}
+
+.modified-byte {
+	color: red;
+}
