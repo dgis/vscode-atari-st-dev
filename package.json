@@ -11,6 +11,9 @@
     "Other"
   ],
   "activationEvents": [],
+	"extensionDependencies": [
+    "ms-vscode.cpptools"
+	],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
