@@ -223,8 +223,8 @@
 
         const video = videoRegexp.exec(registersToExtract);
         if (video.length === 3) {
-            currentState.vbl = Number.parseInt(video[1], 16) >>> 0;
-            currentState.hbl = Number.parseInt(video[2], 16) >>> 0;
+            currentState.vbl = Number.parseInt(video[1]) >>> 0;
+            currentState.hbl = Number.parseInt(video[2]) >>> 0;
         }
 
         vscode.setState(currentState);

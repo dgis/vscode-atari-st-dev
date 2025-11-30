@@ -73,17 +73,6 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 		});
 	}
 
-	// public async showInMemory(address?: number) {
-	// 	if (!this.view)
-	// 		this.deferredView = makeDeferred<vscode.WebviewView>();
-	// 	await vscode.commands.executeCommand(`atariSTDev.memoryView${this.index}.focus`);
-	// 	if (!this.view)
-	// 		await this.deferredView.promise;
-	// 	if (this.view) {
-	// 		this.view?.webview.postMessage({ type: "showInMemory", address } );
-	// 	}
-	// }
-
 	public getLastContextSelection(): string | undefined {
 		return this.lastContextSelection;
 	}
