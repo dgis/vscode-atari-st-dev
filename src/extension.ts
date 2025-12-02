@@ -1,6 +1,7 @@
 // The module "vscode" contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import * as path from 'path';
 import { CPUViewProvider } from "./cpu-view-provider";
 import { HardwareTreeviewProvider } from "./hardware-treeview-provider";
 import { MemoryViewProvider } from "./memory-view-provider";
@@ -36,6 +37,14 @@ export function activate(context: vscode.ExtensionContext) {
 			}));
 		}
 	});
+
+	context.subscriptions.push(vscode.commands.registerCommand(`atariSTDev.toolsPath`, () => {
+		vscode.commands.executeCommand('setContext', 'atariSTDev.showDebugViews', true);
+		return path.join(context.extensionPath, 'sdk', process.platform);
+	}));
+	context.subscriptions.push(vscode.commands.registerCommand(`atariSTDev.activateDebugViews`, () => {
+		vscode.commands.executeCommand('setContext', 'atariSTDev.showDebugViews', true);
+	}));
 }
 
 // This method is called when your extension is deactivated
