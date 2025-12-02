@@ -1,0 +1,4 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleName = "Hatari";
+NSHumanReadableCopyright = "Copyright © 2022, T. Huth.";﻿
