@@ -1,9 +1,9 @@
 TODO
-* Add a graphic inspector webview.
+* Activate the extension only when needed.
 * Add the Atari ST SDK
-* See unit tests
 * Test light and dark themes
-* Publish a test version
+* Add a graphic inspector webview.
+* See unit tests
 * Profiling
 * NOT POSSIBLE: Add Show in Disassembly.
 

@@ -1,15 +1,20 @@
 {
   "name": "atari-st-dev",
   "displayName": "Atari ST Dev",
-  "publisher": "Dgis",
+  "publisher": "dgis",
   "description": "Atari ST C/C++/Assembly Compile and Debug",
+  "repository": {
+    "url": "https://github.com/dgis/vscode-atari-st-dev"
+  },
   "version": "0.5.0",
   "engines": {
     "vscode": "^1.105.0"
   },
   "categories": [
-    "Other"
-  ],
+    "Programming Languages",
+		"Debuggers"
+	],
+	"icon": "media/atari-color.png",
   "activationEvents": [],
 	"extensionDependencies": [
     "ms-vscode.cpptools"
@@ -17,6 +22,11 @@
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
+      {
+        "command": "atariSTDev.toolsPath",
+        "title": "Show in Memory1",
+        "category": "Atari ST"
+      },
       {
         "command": "atariSTDev.showInMemory1",
         "title": "Show in Memory1",
@@ -70,14 +80,14 @@
           "name": "Atari ST: CPU",
           "icon": "$(chip)",
           "visibility": "visible",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         },
         {
           "id": "atariSTDev.hardwareView",
           "name": "Atari ST: Hardware",
           "icon": "media/atari.svg",
           "visibility": "collapsed",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         },
         {
           "type": "webview",
@@ -85,7 +95,7 @@
           "name": "Memory1",
           "icon": "$(file-binary)",
           "visibility": "visible",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         },
         {
           "type": "webview",
@@ -93,7 +103,7 @@
           "name": "Memory2",
           "icon": "$(file-binary)",
           "visibility": "hidden",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         },
         {
           "type": "webview",
@@ -101,7 +111,7 @@
           "name": "Memory3",
           "icon": "$(file-binary)",
           "visibility": "hidden",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         },
         {
           "type": "webview",
@@ -109,7 +119,7 @@
           "name": "Memory4",
           "icon": "$(file-binary)",
           "visibility": "hidden",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         }
       ]
     },
@@ -117,41 +127,41 @@
       "view/title": [
         {
           "command": "atariSTDev.refreshMemory1",
-          "when": "view == atariSTDev.memoryView1 && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')",
+          "when": "view == atariSTDev.memoryView1",
           "group": "navigation"
         },
         {
           "command": "atariSTDev.refreshMemory2",
-          "when": "view == atariSTDev.memoryView2 && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')",
+          "when": "view == atariSTDev.memoryView2",
           "group": "navigation"
         },
         {
           "command": "atariSTDev.refreshMemory3",
-          "when": "view == atariSTDev.memoryView3 && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')",
+          "when": "view == atariSTDev.memoryView3",
           "group": "navigation"
         },
         {
           "command": "atariSTDev.refreshMemory4",
-          "when": "view == atariSTDev.memoryView4 && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')",
+          "when": "view == atariSTDev.memoryView4",
           "group": "navigation"
         }
       ],
       "debug/variables/context": [
         {
           "submenu": "atariSTDev/showInMemory",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         }
       ],
       "debug/watch/context": [
         {
           "submenu": "atariSTDev/showInMemory",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         }
       ],
       "view/item/context": [
         {
           "submenu": "atariSTDev/showInMemory",
-          "when": "view == atariSTDev.hardwareView && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
+          "when": "view == atariSTDev.hardwareView"
         }
       ],
       "webview/context": [
@@ -162,20 +172,16 @@
       ],
       "atariSTDev/showInMemory": [
         {
-          "command": "atariSTDev.showInMemory1",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "command": "atariSTDev.showInMemory1"
         },
         {
-          "command": "atariSTDev.showInMemory2",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "command": "atariSTDev.showInMemory2"
         },
         {
-          "command": "atariSTDev.showInMemory3",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "command": "atariSTDev.showInMemory3"
         },
         {
-          "command": "atariSTDev.showInMemory4",
-          "when": "debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg'"
+          "command": "atariSTDev.showInMemory4"
         }
       ]
     },
