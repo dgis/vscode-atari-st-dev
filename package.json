@@ -24,7 +24,7 @@
     "commands": [
       {
         "command": "atariSTDev.toolsPath",
-        "title": "Show in Memory1",
+        "title": "Get the Atari ST Dev Tools Path",
         "category": "Atari ST"
       },
       {
