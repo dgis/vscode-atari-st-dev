@@ -1,7 +1,8 @@
 TODO
+* Add samples
+* Add unit tests
 * Add a graphic inspector webview.
-* See unit tests
-* Profiling
+* Add profiling
 
 
 # Atari ST Visual Studio Code Extension
