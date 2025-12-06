@@ -1,11 +1,7 @@
 TODO
-* Activate the extension only when needed.
-* Add the Atari ST SDK
-* Test light and dark themes
 * Add a graphic inspector webview.
 * See unit tests
 * Profiling
-* NOT POSSIBLE: Add Show in Disassembly.
 
 
 # Atari ST Visual Studio Code Extension

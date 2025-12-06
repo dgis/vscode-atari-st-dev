@@ -15,18 +15,15 @@
 		"Debuggers"
 	],
 	"icon": "media/atari-color.png",
-  "activationEvents": [],
+  "activationEvents": [
+    "*"
+  ],
 	"extensionDependencies": [
     "ms-vscode.cpptools"
 	],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
-      {
-        "command": "atariSTDev.toolsPath",
-        "title": "Get the Atari ST Dev Tools Path",
-        "category": "Atari ST"
-      },
       {
         "command": "atariSTDev.showInMemory1",
         "title": "Show in Memory1",
@@ -190,7 +187,18 @@
         "id": "atariSTDev/showInMemory",
         "label": "Show in Memory"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Atari ST/TT/Falcon Dev",
+      "type": "object",
+      "properties": {
+        "atariSTDev.activate": {
+          "type": "boolean",
+          "default": false,
+          "description": "Atari ST Dev extension activation switch (set this setting to true in your own '.vscode/settings.json' file with '\"atariSTDev.activate\": true' )."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
