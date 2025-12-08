@@ -1,0 +1,22 @@
+{
+    "debug.allowBreakpointsEverywhere": true,
+    "files.associations": {
+        "*.S": "m68k"
+    },
+    "[m68k]": {
+        "files.encoding": "cp437",
+        "editor.tabSize": 8,
+        "editor.rulers": []
+    },
+    "terminal.integrated.env.linux": {
+        "PATH": "${env:ATARIST_TOOLS}/bin:${env:ATARIST_TOOLS}/opt/cross-mint/bin:${env:ATARIST_TOOLS}/opt/cross-mint/m68k-atari-mintelf/bin:${env:PATH}"
+        // On WSL, the ATARIST_TOOLS env variable does work here, replace it with an absolute path:
+        // "PATH": "<absolute path to sdk/tools/linux>/bin:<absolute path to sdk/tools/linux>/opt/cross-mint/bin:<absolute path to sdk/tools/linux>/opt/cross-mint/m68k-atari-mintelf/bin:${env:PATH}"
+    },
+    "terminal.integrated.env.windows": {
+        "PATH": "${env:ATARIST_TOOLS}\\bin;${env:ATARIST_TOOLS}\\opt\\cross-mint\\bin;${env:ATARIST_TOOLS}\\opt\\cross-mint\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem"
+    },
+    "terminal.integrated.env.osx": {
+        "PATH": "${env:ATARIST_TOOLS}/bin:${env:ATARIST_TOOLS}/opt/cross-mint/bin:${env:ATARIST_TOOLS}/opt/cross-mint/m68k-atari-mintelf/bin:${env:PATH}"
+    }
+}

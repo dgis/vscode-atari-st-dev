@@ -1,0 +1,89 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "Atari ST: make",
+            "command": "make",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Build PRG from Makefile for Atari ST."
+        },
+        {
+            "type": "shell",
+            "label": "Atari ST: make clean",
+            "command": "make",
+            "args": [
+                "clean"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Cleanup from Makefile for Atari ST."
+        },
+        {
+            "type": "shell",
+            "label": "Atari ST: build selected C file",
+            "command": "m68k-atari-mintelf-gcc",
+            "args": [
+                "../libcmini-elf/lib/crt0.o",
+                "${relativeFile}",
+                "-std=c99",
+                "-I../libcmini-elf/include",
+                "-o",
+                "${workspaceFolder}\\${fileBasenameNoExtension}.prg",
+                "-g",
+                "-nostdlib",
+                "-L../libcmini-elf/lib",
+                "-lcmini",
+                "-lgcc"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Build PRG from active file for Atari ST."
+        },
+        {
+            "type": "shell",
+            "label": "Atari ST: run",
+            "command": "${env:ATARIST_TOOLS}/hatari/hatari",
+            "osx": {
+                "command": "${env:ATARIST_TOOLS}/hatari/hatari.app/Contents/MacOS/hatari"
+            },
+            "args": [
+                "--tos", "${env:ATARIST_TOOLS}/hatari/etos512us.img",
+                "--confirm-quit", "no",
+                "--sound", "off",
+                "--fast-forward", "yes",
+                "${workspaceFolder}${/}main.prg"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "detail": "Run PRG from active file for Atari ST."
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "01HelloWorld"
+		},
+		{
+			"path": "02WithAssembly"
+		}
+	],
+	"settings": {
+		"[m68k]": {
+			"editor.rulers": []
+		}
+	}
+}
