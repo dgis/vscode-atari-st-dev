@@ -10,22 +10,25 @@ class DebuggerService {
 	private currentFrameId = "";
 
 	private debug = true;
-	private test = false;
-	private testBuffer = "";
+
+	private fastStart = true;
 
 	constructor() {
-		if (this.test) {
-			let ascii = "";
-			for (let i = 1; i < 256; i++) {
-				ascii += String.fromCharCode(i);
+		vscode.debug.onDidStartDebugSession((session: vscode.DebugSession) => {
+			if (session.type === "cppdbg") {
+				this.fastStart = true;
 			}
-			this.testBuffer = ascii.repeat(4 * 1024 * 4);
-		}
-
+		});
 		vscode.debug.onDidChangeActiveStackItem((event: any) => {
 			this.debug && console.log(`DebuggerService::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
 			if (event.session && event.session.type === "cppdbg") {
 				this.currentFrameId = event.frameId;
+
+				if (this.fastStart) {
+					// Disable fast-forwarding on first stop to ensure correct speed emulation.
+					this.evaluateGDBCommand("-exec monitor setopt --fast-forward no");
+					this.fastStart = false;
+				}
 			}
 		});
 	}
@@ -62,68 +65,52 @@ class DebuggerService {
 
 	public async readMemory(address: number, offset: number, count: number) {
 		this.debug && console.log(`DebuggerService::readMemory(address: 0x${address.toString(16)}, offset: ${offset}, count: ${count})`);
-		if (!this.test) {
-			const activeDebugSession = vscode.debug.activeDebugSession;
-			if (activeDebugSession !== undefined) {
-				const response = await activeDebugSession.customRequest("readMemory", {
-					memoryReference: address,
-					offset: offset,
-					count: count,
-				});
-				response.address = parseInt(response.address, 16);
-				response.data = atob(response.data);
-				this.debug && console.log(`DebuggerService::readMemory(address: 0x${address.toString(16)}, offset: ${offset}, count: ${count}) -> 0x${asciiToHexa(response.data)}`);
-				return response;
-			} else {
-				this.debug && console.log("DebuggerService::readMemory() No valid debugging session is currently running.");
-			}
+		const activeDebugSession = vscode.debug.activeDebugSession;
+		if (activeDebugSession !== undefined) {
+			const response = await activeDebugSession.customRequest("readMemory", {
+				memoryReference: address,
+				offset: offset,
+				count: count,
+			});
+			response.address = parseInt(response.address, 16);
+			response.data = atob(response.data);
+			this.debug && console.log(`DebuggerService::readMemory(address: 0x${address.toString(16)}, offset: ${offset}, count: ${count}) -> 0x${asciiToHexa(response.data)}`);
+			return response;
 		} else {
-			let buffer = this.testBuffer.substring(address, address + count);
-			return {
-				address: address,
-				unreadableBytes: 0,
-				data: buffer
-			};
+			this.debug && console.log("DebuggerService::readMemory() No valid debugging session is currently running.");
 		}
 	}
 
+	//TODO: implement writeMemory to allow memory editing in memory view.
 	public async writeMemory(address: number, data: string) {
-		if (!this.test) {
-			const activeDebugSession = vscode.debug.activeDebugSession;
-			if (activeDebugSession !== undefined) {
-				//-exec set {int[4]}0x601050 = {1, 2, 3, 4}
-				//-exec set {char[5]}(0x1b13c) = "ABCDE"
-				// // writeMemory(memoryReference: string, offset: number, data: string, allowPartial?: boolean): Promise<DebugProtocol.WriteMemoryResponse | undefined>;
-				// let buffer = btoa(data);
-				// activeDebugSession.customRequest("writeMemory", {
-				// 	memoryReference: address,
-				// 	offset: 0,
-				// 	data: buffer
-				// }).then((response: any) => {
-				// 	this.debug && console.log("DebuggerService::Got response", response);
-				// 	response.type = "memoryWritten";
-				// 	// response.offset?: number; // Property that should be returned when `allowPartial` is true to indicate the offset of the first byte of data successfully written. Can be negative.
-				// 	// response.bytesWritten?: number; // Property that should be returned when `allowPartial` is true to indicate the number of bytes starting from address that were successfully written.
-				// 	view.postMessage(response);
-				// });
-				const args = {
-					// expression: "-exec set {int[4]}0x601050 = {1, 2, 3, 4}",
-					expression: "-exec monitor cpureg",
-					frameId: this.currentFrameId,
-					context: "repl"
-				};
-				const response = await activeDebugSession.customRequest("evaluate", args);
-				this.debug && console.log("DebuggerService::Got response", response);
-				return response;
-			} else {
-				this.debug && console.log("DebuggerService::writeMemory() No valid debugging session is currently running.");
-			}
-		} else {
-			this.testBuffer = this.testBuffer.substring(0, address) + data + this.testBuffer.substring(address + data.length);
-			return {
-				offset: 0,
-				bytesWritten: data.length
+		const activeDebugSession = vscode.debug.activeDebugSession;
+		if (activeDebugSession !== undefined) {
+			//-exec set {int[4]}0x601050 = {1, 2, 3, 4}
+			//-exec set {char[5]}(0x1b13c) = "ABCDE"
+			// // writeMemory(memoryReference: string, offset: number, data: string, allowPartial?: boolean): Promise<DebugProtocol.WriteMemoryResponse | undefined>;
+			// let buffer = btoa(data);
+			// activeDebugSession.customRequest("writeMemory", {
+			// 	memoryReference: address,
+			// 	offset: 0,
+			// 	data: buffer
+			// }).then((response: any) => {
+			// 	this.debug && console.log("DebuggerService::Got response", response);
+			// 	response.type = "memoryWritten";
+			// 	// response.offset?: number; // Property that should be returned when `allowPartial` is true to indicate the offset of the first byte of data successfully written. Can be negative.
+			// 	// response.bytesWritten?: number; // Property that should be returned when `allowPartial` is true to indicate the number of bytes starting from address that were successfully written.
+			// 	view.postMessage(response);
+			// });
+			const args = {
+				// expression: "-exec set {int[4]}0x601050 = {1, 2, 3, 4}",
+				expression: "-exec monitor cpureg",
+				frameId: this.currentFrameId,
+				context: "repl"
 			};
+			const response = await activeDebugSession.customRequest("evaluate", args);
+			this.debug && console.log("DebuggerService::Got response", response);
+			return response;
+		} else {
+			this.debug && console.log("DebuggerService::writeMemory() No valid debugging session is currently running.");
 		}
 	}
 

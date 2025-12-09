@@ -7,9 +7,5 @@
         "files.encoding": "cp437",
         "editor.tabSize": 8
     },
-    "atariSTDev.activate": false,
-    "terminal.integrated.env.windows": {
-        "PATH": "c:\\Users\\Dgis\\Documents\\Git\\vscode-atari-st-dev\\sdk\\win32\\bin;c:\\Users\\Dgis\\Documents\\Git\\vscode-atari-st-dev\\sdk\\win32\\opt\\cross-mint\\bin;c:\\Users\\Dgis\\Documents\\Git\\vscode-atari-st-dev\\sdk\\win32\\opt\\cross-mint\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem",
-        "ATARIST_TOOLS": "c:\\Users\\Dgis\\Documents\\Git\\vscode-atari-st-dev\\sdk\\win32"
-    }
+    "atariSTDev.activate": true
 }

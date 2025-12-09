@@ -10,7 +10,6 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 	private view?: vscode.WebviewView;
 	private debuggerContext: DebuggerContext = new DebuggerContext;
 	private lastContextSelection?: string;
-	//private deferredView: any | null = null;
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri
@@ -43,9 +42,6 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 					type: "initialize",
 					debugSessionStarted: vscode.debug.activeDebugSession?.type === "cppdbg"
 				});
-				// if (this.deferredView) {
-				// 	this.deferredView.resolve(this.view);
-				// }
 			} else if (data.type === "contextSelection") {
 				this.lastContextSelection = data.selection;
 			} else

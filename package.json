@@ -195,7 +195,14 @@
         "atariSTDev.activate": {
           "type": "boolean",
           "default": false,
+          "scope": "resource",
           "description": "Atari ST Dev extension activation switch (set this setting to true in your own '.vscode/settings.json' file with '\"atariSTDev.activate\": true' )."
+        },
+        "atariSTDev.path": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "description": "Atari ST tools location."
         }
       }
     }

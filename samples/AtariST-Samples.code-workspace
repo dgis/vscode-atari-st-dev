@@ -5,11 +5,13 @@
 		},
 		{
 			"path": "02WithAssembly"
+		},
+		{
+			"path": "03CWithAssembly"
+		},
+		{
+			"path": "04SNDH"
 		}
 	],
-	"settings": {
-		"[m68k]": {
-			"editor.rulers": []
-		}
-	}
+	"settings": {}
 }

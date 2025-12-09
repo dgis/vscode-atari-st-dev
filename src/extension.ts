@@ -1,60 +1,67 @@
 // The module "vscode" contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import * as path from 'path';
+import * as path from "path";
 import { CPUViewProvider } from "./cpu-view-provider";
 import { HardwareTreeviewProvider } from "./hardware-treeview-provider";
 import { MemoryViewProvider } from "./memory-view-provider";
 
-function getVscodePlatform(): 'windows' | 'linux' | 'osx' {
+let isExtensionActivated = false;
+let ATARIST_TOOLS: string;
+
+function getVscodePlatform(): "windows" | "linux" | "osx" {
   switch (process.platform) {
-    case 'win32': return 'windows';
-    case 'darwin': return 'osx';
-    case 'linux': return 'linux';
-    default: return 'linux';
+    case "win32": return "windows";
+    case "darwin": return "osx";
+    case "linux": return "linux";
+    default: return "linux";
   }
 }
 
 async function setEnvironmentPath(context: vscode.ExtensionContext) {
-	const ATARIST_TOOLS = path.join(context.extensionPath, 'sdk', process.platform);
+	ATARIST_TOOLS = path.join(context.extensionPath, "sdk", process.platform);
 
 	// Update internal PATHs
-	// const col = context.environmentVariableCollection;
-	// let PATH: string | undefined = col.get('PATH')?.value;
-	// if (process.platform === "win32") {
-	// 	const toolsDir = `${ATARIST_TOOLS}\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem`;
-	// 	if (!(PATH && PATH.includes(toolsDir)))
-	// 		col.prepend('PATH', toolsDir + ';');
-	// } else {
-	// 	const toolsDir = `${ATARIST_TOOLS}/bin:${ATARIST_TOOLS}/opt/cross-mint/bin:${ATARIST_TOOLS}/opt/cross-mint/m68k-atari-mintelf/bin`;
-	// 	if (!(PATH && PATH.includes(toolsDir)))
-	// 		col.prepend('PATH', toolsDir + ':');
-	// }
-	// col.replace('ATARIST_TOOLS', ATARIST_TOOLS);
-	// col.persistent = true;
-
+	for (const workspaceFolder of vscode.workspace.workspaceFolders || []) {
+		const col = context.environmentVariableCollection.getScoped({ workspaceFolder });
+		let PATH: string | undefined = col.get("PATH")?.value;
+		if (process.platform === "win32") {
+			const toolsDir = `${ATARIST_TOOLS}\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem`;
+			if (!(PATH && PATH.includes(toolsDir)))
+				col.prepend("PATH", toolsDir + ";");
+		} else {
+			const toolsDir = `${ATARIST_TOOLS}/bin:${ATARIST_TOOLS}/opt/cross-mint/bin:${ATARIST_TOOLS}/opt/cross-mint/m68k-atari-mintelf/bin`;
+			if (!(PATH && PATH.includes(toolsDir)))
+				col.prepend("PATH", toolsDir + ":");
+		}
+		col.replace("ATARIST_TOOLS", ATARIST_TOOLS);
+		//col.persistent = true;
+	}
 
 	// Update workspace PATHs (saved in .vscode/settings.json)
 	const terminalIntegratedEnv = `terminal.integrated.env.${getVscodePlatform()}`;
-	const cfg = vscode.workspace.getConfiguration();
-
-	const current = cfg.get<Record<string,string> | undefined>(terminalIntegratedEnv);
-	let PATH: string | undefined = current?.PATH;
-	if (process.platform === "win32") {
-		const toolsDir = `${ATARIST_TOOLS}\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem`;
-		if (!(current?.PATH && current.PATH.includes(toolsDir)))
-			PATH = current?.PATH ? `${toolsDir};${current.PATH}` : toolsDir;
-	} else {
-		const toolsDir = `${ATARIST_TOOLS}/bin:${ATARIST_TOOLS}/opt/cross-mint/bin:${ATARIST_TOOLS}/opt/cross-mint/m68k-atari-mintelf/bin`;
-		if (!(current?.PATH && current.PATH.includes(toolsDir)))
-			PATH = current?.PATH ? `${toolsDir}:${current.PATH}` : toolsDir;
+	for (const workspaceFolder of vscode.workspace.workspaceFolders || []) {
+		const config = vscode.workspace.getConfiguration(undefined, workspaceFolder.uri);
+		const current = config.get<Record<string,string> | undefined>(terminalIntegratedEnv);
+		let PATH = current?.PATH;
+		if (process.platform === "win32") {
+			const toolsDir = `${ATARIST_TOOLS}\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem`;
+			if (!(current?.PATH && current.PATH.includes(toolsDir)))
+				PATH = current?.PATH ? `${toolsDir};${current.PATH}` : toolsDir;
+		} else {
+			const toolsDir = `${ATARIST_TOOLS}/bin:${ATARIST_TOOLS}/opt/cross-mint/bin:${ATARIST_TOOLS}/opt/cross-mint/m68k-atari-mintelf/bin`;
+			if (!(current?.PATH && current.PATH.includes(toolsDir)))
+				PATH = current?.PATH ? `${toolsDir}:${current.PATH}` : toolsDir;
+		}
+		const newEnv = {
+			...(current || {}),
+			PATH,
+			ATARIST_TOOLS
+		};
+		await config.update("atariSTDev.activate", true, vscode.ConfigurationTarget.Workspace);
+		await config.update("atariSTDev.path", ATARIST_TOOLS, vscode.ConfigurationTarget.Workspace);
+		await config.update(terminalIntegratedEnv, newEnv, vscode.ConfigurationTarget.Workspace);
 	}
-	const newEnv = {
-		...(current || {}),
-		PATH,
-		ATARIST_TOOLS
-	};
-	await cfg.update(terminalIntegratedEnv, newEnv, vscode.ConfigurationTarget.Workspace);
 }
 
 async function activateExtension(context: vscode.ExtensionContext) {
@@ -89,31 +96,48 @@ async function activateExtension(context: vscode.ExtensionContext) {
 		}
 	});
 
-	vscode.commands.executeCommand('setContext', 'atariSTDev.showDebugViews', true);
+	vscode.commands.executeCommand("setContext", "atariSTDev.showDebugViews", true);
 }
 
 // This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	const config = vscode.workspace.getConfiguration("atariSTDev");
-	const isExtensionActivated = config.get<boolean>("activate", false);
 
-	if (!isExtensionActivated) {
+	context.subscriptions.push(vscode.commands.registerCommand("atariSTDev.tools", async () => {
+		if (!isExtensionActivated) {
+			await activateExtension(context);
+		}
+		return ATARIST_TOOLS;
+	}));
+
+	for (const workspaceFolder of vscode.workspace.workspaceFolders || []) {
+		const config0 = vscode.workspace.getConfiguration("atariSTDev", workspaceFolder.uri);
+		if (config0.get<boolean>("activate", false)) {
+			isExtensionActivated = true;
+			break;
+		}
+	}
+    if (isExtensionActivated) {
+        activateExtension(context);
+    } else {
+		// Listen for configuration changes to activate the extension
 		let didChangeConfigurationSubscription = vscode.workspace.onDidChangeConfiguration(event => {
-			if (event.affectsConfiguration('atariSTDev.activate')) {
-				const config0 = vscode.workspace.getConfiguration("atariSTDev");
-				if (config0.get<boolean>("activate", false)) {
-					// Activate the extension only the first time the setting is changed to true.
-					activateExtension(context);
-					didChangeConfigurationSubscription.dispose();
+			if (event.affectsConfiguration("atariSTDev.activate")) {
+				for (const workspaceFolder of vscode.workspace.workspaceFolders || []) {
+					const config0 = vscode.workspace.getConfiguration("atariSTDev", workspaceFolder.uri);
+					if (config0.get<boolean>("activate", false)) {
+						isExtensionActivated = true;
+						// Activate the extension only the first time the setting is changed to true.
+						activateExtension(context);
+						break;
+					}
 				}
 			}
+			if (isExtensionActivated) {
+				// Dispose the listener once the extension is activated
+				didChangeConfigurationSubscription.dispose();
+			}
 		});
-
-		return;  // Exit activation early
 	}
-
-	activateExtension(context);
 }
 
 // This method is called when your extension is deactivated
