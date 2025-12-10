@@ -1,6 +1,8 @@
 TODO
-* Add samples
+* Add walkthroughs to copy the samples somewhere
+* Add C/M libs
 * Add unit tests
+* Improve README.md
 * Add a graphic inspector webview.
 * Add profiling
 

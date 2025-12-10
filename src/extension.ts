@@ -1,6 +1,7 @@
 // The module "vscode" contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import * as fs from 'fs';
 import * as path from "path";
 import { CPUViewProvider } from "./cpu-view-provider";
 import { HardwareTreeviewProvider } from "./hardware-treeview-provider";
@@ -8,6 +9,7 @@ import { MemoryViewProvider } from "./memory-view-provider";
 
 let isExtensionActivated = false;
 let ATARIST_TOOLS: string;
+const PENDING_WALKTHROUGH_KEY = "atariSTDev.openWalkthroughOnNextWindow";
 
 function getVscodePlatform(): "windows" | "linux" | "osx" {
   switch (process.platform) {
@@ -16,6 +18,40 @@ function getVscodePlatform(): "windows" | "linux" | "osx" {
     case "linux": return "linux";
     default: return "linux";
   }
+}
+
+async function checkAndOpenPendingWalkthrough(context: vscode.ExtensionContext): Promise<void> {
+	const pending = context.globalState.get<{ workspaceFile?: string; walkthrough?: string } | undefined>(PENDING_WALKTHROUGH_KEY);
+	if (!pending || !pending.walkthrough) {
+		return;
+	}
+
+	const currentWorkspaceFile = vscode.workspace.workspaceFile ? vscode.workspace.workspaceFile.toString() : undefined;
+	if (pending.workspaceFile && currentWorkspaceFile === pending.workspaceFile) {
+		await vscode.commands.executeCommand("workbench.action.openWalkthrough", pending.walkthrough);
+		await context.globalState.update(PENDING_WALKTHROUGH_KEY, undefined);
+		return;
+	}
+
+	// Listen for workspace changes in case the workspaceFile isn't available yet.
+	const disposable = vscode.workspace.onDidChangeWorkspaceFolders(async () => {
+		const current = vscode.workspace.workspaceFile ? vscode.workspace.workspaceFile.toString() : undefined;
+		if (pending.workspaceFile && current === pending.workspaceFile) {
+			await vscode.commands.executeCommand("workbench.action.openWalkthrough", pending.walkthrough);
+			await context.globalState.update(PENDING_WALKTHROUGH_KEY, undefined);
+			disposable.dispose();
+		}
+	});
+
+	// Also try once after a short delay.
+	setTimeout(async () => {
+		const current = vscode.workspace.workspaceFile ? vscode.workspace.workspaceFile.toString() : undefined;
+		if (pending.workspaceFile && current === pending.workspaceFile) {
+			await vscode.commands.executeCommand("workbench.action.openWalkthrough", pending.walkthrough);
+			await context.globalState.update(PENDING_WALKTHROUGH_KEY, undefined);
+			disposable.dispose();
+		}
+	}, 500);
 }
 
 async function setEnvironmentPath(context: vscode.ExtensionContext) {
@@ -99,16 +135,65 @@ async function activateExtension(context: vscode.ExtensionContext) {
 	vscode.commands.executeCommand("setContext", "atariSTDev.showDebugViews", true);
 }
 
+async function openSamplesInNewWorkspace(context: vscode.ExtensionContext) {
+	if (vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders.length === 0) {
+		vscode.window.showErrorMessage(`Failed to copy samples. No workspace folder is opened.`);
+		return;
+	}
+
+	try {
+		let workscapeFileUri = null;
+		const sourcePath = path.join(context.extensionPath, "samples");
+		const sourceUri = vscode.Uri.file(sourcePath);
+		const destinationUri = vscode.workspace.workspaceFolders[0].uri;
+		const destinationPath = destinationUri.fsPath;
+		const destinationFiles = fs.readdirSync(destinationPath);
+		if(destinationFiles.length) {
+			vscode.window.showErrorMessage(`Failed to copy samples. Workspace folder is not empty.`);
+			return;
+		}
+		const entries = await vscode.workspace.fs.readDirectory(sourceUri);
+		for (const [name, fileType] of entries) {
+			const childSourceUri = vscode.Uri.joinPath(sourceUri, name);
+			const childDestinationUri = vscode.Uri.joinPath(destinationUri, name);
+			if (fileType === vscode.FileType.File || fileType === vscode.FileType.Directory) {
+				await vscode.workspace.fs.copy(childSourceUri, childDestinationUri, { overwrite: true });
+			}
+			if (fileType === vscode.FileType.File && name.endsWith(".code-workspace")) {
+				workscapeFileUri = childDestinationUri;
+			}
+		}
+
+		vscode.window.showInformationMessage(`Atari ST samples copied to workspace folder.`);
+		if (workscapeFileUri) {
+			// Queue the walkthrough to open in the newly opened window.
+			await context.globalState.update(PENDING_WALKTHROUGH_KEY, {
+				workspaceFile: workscapeFileUri.toString(),
+				walkthrough: "dgis.atari-st-dev#atariSTDev.gettingStarted"
+			});
+			// Open the workspace in a new window. The extension in that window
+			// will read the flag and open the walkthrough on activation.
+			await vscode.commands.executeCommand('vscode.openFolder', workscapeFileUri, false);
+		}
+	} catch(error) {
+		vscode.window.showErrorMessage(`Failed to copy samples. ${(error as Error).toString()}`);
+	}
+}
+
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
 
-	context.subscriptions.push(vscode.commands.registerCommand("atariSTDev.tools", async () => {
-		if (!isExtensionActivated) {
-			await activateExtension(context);
-		}
-		return ATARIST_TOOLS;
+	context.subscriptions.push(vscode.commands.registerCommand("atariSTDev.getSamples", () => {
+		openSamplesInNewWorkspace(context);
 	}));
 
+	// If another window queued a walkthrough for this workspace, open it now.
+	checkAndOpenPendingWalkthrough(context).catch((err: unknown) => {
+		// Don't block activation on this; show a warning if it fails.
+		console.error("Failed to check pending walkthrough:", err);
+	});
+
+	// Check if the extension should be activated based on the configuration
 	for (const workspaceFolder of vscode.workspace.workspaceFolders || []) {
 		const config0 = vscode.workspace.getConfiguration("atariSTDev", workspaceFolder.uri);
 		if (config0.get<boolean>("activate", false)) {
