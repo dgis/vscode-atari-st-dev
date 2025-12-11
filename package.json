@@ -12,15 +12,15 @@
   },
   "categories": [
     "Programming Languages",
-		"Debuggers"
-	],
-	"icon": "media/atari-color.png",
+    "Debuggers"
+  ],
+  "icon": "media/atari-color.png",
   "activationEvents": [
     "*"
   ],
-	"extensionDependencies": [
+  "extensionDependencies": [
     "ms-vscode.cpptools"
-	],
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "walkthroughs": [
@@ -28,149 +28,149 @@
         "id": "atariSTDev.gettingStarted",
         "title": "Sample",
         "description": "A sample walkthrough",
-				"steps": [
-					{
-						"id": "runcommand",
-						"title": "Run Command",
-						"description": "This step will run a command and check off once it has been run.\n[Run Command](command:atariSTDev.getSamples)",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						},
-						"completionEvents": [
-							"onCommand:getting-started-sample.runCommand"
-						]
-					},
-					{
-						"id": "changesetting",
-						"title": "Change Setting",
-						"description": "This step will change a setting and check off when the setting has changed\n[Change Setting](command:getting-started-sample.changeSetting)",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						},
-						"completionEvents": [
-							"onSettingChanged:getting-started-sample.sampleSetting"
-						]
-					},
-					{
-						"id": "setcontext",
-						"title": "Set Context",
-						"description": "This step will set a context key, and check off when that context has been set\n[Set Context](command:getting-started-sample.setContext)",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						},
-						"completionEvents": [
-							"onContext:gettingStartedContextKey"
-						]
-					},
-					{
-						"id": "install python extension",
-						"title": "Install Python Extension",
-						"description": "Click here to install the Python Extension. This step will complete once it has been installed.\n[Here](command:workbench.extensions.installExtension?%22ms-python.python%22)",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						},
-						"completionEvents": [
-							"extensionInstalled:ms-python.python"
-						]
-					},
-					{
-						"id": "open terminal view",
-						"title": "Open Terminal",
-						"description": "Click [here](command:workbench.action.terminal.toggleTerminal) to open terminal. This step will complete once the terminal has been opened.",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						},
-						"completionEvents": [
-							"onView:terminal"
-						]
-					},
-					{
-						"id": "usesvg",
-						"title": "Use SVG's",
-						"description": "Try out using SVG's in your content, they can react to the theme (try: ``var(--vscode-foreground)``) and even host command links (try: ``xlink:href=\"command:``)",
-						"media": {
-							"svg": "media/image.svg",
-							"altText": "Empty svg image"
-						}
-					},
-					{
-						"id": "mac",
-						"title": "UI Platform: Mac",
-						"description": "This step will only show on a Mac.",
-						"when": "isMac",
-						"media": {
-							"markdown": "media/mac.md"
-						}
-					},
-					{
-						"id": "windows",
-						"title": "UI Platform: Windows",
-						"description": "This step will only show on Windows",
-						"when": "isWindows",
-						"media": {
-							"markdown": "media/windows.md"
-						}
-					},
-					{
-						"id": "linux",
-						"title": "UI Platform: Linux",
-						"description": "This step will only show on Linux",
-						"when": "isLinux",
-						"media": {
-							"markdown": "media/linux.md"
-						}
-					},
-					{
-						"id": "macRemote",
-						"title": "Workspace Platform: Mac",
-						"description": "This step will only show on Mac remotes.",
-						"when": "workspacePlatform == 'mac'",
-						"media": {
-							"markdown": "media/mac.md"
-						}
-					},
-					{
-						"id": "windowsRemote",
-						"title": "Workspace Platform: Windows",
-						"description": "This step will only show on Windows remotes",
-						"when": "workspacePlatform == 'windows'",
-						"media": {
-							"markdown": "media/windows.md"
-						}
-					},
-					{
-						"id": "linuxRemote",
-						"title": "Workspace Platform: Linux",
-						"description": "This step will only show on Linux remotes",
-						"when": "workspacePlatform == 'linux'",
-						"media": {
-							"markdown": "media/linux.md"
-						}
-					},
-					{
-						"id": "webRemote",
-						"title": "Workspace Platform: Web",
-						"description": "This step will only show on webworker remotes",
-						"when": "workspacePlatform == 'webworker'",
-						"media": {
-							"markdown": "media/linux.md"
-						}
-					},
-					{
-						"id": "showSources",
-						"title": "View Sources",
-						"description": "Open a folder containg the sources of this extension.\n[View Sources](command:getting-started-sample.viewSources)",
-						"media": {
-							"image": "media/image.png",
-							"altText": "Empty image"
-						}
-					}
-				]
+        "steps": [
+          {
+            "id": "runcommand",
+            "title": "Run Command",
+            "description": "This step will run a command and check off once it has been run.\n[Run Command](command:atariSTDev.getSamples)",
+            "media": {
+              "image": "media/image.png",
+              "altText": "Empty image"
+            },
+            "completionEvents": [
+              "onCommand:getting-started-sample.runCommand"
+            ]
+          },
+          {
+            "id": "changesetting",
+            "title": "Change Setting",
+            "description": "This step will change a setting and check off when the setting has changed\n[Change Setting](command:getting-started-sample.changeSetting)",
+            "media": {
+              "image": "media/image.png",
+              "altText": "Empty image"
+            },
+            "completionEvents": [
+              "onSettingChanged:getting-started-sample.sampleSetting"
+            ]
+          },
+          {
+            "id": "setcontext",
+            "title": "Set Context",
+            "description": "This step will set a context key, and check off when that context has been set\n[Set Context](command:getting-started-sample.setContext)",
+            "media": {
+              "image": "media/image.png",
+              "altText": "Empty image"
+            },
+            "completionEvents": [
+              "onContext:gettingStartedContextKey"
+            ]
+          },
+          {
+            "id": "install python extension",
+            "title": "Install Python Extension",
+            "description": "Click here to install the Python Extension. This step will complete once it has been installed.\n[Here](command:workbench.extensions.installExtension?%22ms-python.python%22)",
+            "media": {
+              "image": "media/image.png",
+              "altText": "Empty image"
+            },
+            "completionEvents": [
+              "extensionInstalled:ms-python.python"
+            ]
+          },
+          {
+            "id": "open terminal view",
+            "title": "Open Terminal",
+            "description": "Click [here](command:workbench.action.terminal.toggleTerminal) to open terminal. This step will complete once the terminal has been opened.",
+            "media": {
+              "image": "media/image.png",
+              "altText": "Empty image"
+            },
+            "completionEvents": [
+              "onView:terminal"
+            ]
+          },
+          {
+            "id": "usesvg",
+            "title": "Use SVG's",
+            "description": "Try out using SVG's in your content, they can react to the theme (try: ``var(--vscode-foreground)``) and even host command links (try: ``xlink:href=\"command:``)",
+            "media": {
+              "svg": "media/image.svg",
+              "altText": "Empty svg image"
+            }
+          },
+          {
+            "id": "mac",
+            "title": "UI Platform: Mac",
+            "description": "This step will only show on a Mac.",
+            "when": "isMac",
+            "media": {
+              "markdown": "media/mac.md"
+            }
+          },
+          {
+            "id": "windows",
+            "title": "UI Platform: Windows",
+            "description": "This step will only show on Windows",
+            "when": "isWindows",
+            "media": {
+              "markdown": "media/windows.md"
+            }
+          },
+          {
+            "id": "linux",
+            "title": "UI Platform: Linux",
+            "description": "This step will only show on Linux",
+            "when": "isLinux",
+            "media": {
+              "markdown": "media/linux.md"
+            }
+          },
+          {
+            "id": "macRemote",
+            "title": "Workspace Platform: Mac",
+            "description": "This step will only show on Mac remotes.",
+            "when": "workspacePlatform == 'mac'",
+            "media": {
+              "markdown": "media/mac.md"
+            }
+          },
+          {
+            "id": "windowsRemote",
+            "title": "Workspace Platform: Windows",
+            "description": "This step will only show on Windows remotes",
+            "when": "workspacePlatform == 'windows'",
+            "media": {
+              "markdown": "media/windows.md"
+            }
+          },
+          {
+            "id": "linuxRemote",
+            "title": "Workspace Platform: Linux",
+            "description": "This step will only show on Linux remotes",
+            "when": "workspacePlatform == 'linux'",
+            "media": {
+              "markdown": "media/linux.md"
+            }
+          },
+          {
+            "id": "webRemote",
+            "title": "Workspace Platform: Web",
+            "description": "This step will only show on webworker remotes",
+            "when": "workspacePlatform == 'webworker'",
+            "media": {
+              "markdown": "media/linux.md"
+            }
+          },
+          {
+            "id": "showSources",
+            "title": "View Sources",
+            "description": "Open a folder containg the sources of this extension.\n[View Sources](command:getting-started-sample.viewSources)",
+            "media": {
+              "image": "media/image.png",
+              "altText": "Empty image"
+            }
+          }
+        ]
       }
     ],
     "commands": [
@@ -227,7 +227,7 @@
     "views": {
       "debug": [
         {
-					"type": "webview",
+          "type": "webview",
           "id": "atariSTDev.CPUView",
           "name": "Atari ST: CPU",
           "icon": "$(chip)",
@@ -371,14 +371,16 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.105.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
+    "@types/sinon": "^21.0.0",
+    "@types/vscode": "^1.105.0",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
-    "eslint": "^9.36.0",
-    "typescript": "^5.9.3",
     "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.36.0",
+    "sinon": "^21.0.0",
+    "typescript": "^5.9.3"
   }
 }

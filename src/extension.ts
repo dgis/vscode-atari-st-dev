@@ -20,7 +20,7 @@ function getVscodePlatform(): "windows" | "linux" | "osx" {
   }
 }
 
-async function checkAndOpenPendingWalkthrough(context: vscode.ExtensionContext): Promise<void> {
+export async function checkAndOpenPendingWalkthrough(context: vscode.ExtensionContext): Promise<void> {
 	const pending = context.globalState.get<{ workspaceFile?: string; walkthrough?: string } | undefined>(PENDING_WALKTHROUGH_KEY);
 	if (!pending || !pending.walkthrough) {
 		return;
@@ -54,7 +54,7 @@ async function checkAndOpenPendingWalkthrough(context: vscode.ExtensionContext):
 	}, 500);
 }
 
-async function setEnvironmentPath(context: vscode.ExtensionContext) {
+export async function setEnvironmentPath(context: vscode.ExtensionContext) {
 	ATARIST_TOOLS = path.join(context.extensionPath, "sdk", process.platform);
 
 	// Update internal PATHs
@@ -100,7 +100,7 @@ async function setEnvironmentPath(context: vscode.ExtensionContext) {
 	}
 }
 
-async function activateExtension(context: vscode.ExtensionContext) {
+export async function activateExtension(context: vscode.ExtensionContext) {
 
 	await setEnvironmentPath(context);
 
@@ -135,7 +135,7 @@ async function activateExtension(context: vscode.ExtensionContext) {
 	vscode.commands.executeCommand("setContext", "atariSTDev.showDebugViews", true);
 }
 
-async function openSamplesInNewWorkspace(context: vscode.ExtensionContext) {
+export async function openSamplesInNewWorkspace(context: vscode.ExtensionContext) {
 	if (vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders.length === 0) {
 		vscode.window.showErrorMessage(`Failed to copy samples. No workspace folder is opened.`);
 		return;
