@@ -37,6 +37,7 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 		this.view.webview.html = this._getHtmlForWebview(this.view.webview);
 
 		this.view.webview.onDidReceiveMessage(data => {
+			if (!data) return;
 			if (data.type === "initialize") {
 				this.debuggerContext.postMessageView.postMessage({
 					type: "initialize",
@@ -63,7 +64,7 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 		});
 		vscode.debug.onDidChangeActiveStackItem((event: any) => {
 			this.debug && console.log(`CPUViewProvider::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
-			if (event.session && event.session.type === "cppdbg") {
+			if (event?.session && event.session.type === "cppdbg") {
 				this.view?.webview.postMessage({ type: "debugSessionUpdated" });
 			}
 		});

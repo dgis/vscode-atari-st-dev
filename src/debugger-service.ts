@@ -21,7 +21,7 @@ class DebuggerService {
 		});
 		vscode.debug.onDidChangeActiveStackItem((event: any) => {
 			this.debug && console.log(`DebuggerService::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
-			if (event.session && event.session.type === "cppdbg") {
+			if (event?.session && event.session.type === "cppdbg") {
 				this.currentFrameId = event.frameId;
 
 				if (this.fastStart) {

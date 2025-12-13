@@ -268,7 +268,7 @@ export class HardwareTreeviewProvider implements vscode.TreeDataProvider<Hardwar
 		});
 		vscode.debug.onDidChangeActiveStackItem((event: any) => {
 			this.debug && console.log(`HardwareTreeviewProvider::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
-			if (event.session && event.session.type === "cppdbg") {
+			if (event?.session && event.session.type === "cppdbg") {
 				this.refresh();
 			}
 		});

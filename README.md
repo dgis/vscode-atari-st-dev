@@ -1,35 +1,20 @@
-TODO
-* Add walkthroughs to copy the samples somewhere
-* Add C/M libs
-* Add unit tests
-* Improve README.md
-* Add a graphic inspector webview.
-* Add profiling
-
-
 # Atari ST Visual Studio Code Extension
 
 This extension allows to compile and debug C/C++/Assembly programs for Atari ST/TT/Falcon using GCC/GDB and a modify version of the Hatari emulator.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
 
-For example if there is an image subfolder under your extension project workspace:
 
-\!\[feature X\]\(images/feature-x.png\)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+
+
+
 
 ## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
 
 This extension contributes the following settings:
 
@@ -38,7 +23,10 @@ This extension contributes the following settings:
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+* While debugging, if a function contain a TRAP instruction, the debugger is unable to 'step over'. You must set a breakpoint after the function and continue execution until it is reached.
+* Be careful not to name the program with more than 8.3 characters, because the GEMDOS code of the Hatari emulator could misinterpret it ("MAINPROG1.PRG" and "MAINPROG2.PRG" can be confused)!
+* The disassembly view uses Intel syntax instead of DevPack syntax.
+* Use code page 437 to view the Atari source file, as it closely matches the Atari ST's ASCII characters.
 
 ## Release Notes
 
@@ -46,35 +34,21 @@ Users appreciate release notes as you update your extension.
 
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Initial release
 
 ---
 
-## Following extension guidelines
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+## TODO
+* Improve walkthroughs
+* Improve README.md
+* Add C/M libs
+* Add a GEM sample
+* Add a graphic inspector webview
+* Add profiling
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
 
 ## Greetings
-
-
 
 
 **Enjoy!**

@@ -26,148 +26,114 @@
     "walkthroughs": [
       {
         "id": "atariSTDev.gettingStarted",
-        "title": "Sample",
-        "description": "A sample walkthrough",
+        "title": "Atari ST Dev Getting Started",
+        "description": "Sample walkthrough",
         "steps": [
           {
-            "id": "runcommand",
-            "title": "Run Command",
-            "description": "This step will run a command and check off once it has been run.\n[Run Command](command:atariSTDev.getSamples)",
+            "id": "openEmptyFolder",
+            "title": "Open Folder",
+            "description": "[Open an empty folder](command:workbench.action.files.openFolder) to copy samples.",
             "media": {
-              "image": "media/image.png",
+              "image": "media/atari-color.png",
               "altText": "Empty image"
             },
             "completionEvents": [
-              "onCommand:getting-started-sample.runCommand"
+              "onCommand:workbench.action.files.openFolder"
             ]
           },
           {
-            "id": "changesetting",
-            "title": "Change Setting",
-            "description": "This step will change a setting and check off when the setting has changed\n[Change Setting](command:getting-started-sample.changeSetting)",
+            "id": "copySample",
+            "title": "Copy Sample Files",
+            "description": "[copy the samples](command:atariSTDev.getSamples). A multi-projects workspace should load and this walkthrough should automatically appears to continue.",
             "media": {
-              "image": "media/image.png",
+              "image": "media/atari-color.png",
               "altText": "Empty image"
             },
             "completionEvents": [
-              "onSettingChanged:getting-started-sample.sampleSetting"
+              "onCommand:atariSTDev.getSamples"
             ]
           },
           {
-            "id": "setcontext",
-            "title": "Set Context",
-            "description": "This step will set a context key, and check off when that context has been set\n[Set Context](command:getting-started-sample.setContext)",
+            "id": "debugOneSample",
+            "title": "Debug one sample project",
+            "description": "[Open the Run and Debug](command:workbench.view.debug) view (Ctrl+Shift+D) and select one of the sample configurations from the dropdown and start debugging (F5) or [Select and Start Debugging](command:workbench.action.debug.selectandstart).\nYou can debug a mix of C, C++ or 68k assembly files.",
             "media": {
-              "image": "media/image.png",
+              "image": "media/atari-color.png",
               "altText": "Empty image"
             },
             "completionEvents": [
-              "onContext:gettingStartedContextKey"
+              "onCommand:workbench.view.debug"
             ]
           },
           {
-            "id": "install python extension",
-            "title": "Install Python Extension",
-            "description": "Click here to install the Python Extension. This step will complete once it has been installed.\n[Here](command:workbench.extensions.installExtension?%22ms-python.python%22)",
+            "id": "openCPUView",
+            "title": "Open CPU view",
+            "description": "[Open the Atari ST CPU](command:atariSTDev.CPUView.focus) view to see the CPU registers and flags.",
             "media": {
-              "image": "media/image.png",
+              "image": "media/atari-color.png",
               "altText": "Empty image"
             },
             "completionEvents": [
-              "extensionInstalled:ms-python.python"
+              "onCommand:atariSTDev.CPUView.focus"
             ]
           },
           {
-            "id": "open terminal view",
-            "title": "Open Terminal",
-            "description": "Click [here](command:workbench.action.terminal.toggleTerminal) to open terminal. This step will complete once the terminal has been opened.",
+            "id": "showAddressInMemoryView",
+            "title": "Show Address in Memory View",
+            "description": "While debugging, right click on a variable or a register address and select 'Show in Memory' to open the Memory View at that address.",
             "media": {
-              "image": "media/image.png",
+              "image": "media/atari-color.png",
               "altText": "Empty image"
             },
             "completionEvents": [
-              "onView:terminal"
+              "onCommand:atariSTDev.showInMemory1",
+              "onCommand:atariSTDev.showInMemory2",
+              "onCommand:atariSTDev.showInMemory3",
+              "onCommand:atariSTDev.showInMemory4"
             ]
           },
           {
-            "id": "usesvg",
-            "title": "Use SVG's",
-            "description": "Try out using SVG's in your content, they can react to the theme (try: ``var(--vscode-foreground)``) and even host command links (try: ``xlink:href=\"command:``)",
+            "id": "openHardwareView",
+            "title": "Open Hardware view",
+            "description": "[Open the Atari ST Hardware](command:atariSTDev.hardwareView.focus) view to see some hardware variables. It is also possible to right click on hardware items and 'Show in Memory' to open the Memory View at that address.",
             "media": {
-              "svg": "media/image.svg",
+              "svg": "media/atari.svg",
               "altText": "Empty svg image"
-            }
+            },
+            "completionEvents": [
+              "onCommand:atariSTDev.hardwareView.focus"
+            ]
           },
           {
-            "id": "mac",
-            "title": "UI Platform: Mac",
-            "description": "This step will only show on a Mac.",
-            "when": "isMac",
+            "id": "disassemblyView",
+            "title": "Open Disassembly view",
+            "description": "[Open the Disassembly View](command:debug.action.openDisassemblyView) to see the current disassembly (in GDB format) while debugging. You can right click on the Call Stack view and select 'Open Disassembly View' to open the Disassembly View at that function (This view is a built-in VS Code debug feature).",
             "media": {
-              "markdown": "media/mac.md"
-            }
+              "svg": "media/atari.svg",
+              "altText": "Empty svg image"
+            },
+            "completionEvents": [
+              "onCommand:debug.action.openDisassemblyView"
+            ]
           },
           {
-            "id": "windows",
-            "title": "UI Platform: Windows",
-            "description": "This step will only show on Windows",
-            "when": "isWindows",
+            "id": "openDebugConsole",
+            "title": "Open Debug Console",
+            "description": "[Open the Debug Console](command:workbench.panel.repl.view.focus) to access the console. While debugging, you can run the following commands:\nfor gdb: > -exec <gdb command>\n  examples:\n  -exec help\n  -exec info registers\n  -exec x/5i $pc\nfor hatari debugger: > -exec monitor <hatari debugger command>\n  examples:\n  -exec monitor help\n  -exec monitor info\n  -exec monitor cpureg\n  -exec monitor disasm\n  -exec monitor memdump",
             "media": {
-              "markdown": "media/windows.md"
-            }
+              "svg": "media/atari.svg",
+              "altText": "Empty svg image"
+            },
+            "completionEvents": [
+              "onCommand:workbench.panel.repl.view.focus"
+            ]
           },
           {
-            "id": "linux",
-            "title": "UI Platform: Linux",
-            "description": "This step will only show on Linux",
-            "when": "isLinux",
+            "id": "readMe",
+            "title": "Read me",
+            "description": "You can read more about this extension in the README file.",
             "media": {
-              "markdown": "media/linux.md"
-            }
-          },
-          {
-            "id": "macRemote",
-            "title": "Workspace Platform: Mac",
-            "description": "This step will only show on Mac remotes.",
-            "when": "workspacePlatform == 'mac'",
-            "media": {
-              "markdown": "media/mac.md"
-            }
-          },
-          {
-            "id": "windowsRemote",
-            "title": "Workspace Platform: Windows",
-            "description": "This step will only show on Windows remotes",
-            "when": "workspacePlatform == 'windows'",
-            "media": {
-              "markdown": "media/windows.md"
-            }
-          },
-          {
-            "id": "linuxRemote",
-            "title": "Workspace Platform: Linux",
-            "description": "This step will only show on Linux remotes",
-            "when": "workspacePlatform == 'linux'",
-            "media": {
-              "markdown": "media/linux.md"
-            }
-          },
-          {
-            "id": "webRemote",
-            "title": "Workspace Platform: Web",
-            "description": "This step will only show on webworker remotes",
-            "when": "workspacePlatform == 'webworker'",
-            "media": {
-              "markdown": "media/linux.md"
-            }
-          },
-          {
-            "id": "showSources",
-            "title": "View Sources",
-            "description": "Open a folder containg the sources of this extension.\n[View Sources](command:getting-started-sample.viewSources)",
-            "media": {
-              "image": "media/image.png",
-              "altText": "Empty image"
+              "markdown": "README.md"
             }
           }
         ]
