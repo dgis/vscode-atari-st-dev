@@ -1,0 +1,11 @@
+{
+    "debug.allowBreakpointsEverywhere": true,
+    "files.associations": {
+        "*.S": "m68k"
+    },
+    "[m68k]": {
+        "files.encoding": "cp437",
+        "editor.tabSize": 8
+    },
+    "atariSTDev.activate": true
+}
