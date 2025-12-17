@@ -3,6 +3,7 @@
 src/**
 .gitignore
 .yarnrc
+.DS_Store
 vsc-extension-quickstart.md
 **/tsconfig.json
 **/eslint.config.mjs

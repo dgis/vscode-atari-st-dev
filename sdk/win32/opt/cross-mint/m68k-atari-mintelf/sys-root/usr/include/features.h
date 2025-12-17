@@ -1,0 +1,600 @@
+/* Copyright (C) 1991-2012 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
+/* Adapted to the MiNTLib by Guido Flohr <guido@freemint.de>.  */
+
+#ifndef	_FEATURES_H
+#define	_FEATURES_H	1
+
+#ifndef _COMPILER_H
+# include <compiler.h>
+#endif
+
+/* These are defined by the user (or the compiler)
+   to specify the desired environment:
+
+   __STRICT_ANSI__	ISO Standard C.
+   _ISOC99_SOURCE	Extensions to ISO C89 from ISO C99.
+   _ISOC11_SOURCE	Extensions to ISO C99 from ISO C11.
+   _ISOC2X_SOURCE	Extensions to ISO C99 from ISO C2X.
+   __STDC_WANT_LIB_EXT2__
+			Extensions to ISO C99 from TR 27431-2:2010.
+   __STDC_WANT_IEC_60559_BFP_EXT__
+			Extensions to ISO C11 from TS 18661-1:2014.
+   __STDC_WANT_IEC_60559_FUNCS_EXT__
+			Extensions to ISO C11 from TS 18661-4:2015.
+   __STDC_WANT_IEC_60559_TYPES_EXT__
+			Extensions to ISO C11 from TS 18661-3:2015.
+   __STDC_WANT_IEC_60559_EXT__
+			ISO C2X interfaces defined only in Annex F.
+
+   _POSIX_SOURCE	IEEE Std 1003.1.
+   _POSIX_C_SOURCE	If ==1, like _POSIX_SOURCE; if >=2 add IEEE Std 1003.2;
+			if >=199309L, add IEEE Std 1003.1b-1993;
+			if >=199506L, add IEEE Std 1003.1c-1995;
+			if >=200112L, all of IEEE 1003.1-2004
+			if >=200809L, all of IEEE 1003.1-2008
+   _XOPEN_SOURCE	Includes POSIX and XPG things.  Set to 500 if
+			Single Unix conformance is wanted, to 600 for the
+			sixth revision, to 700 for the seventh revision.
+   _XOPEN_SOURCE_EXTENDED XPG things and X/Open Unix extensions.
+   _LARGEFILE_SOURCE	Some more functions for correct standard I/O.
+   _LARGEFILE64_SOURCE	Additional functionality from LFS for large files.
+   _FILE_OFFSET_BITS=N	Select default filesystem interface.
+   _BSD_SOURCE		ISO C, POSIX, and 4.3BSD things.
+   _SVID_SOURCE		ISO C, POSIX, and SVID things.
+   _ATFILE_SOURCE	Additional *at interfaces.
+   _DYNAMIC_STACK_SIZE_SOURCE Select correct (but non compile-time constant)
+			MINSIGSTKSZ, SIGSTKSZ and PTHREAD_STACK_MIN.
+   _GNU_SOURCE		All of the above, plus GNU extensions.
+   _DEFAULT_SOURCE	The default set of features (taking precedence over
+			__STRICT_ANSI__).
+
+   _FORTIFY_SOURCE	Add security hardening to many library functions.
+			Set to 1, 2 or 3; 3 performs stricter checks than 2, which
+			performs stricter checks than 1.
+
+   _REENTRANT		Select additionally reentrant object.
+   _THREAD_SAFE		Same as _REENTRANT, often used by other systems.
+
+   The `-ansi' switch to the GNU C compiler, and standards conformance
+   options such as `-std=c99', define __STRICT_ANSI__.  If none of
+   these are defined, or if _DEFAULT_SOURCE is defined, the default is
+   to have _POSIX_SOURCE set to one and _POSIX_C_SOURCE set to
+   200809L, as well as enabling miscellaneous functions from BSD and
+   SVID.  If more than one of these are defined, they accumulate.  For
+   example __STRICT_ANSI__, _POSIX_SOURCE and _POSIX_C_SOURCE together
+   give you ISO C, 1003.1, and 1003.2, but nothing else.
+
+   These are defined by this file and are used by the
+   header files to decide what to declare or define:
+
+   __GLIBC_USE (F)	Define things from feature set F.  This is defined
+			to 1 or 0; the subsequent macros are either defined
+			or undefined, and those tests should be moved to
+			__GLIBC_USE.
+   __USE_ISOC11		Define ISO C11 things.
+   __USE_ISOC99		Define ISO C99 things.
+   __USE_ISOC95		Define ISO C90 AMD1 (C95) things.
+   __USE_ISOCXX11	Define ISO C++11 things.
+   __USE_POSIX		Define IEEE Std 1003.1 things.
+   __USE_POSIX2		Define IEEE Std 1003.2 things.
+   __USE_POSIX199309	Define IEEE Std 1003.1, and .1b things.
+   __USE_POSIX199506	Define IEEE Std 1003.1, .1b, .1c and .1i things.
+   __USE_XOPEN		Define XPG things.
+   __USE_XOPEN_EXTENDED	Define X/Open Unix things.
+   __USE_UNIX98		Define Single Unix V2 things.
+   __USE_XOPEN2K        Define XPG6 things.
+   __USE_XOPEN2KXSI     Define XPG6 XSI things.
+   __USE_XOPEN2K8       Define XPG7 things.
+   __USE_XOPEN2K8XSI    Define XPG7 XSI things.
+   __USE_LARGEFILE	Define correct standard I/O things.
+   __USE_LARGEFILE64	Define LFS things with separate names.
+   __USE_FILE_OFFSET64	Define 64bit interface as default.
+   __USE_BSD		Define 4.3BSD things.
+   __USE_SVID		Define SVID things.
+   __USE_MISC		Define things from 4.3BSD or System V Unix.
+   __USE_ATFILE		Define *at interfaces and AT_* constants for them.
+   __USE_DYNAMIC_STACK_SIZE Define correct (but non compile-time constant)
+			MINSIGSTKSZ, SIGSTKSZ and PTHREAD_STACK_MIN.
+   __USE_GNU		Define GNU extensions.
+   __USE_REENTRANT	Define reentrant/thread-safe *_r functions.
+   __USE_FORTIFY_LEVEL	Additional security measures used, according to level.
+   __FAVOR_BSD		Favor 4.3BSD things in cases of conflict.
+   __USE_MINTLIB        Define MiNTLib extensions.
+
+   The macros `__GNU_LIBRARY__', `__GLIBC__', and `__GLIBC_MINOR__' are
+   defined by this file unconditionally.  `__GNU_LIBRARY__' is provided
+   only for compatibility.  All new code should use the other symbols
+   to test for features.
+
+   All macros listed above as possibly being defined by this file are
+   explicitly undefined if they are not explicitly defined.
+   Feature-test macros that are not defined by the user or compiler
+   but are implied by the other feature-test macros defined (or by the
+   lack of any definitions) are defined by the file.
+
+   ISO C feature test macros depend on the definition of the macro
+   when an affected header is included, not when the first system
+   header is included, and so they are handled in
+   <bits/libc-header-start.h>, which does not have a multiple include
+   guard.  Feature test macros that can be handled from the first
+   system header included are handled here.  */
+
+/* When compiling the library itself, we have to define _GNU_SOURCE and
+   _MINTLIB_SOURCE because we compile these extentions.  */
+#ifdef _LIBC
+# define _GNU_SOURCE
+# define _MINTLIB_SOURCE
+#endif
+
+/* Undefine everything, so we get a clean slate.  */
+#undef	__USE_ISOC11
+#undef	__USE_ISOC99
+#undef	__USE_ISOC95
+#undef	__USE_ISOCXX11
+#undef	__USE_POSIX
+#undef	__USE_POSIX2
+#undef	__USE_POSIX199309
+#undef	__USE_POSIX199506
+#undef	__USE_XOPEN
+#undef	__USE_XOPEN_EXTENDED
+#undef	__USE_UNIX98
+#undef	__USE_XOPEN2K
+#undef	__USE_XOPEN2KXSI
+#undef	__USE_XOPEN2K8
+#undef	__USE_XOPEN2K8XSI
+#undef	__USE_LARGEFILE
+#undef	__USE_LARGEFILE64
+#undef	__USE_FILE_OFFSET64
+#undef	__USE_BSD
+#undef	__USE_SVID
+#undef	__USE_MISC
+#undef	__USE_ATFILE
+#undef	__USE_DYNAMIC_STACK_SIZE
+#undef	__USE_GNU
+#undef	__USE_REENTRANT
+#undef	__USE_FORTIFY_LEVEL
+#undef	__FAVOR_BSD
+#undef	__KERNEL_STRICT_NAMES
+#undef  __USE_MINTLIB
+#undef	__GLIBC_USE_ISOC2X
+#undef	__GLIBC_USE_DEPRECATED_GETS
+#undef	__GLIBC_USE_DEPRECATED_SCANF
+
+/* Suppress kernel-name space pollution unless user expressedly asks
+   for it.  */
+#ifndef _LOOSE_KERNEL_NAMES
+# define __KERNEL_STRICT_NAMES
+#endif
+
+/* Whether to use feature set F.  */
+#define __GLIBC_USE(F)	__GLIBC_USE_ ## F
+
+/* Always use ISO C things.  */
+#define	__USE_ANSI	1
+
+/* If _BSD_SOURCE was defined by the user, favor BSD over POSIX.  */
+#if defined _BSD_SOURCE && \
+    !(defined _POSIX_SOURCE || defined _POSIX_C_SOURCE || \
+      defined _XOPEN_SOURCE || defined _GNU_SOURCE || defined _SVID_SOURCE)
+# define __FAVOR_BSD	1
+#endif
+
+/* If _GNU_SOURCE was defined by the user, turn on all the other features.  */
+#ifdef _GNU_SOURCE
+# undef  _ISOC95_SOURCE
+# define _ISOC95_SOURCE	1
+# undef  _ISOC99_SOURCE
+# define _ISOC99_SOURCE	1
+# undef  _ISOC11_SOURCE
+# define _ISOC11_SOURCE	1
+# undef  _ISOC2X_SOURCE
+# define _ISOC2X_SOURCE	1
+# undef  _POSIX_SOURCE
+# define _POSIX_SOURCE	1
+# undef  _POSIX_C_SOURCE
+# define _POSIX_C_SOURCE	200809L
+# undef  _XOPEN_SOURCE
+# define _XOPEN_SOURCE	700
+# undef  _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED	1
+# ifndef __MINT__ /* not yet */
+# undef	 _LARGEFILE64_SOURCE
+# define _LARGEFILE64_SOURCE	1
+# endif /* !__MINT__ */
+# undef  _BSD_SOURCE
+# define _BSD_SOURCE	1
+# undef  _SVID_SOURCE
+# define _SVID_SOURCE	1
+# undef  _DEFAULT_SOURCE
+# define _DEFAULT_SOURCE	1
+# ifndef __MINT__ /* not yet */
+# undef  _ATFILE_SOURCE
+# define _ATFILE_SOURCE	1
+# undef  _DYNAMIC_STACK_SIZE_SOURCE
+# define _DYNAMIC_STACK_SIZE_SOURCE 1
+# endif /* !__MINT__ */
+#endif
+
+/* If nothing (other than _GNU_SOURCE) is defined,
+   define _BSD_SOURCE and _SVID_SOURCE.  */
+#if (!defined __STRICT_ANSI__ && !defined _ISOC99_SOURCE && \
+     !defined _POSIX_SOURCE && !defined _POSIX_C_SOURCE && \
+     !defined _XOPEN_SOURCE && !defined _BSD_SOURCE && !defined _SVID_SOURCE)
+# define _BSD_SOURCE	1
+# define _SVID_SOURCE	1
+#endif
+
+/* This is to enable the ISO C2X extension.  */
+#if (defined _ISOC2X_SOURCE \
+     || (defined __STDC_VERSION__ && __STDC_VERSION__ > 201710L))
+# define __GLIBC_USE_ISOC2X	1
+#else
+# define __GLIBC_USE_ISOC2X	0
+#endif
+
+/* This is to enable the ISO C11 extension.  */
+#if (defined _ISOC11_SOURCE || defined _ISOC2X_SOURCE \
+     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 201112L))
+# define __USE_ISOC11	1
+#endif
+
+/* This is to enable the ISO C99 extension.  */
+#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE			\
+     || defined _ISOC2X_SOURCE						\
+     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L))
+# define __USE_ISOC99	1
+#endif
+
+/* This is to enable the ISO C90 Amendment 1:1995 extension.  */
+#if (defined _ISOC99_SOURCE || defined _ISOC11_SOURCE			\
+     || defined _ISOC2X_SOURCE						\
+     || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199409L))
+# define __USE_ISOC95	1
+#endif
+
+#ifdef __cplusplus
+/* This is to enable compatibility for ISO C++17.  */
+# if __cplusplus >= 201703L
+#  define __USE_ISOC11	1
+# endif
+/* This is to enable compatibility for ISO C++11.
+   Check the temporary macro for now, too.  */
+# if __cplusplus >= 201103L || defined __GXX_EXPERIMENTAL_CXX0X__
+#  define __USE_ISOCXX11	1
+#  define __USE_ISOC99	1
+# endif
+#endif
+
+/* If none of the ANSI/POSIX macros are defined, use POSIX.1 and POSIX.2
+   (and IEEE Std 1003.1b-1993 unless _XOPEN_SOURCE is defined).  */
+#if ((!defined __STRICT_ANSI__					\
+      || (defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 500))	\
+     && !defined _POSIX_SOURCE && !defined _POSIX_C_SOURCE)
+# define _POSIX_SOURCE	1
+# if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 500
+#  define _POSIX_C_SOURCE	2
+# elif defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 600
+#  define _POSIX_C_SOURCE	199506L
+# elif defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) < 700
+#  define _POSIX_C_SOURCE	200112L
+# else
+#  define _POSIX_C_SOURCE	200809L
+# endif
+# define __USE_POSIX_IMPLICITLY	1
+#endif
+
+/* Some C libraries once required _REENTRANT and/or _THREAD_SAFE to be
+   defined in all multithreaded code.  GNU libc has not required this
+   for many years.  We now treat them as compatibility synonyms for
+   _POSIX_C_SOURCE=199506L, which is the earliest level of POSIX with
+   comprehensive support for multithreaded code.  Using them never
+   lowers the selected level of POSIX conformance, only raises it.  */
+#if ((!defined _POSIX_C_SOURCE || (_POSIX_C_SOURCE - 0) < 199506L) \
+     && (defined _REENTRANT || defined _THREAD_SAFE))
+# define _POSIX_SOURCE   1
+# undef  _POSIX_C_SOURCE
+# define _POSIX_C_SOURCE 199506L
+#endif
+
+#if (defined _POSIX_SOURCE					\
+     || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1)	\
+     || defined _XOPEN_SOURCE)
+# define __USE_POSIX	1
+#endif
+
+#if defined _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2 || defined _XOPEN_SOURCE
+# define __USE_POSIX2	1
+#endif
+
+#if defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199309L
+# define __USE_POSIX199309	1
+#endif
+
+#if defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 199506L
+# define __USE_POSIX199506	1
+#endif
+
+#if defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200112L
+# define __USE_XOPEN2K		1
+# undef __USE_ISOC95
+# define __USE_ISOC95		1
+# undef __USE_ISOC99
+# define __USE_ISOC99		1
+#endif
+
+#if defined _POSIX_C_SOURCE && (_POSIX_C_SOURCE - 0) >= 200809L
+# define __USE_XOPEN2K8		1
+# undef  _ATFILE_SOURCE
+# define _ATFILE_SOURCE	1
+#endif
+
+#ifdef	_XOPEN_SOURCE
+# define __USE_XOPEN	1
+# if (_XOPEN_SOURCE - 0) >= 500
+#  define __USE_XOPEN_EXTENDED	1
+#  define __USE_UNIX98	1
+#  undef _LARGEFILE_SOURCE
+#  define _LARGEFILE_SOURCE	1
+#  if (_XOPEN_SOURCE - 0) >= 600
+#   if (_XOPEN_SOURCE - 0) >= 700
+#    define __USE_XOPEN2K8	1
+#    define __USE_XOPEN2K8XSI	1
+#   endif
+#   define __USE_XOPEN2K	1
+#   define __USE_XOPEN2KXSI	1
+#   undef __USE_ISOC95
+#   define __USE_ISOC95		1
+#   undef __USE_ISOC99
+#   define __USE_ISOC99		1
+#  endif
+# else
+#  ifdef _XOPEN_SOURCE_EXTENDED
+#   define __USE_XOPEN_EXTENDED	1
+#  endif
+# endif
+#endif
+
+#ifdef _LARGEFILE_SOURCE
+# define __USE_LARGEFILE	1
+#endif
+
+#ifdef _LARGEFILE64_SOURCE
+# define __USE_LARGEFILE64	1
+#endif
+
+#if defined _FILE_OFFSET_BITS && _FILE_OFFSET_BITS == 64
+# ifndef __MINT__ /* not yet */
+# define __USE_FILE_OFFSET64	1
+# endif
+#endif
+
+#if defined _BSD_SOURCE || defined _SVID_SOURCE
+# define __USE_MISC	1
+#endif
+
+#ifdef	_BSD_SOURCE
+# define __USE_BSD	1
+#endif
+
+#ifdef	_SVID_SOURCE
+# define __USE_SVID	1
+#endif
+
+#ifdef	_ATFILE_SOURCE
+# ifndef __MINT__ /* not yet */
+# define __USE_ATFILE	1
+# endif
+#endif
+
+#ifdef	_GNU_SOURCE
+# define __USE_GNU	1
+#endif
+
+#if defined _REENTRANT || defined _THREAD_SAFE
+# define __USE_REENTRANT	1
+#endif
+
+/* We do support the IEC 559 math functioanlity, real and complex.  */
+#define __STDC_IEC_559__		1
+#define __STDC_IEC_559_COMPLEX__	1
+
+/* ISO/IEC TR 24731-2:2010 defines the __STDC_WANT_LIB_EXT2__
+   macro.  */
+#undef __GLIBC_USE_LIB_EXT2
+#if (defined __USE_GNU							\
+     || (defined __STDC_WANT_LIB_EXT2__ && __STDC_WANT_LIB_EXT2__ > 0))
+# define __GLIBC_USE_LIB_EXT2 1
+#else
+# define __GLIBC_USE_LIB_EXT2 0
+#endif
+
+/* ISO/IEC TS 18661-1:2014 defines the __STDC_WANT_IEC_60559_BFP_EXT__
+   macro.  Most but not all symbols enabled by that macro in TS
+   18661-1 are enabled unconditionally in C2X.  In C2X, the symbols in
+   Annex F still require a new feature test macro
+   __STDC_WANT_IEC_60559_EXT__ instead (C2X does not define
+   __STDC_WANT_IEC_60559_BFP_EXT__), while a few features from TS
+   18661-1 are not included in C2X (and thus should depend on
+   __STDC_WANT_IEC_60559_BFP_EXT__ even when C2X features are
+   enabled).
+
+   __GLIBC_USE (IEC_60559_BFP_EXT) controls those features from TS
+   18661-1 not included in C2X.
+
+   __GLIBC_USE (IEC_60559_BFP_EXT_C2X) controls those features from TS
+   18661-1 that are also included in C2X (with no feature test macro
+   required in C2X).
+
+   __GLIBC_USE (IEC_60559_EXT) controls those features from TS 18661-1
+   that are included in C2X but conditional on
+   __STDC_WANT_IEC_60559_EXT__.  (There are currently no features
+   conditional on __STDC_WANT_IEC_60559_EXT__ that are not in TS
+   18661-1.)  */
+#undef __GLIBC_USE_IEC_60559_BFP_EXT
+#if defined __USE_GNU || defined __STDC_WANT_IEC_60559_BFP_EXT__
+# define __GLIBC_USE_IEC_60559_BFP_EXT 1
+#else
+# define __GLIBC_USE_IEC_60559_BFP_EXT 0
+#endif
+#undef __GLIBC_USE_IEC_60559_BFP_EXT_C2X
+#if __GLIBC_USE (IEC_60559_BFP_EXT) || __GLIBC_USE (ISOC2X)
+# define __GLIBC_USE_IEC_60559_BFP_EXT_C2X 1
+#else
+# define __GLIBC_USE_IEC_60559_BFP_EXT_C2X 0
+#endif
+#undef __GLIBC_USE_IEC_60559_EXT
+#if __GLIBC_USE (IEC_60559_BFP_EXT) || defined __STDC_WANT_IEC_60559_EXT__
+# define __GLIBC_USE_IEC_60559_EXT 1
+#else
+# define __GLIBC_USE_IEC_60559_EXT 0
+#endif
+
+/* ISO/IEC TS 18661-4:2015 defines the
+   __STDC_WANT_IEC_60559_FUNCS_EXT__ macro.  Other than the reduction
+   functions, the symbols from this TS are enabled unconditionally in
+   C2X.  */
+#undef __GLIBC_USE_IEC_60559_FUNCS_EXT
+#if defined __USE_GNU || defined __STDC_WANT_IEC_60559_FUNCS_EXT__
+# define __GLIBC_USE_IEC_60559_FUNCS_EXT 1
+#else
+# define __GLIBC_USE_IEC_60559_FUNCS_EXT 0
+#endif
+#undef __GLIBC_USE_IEC_60559_FUNCS_EXT_C2X
+#if __GLIBC_USE (IEC_60559_FUNCS_EXT) || __GLIBC_USE (ISOC2X)
+# define __GLIBC_USE_IEC_60559_FUNCS_EXT_C2X 1
+#else
+# define __GLIBC_USE_IEC_60559_FUNCS_EXT_C2X 0
+#endif
+
+/* ISO/IEC TS 18661-3:2015 defines the
+   __STDC_WANT_IEC_60559_TYPES_EXT__ macro.  */
+#undef __GLIBC_USE_IEC_60559_TYPES_EXT
+#if defined __USE_GNU || defined __STDC_WANT_IEC_60559_TYPES_EXT__
+# define __GLIBC_USE_IEC_60559_TYPES_EXT 1
+#else
+# define __GLIBC_USE_IEC_60559_TYPES_EXT 0
+#endif
+
+#if defined _FORTIFY_SOURCE && _FORTIFY_SOURCE > 0
+# if !defined __OPTIMIZE__ || __OPTIMIZE__ <= 0
+#  warning _FORTIFY_SOURCE requires compiling with optimization (-O)
+# elif !__GNUC_PREREQ (4, 1)
+#  warning _FORTIFY_SOURCE requires GCC 4.1 or later
+# elif _FORTIFY_SOURCE > 1
+#  define __USE_FORTIFY_LEVEL 2
+# else
+#  define __USE_FORTIFY_LEVEL 1
+# endif
+#endif
+#ifndef __USE_FORTIFY_LEVEL
+# define __USE_FORTIFY_LEVEL 0
+#endif
+
+/* The function 'gets' existed in C89, but is impossible to use
+   safely.  It has been removed from ISO C11 and ISO C++14.  Note: for
+   compatibility with various implementations of <cstdio>, this test
+   must consider only the value of __cplusplus when compiling C++.  */
+#if defined __cplusplus ? __cplusplus >= 201402L : defined __USE_ISOC11
+# define __GLIBC_USE_DEPRECATED_GETS 0
+#else
+# define __GLIBC_USE_DEPRECATED_GETS 1
+#endif
+
+#ifdef _FAKE_GLIBC
+/* This macro indicates that the installed library is the GNU C Library.
+   For historic reasons the value now is 6 and this will stay from now
+   on.  The use of this variable is deprecated.  Use __GLIBC__ and
+   __GLIBC_MINOR__ now (see below) when you want to test for a specific
+   GNU C library version and use the values in <gnu/lib-names.h> to get
+   the sonames of the shared libraries.
+   
+   Of course the MiNTLib is not the GNU libc but quite close already.
+   It seems that it causes more problems if the macros from the glibc
+   are not defined than it causes if they are defined.  If you run
+   into difficulties, #undef the macros in the sources.  */
+#undef  __GNU_LIBRARY__
+#define __GNU_LIBRARY__ 6
+
+/* Major and minor version number of the GNU C library package.  Use
+   these macros to test for features in specific releases.
+   
+   Again, this is a plain lie for the MiNTLib but it is hopefully
+   reasonable to define them.  This MiNTLib version is roughly 
+   compatible with GNU libc 2.1.3.  */
+# define __GLIBC__	2
+# define __GLIBC_MINOR__	1
+#endif
+
+/* Major and minor version number of the MiNTLib package.  Use these macros 
+   to test for features in specific releases.  */
+#define __MINTLIB__		__MINTLIB_MAJOR__
+#define	__MINTLIB_MAJOR__	0
+#define	__MINTLIB_MINOR__	60
+#define __MINTLIB_REVISION__	1
+#define __MINTLIB_BETATAG__     ""
+
+/* Turn on special MiNTLib features if not strict ANSI.  */
+#ifndef __STRICT_ANSI__
+# define __USE_MINTLIB
+#endif
+
+#ifndef __MINT__
+#define __GLIBC_PREREQ(maj, min) \
+	((__GLIBC__ << 16) + __GLIBC_MINOR__ >= ((maj) << 16) + (min))
+#endif
+
+/* Decide whether a compiler supports the long long datatypes.  */
+#if defined __GNUC__ \
+    || (defined __PGI && defined __i386__ ) \
+    || (defined __INTEL_COMPILER && (defined __i386__ || defined __ia64__)) \
+    || (defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L)
+# define __GLIBC_HAVE_LONG_LONG	1
+#endif
+
+/* This is here only because every header file already includes this one.  */
+#ifndef __ASSEMBLER__
+# ifndef _SYS_CDEFS_H
+#  include <sys/cdefs.h>
+# endif
+
+/* If we don't have __REDIRECT, prototypes will be missing if
+   __USE_FILE_OFFSET64 but not __USE_LARGEFILE[64]. */
+# if defined __USE_FILE_OFFSET64 && !defined __REDIRECT
+#  define __USE_LARGEFILE	1
+#  define __USE_LARGEFILE64	1
+# endif
+
+#endif	/* !ASSEMBLER */
+
+/* Decide whether we can define 'extern inline' functions in headers.  */
+#if __GNUC_PREREQ (2, 7) && defined __OPTIMIZE__ \
+    &&  !defined __OPTIMIZE_SIZE__ && !defined __NO_INLINE__
+# define __USE_EXTERN_INLINES	1
+# if (defined __GNUC_STDC_INLINE__ && __GNUC_STDC_INLINE__) || \
+     defined __cplusplus || \
+     (defined __clang__ && (defined __GNUC_STDC_INLINE__ || defined __GNUC_GNU_INLINE__))
+#   define _EXTERN_INLINE extern __inline __attribute__((__gnu_inline__))
+# else
+#   define _EXTERN_INLINE extern __inline
+# endif
+#else
+# define _EXTERN_INLINE extern __inline __attribute__((__gnu_inline__))
+#endif
+
+#endif	/* features.h  */
