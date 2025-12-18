@@ -85,7 +85,7 @@ export async function setEnvironmentPath(context: vscode.ExtensionContext) {
 			if (!(current?.PATH && current.PATH.includes(toolsDir)))
 				PATH = current?.PATH ? `${toolsDir};${current.PATH}` : toolsDir;
 		} else {
-			const toolsDir = `${ATARIST_TOOLS}/bin:${ATARIST_TOOLS}/opt/cross-mint/bin:${ATARIST_TOOLS}/opt/cross-mint/m68k-atari-mintelf/bin`;
+			const toolsDir = `${ATARIST_TOOLS}/bin:${ATARIST_TOOLS}/opt/cross-mint/bin:${ATARIST_TOOLS}/opt/cross-mint/m68k-atari-mintelf/bin:\$\{env:PATH\}`;
 			if (!(current?.PATH && current.PATH.includes(toolsDir)))
 				PATH = current?.PATH ? `${toolsDir}:${current.PATH}` : toolsDir;
 		}

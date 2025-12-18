@@ -7,8 +7,7 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x86",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/../libcmini-elf/include"
+                "${workspaceFolder}/**"
             ]
         }
     ],
