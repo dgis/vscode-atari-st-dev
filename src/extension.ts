@@ -62,7 +62,7 @@ export async function setEnvironmentPath(context: vscode.ExtensionContext) {
 		const col = context.environmentVariableCollection.getScoped({ workspaceFolder });
 		let PATH: string | undefined = col.get("PATH")?.value;
 		if (process.platform === "win32") {
-			const toolsDir = `${ATARIST_TOOLS}\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem`;
+			const toolsDir = `${ATARIST_TOOLS}\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\usr\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem`;
 			if (!(PATH && PATH.includes(toolsDir)))
 				col.prepend("PATH", toolsDir + ";");
 		} else {
@@ -81,7 +81,7 @@ export async function setEnvironmentPath(context: vscode.ExtensionContext) {
 		const current = config.get<Record<string,string> | undefined>(terminalIntegratedEnv);
 		let PATH = current?.PATH;
 		if (process.platform === "win32") {
-			const toolsDir = `${ATARIST_TOOLS}\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem`;
+			const toolsDir = `${ATARIST_TOOLS}\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\bin;${ATARIST_TOOLS}\\opt\\cross-mint\\usr\\m68k-atari-mintelf\\bin;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem`;
 			if (!(current?.PATH && current.PATH.includes(toolsDir)))
 				PATH = current?.PATH ? `${toolsDir};${current.PATH}` : toolsDir;
 		} else {
