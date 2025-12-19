@@ -1,16 +1,28 @@
 #include <stdio.h>
 #include <gem.h>
 
+#include "main.h"
+
 int ap_id;
 int win1_handle = -1, win2_handle = -1;
+OBJECT *menu_tree;
 
 void init_gem(void) {
     ap_id = appl_init();
+    if (ap_id >= 0) {
+        int r = rsrc_load("MAIN.RSC");
+        if (r) {
+            rsrc_gaddr(R_TREE, MENU_MAIN, &menu_tree);
+            menu_bar(menu_tree, 1);
+        }
+    }
 }
 
 void exit_gem(void) {
     if (win1_handle >= 0) wind_close(win1_handle);
     if (win2_handle >= 0) wind_close(win2_handle);
+    menu_bar(menu_tree, 0);
+    rsrc_free();
     appl_exit();
 }
 
@@ -38,14 +50,7 @@ int main(void) {
         printf("Failed to initialize GEM\r\n");
         return 1;
     }
-    
-    printf("GEM Sample Application Started\r\n");
-    printf("Use menu or keyboard shortcuts:\r\n");
-    printf("1 - Open Window 1\r\n");
-    printf("2 - Open Window 2\r\n");
-    printf("D - Show Dialog\r\n");
-    printf("Q - Quit\r\n\r\n");
-    
+
     short mouse_x, mouse_y, mouse_button_state, mouse_click, keyState, key;
 
     while (!done) {
@@ -99,6 +104,26 @@ int main(void) {
         
         if (event & MU_MESAG) {
             switch (msg[0]) {
+                case MN_SELECTED:
+                    switch (msg[4]) {
+                        case MENU_ABOUT:
+                            form_alert(1, "[1][Sample GEM Application|Version 1.0][OK]");
+                            break;
+                        case MENU_QUIT:
+                            done = 1;
+                            break;
+                        case MENU_WINDOW1:
+                            open_window(&win1_handle, "Window 1");
+                            break;
+                        case MENU_WINDOW2:
+                            open_window(&win2_handle, "Window 2");
+                            break;
+                        case MENU_ALERT:
+                            show_dialog();
+                            break;
+                    }
+                    menu_tnormal(menu_tree, msg[3], 1);
+                    break;
                 case WM_CLOSED:
                     if (msg[3] == win1_handle) {
                         wind_close(win1_handle);
@@ -113,6 +138,6 @@ int main(void) {
     }
     
     exit_gem();
-    printf("GEM Application Terminated\r\n");
+
     return 0;
 }

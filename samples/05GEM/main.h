@@ -50,7 +50,12 @@
 
 
 
-#define SAMPLE                             0 /* menu */
+#define MENU_MAIN                          0 /* menu */
+#define MENU_ABOUT                         8 /* STRING in tree MENU_MAIN */
+#define MENU_QUIT                         17 /* STRING in tree MENU_MAIN */
+#define MENU_WINDOW1                      19 /* STRING in tree MENU_MAIN */
+#define MENU_WINDOW2                      20 /* STRING in tree MENU_MAIN */
+#define MENU_ALERT                        21 /* STRING in tree MENU_MAIN */
 
 
 
