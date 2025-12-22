@@ -5,6 +5,7 @@ endif
 
 # Compiler and flags
 CC = m68k-atari-mintelf-gcc
+# CFLAGS = -std=c99 -g -mshort
 CFLAGS = -std=c99 -g
 LDFLAGS = -lgem
 
