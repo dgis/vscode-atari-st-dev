@@ -8,7 +8,7 @@
   },
   "version": "0.5.0",
   "engines": {
-    "vscode": "^1.105.0"
+    "vscode": "^1.102.0"
   },
   "categories": [
     "Programming Languages",

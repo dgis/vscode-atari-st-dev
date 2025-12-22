@@ -36,6 +36,7 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
     `{
         "atariSTDev.activate": true
     }`
+- **Debug and watch a variable in hexadecimal** While debugging, to see a variable in hexadecimal instead of decimal, just add the suffix ",h" to the variable name in the watch view. For example, to watch the variable name "myVariable" in hexa, rename your variable to "myVariable,h".
 
 **Contributed Commands**
 - **`atariSTDev.getSamples`**: Copy sample projects into the active workspace and (if present) open the provided workspace file.
