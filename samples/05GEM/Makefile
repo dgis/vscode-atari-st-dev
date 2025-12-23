@@ -5,9 +5,19 @@ endif
 
 # Compiler and flags
 CC = m68k-atari-mintelf-gcc
-# CFLAGS = -std=c99 -g -mshort
-CFLAGS = -std=c99 -g
-LDFLAGS = -lgem
+
+# CFLAGS = -std=c99 -g
+# LDFLAGS = -lgem
+
+# CFLAGS = -mshort -std=c99 -g
+# LDFLAGS = -mshort -lgem
+
+# CFLAGS = -I../libcmini-elf/include -std=c99 -g
+# LDFLAGS = ../libcmini-elf/lib/crt0.o -nostdlib -L../libcmini-elf/lib -lcmini -lgcc -lgem
+
+CFLAGS = -mshort -I../libcmini-elf/include -std=c99 -g
+LDFLAGS = -mshort ../libcmini-elf/lib/mshort/crt0.o -nostdlib -L../libcmini-elf/lib/mshort -lcmini -lgcc -lgem
+
 
 # Target executable
 TARGET = main.prg

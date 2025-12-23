@@ -6,7 +6,7 @@ import debuggerService, { DebuggerContext } from "./debugger-service";
 
 export class CPUViewProvider implements vscode.WebviewViewProvider {
 
-	private debug = true;
+	private debug = false;
 	private view?: vscode.WebviewView;
 	private debuggerContext: DebuggerContext = new DebuggerContext;
 	private lastContextSelection?: string;

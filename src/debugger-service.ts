@@ -9,7 +9,7 @@ class DebuggerService {
 
 	private currentFrameId = "";
 
-	private debug = true;
+	private debug = false;
 
 	private fastStart = true;
 

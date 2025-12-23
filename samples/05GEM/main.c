@@ -2,9 +2,11 @@
 #include <gem.h>
 #include "main.h"
 
-typedef int BOOL;
+typedef short BOOL;
 #define FALSE 0
 #define TRUE 1
+
+short vdi_handle, char_w, char_h, box_w, box_h;
 
 struct window {
 	short handle; // window handle
@@ -17,7 +19,15 @@ struct window window1 = {
 
 OBJECT *menu_tree;
 
-void open_window(short *handle, char *title, char *info) {
+char *text[] = {
+	"This is some sample text",
+	"for use in the C-manship",
+	"window demonstration found",
+	"in Chapter 18."
+};
+int num_lines = 4;
+
+void open_window(short *handle, char *title, char *info, short x, short y, short w, short h) {
 	if (*handle < 0) {
 		short desktop_x, desktop_y, desktop_w, desktop_h;
 		wind_get(DESK, WF_WORKXYWH, &desktop_x, &desktop_y, &desktop_w, &desktop_h);
@@ -25,7 +35,7 @@ void open_window(short *handle, char *title, char *info) {
 		if (*handle >= 0) {
 			wind_set_ptr(*handle, WF_NAME, title);
 			wind_set_ptr(*handle, WF_INFO, info);
-			wind_open(*handle, 50, 50, 200, 100);
+			wind_open(*handle, x, y, w, h);
 		}
 	}
 }
@@ -52,13 +62,58 @@ void maximize_window(short handle) {
 		wind_set(handle, WF_CURRXYWH, previous_x, previous_y, previous_w, previous_h);
 	} else {
 		short current_x, current_y, current_w, current_h;
-		short fullscreen_x, fullscreen_y, fullscreen_w, fullscreen_h;
-
 		wind_get(handle, WF_CURRXYWH, &current_x, &current_y, &current_w, &current_h);
+
+		short fullscreen_x, fullscreen_y, fullscreen_w, fullscreen_h;
 		wind_get(handle, WF_FULLXYWH, &fullscreen_x, &fullscreen_y, &fullscreen_w, &fullscreen_h);
+
 		graf_growbox(current_x, current_y, current_w, current_h, fullscreen_x, fullscreen_y, fullscreen_w, fullscreen_h);
 		wind_set(handle, WF_CURRXYWH, fullscreen_x, fullscreen_y, fullscreen_w, fullscreen_h);
 	}
+}
+
+void draw_window(short window_handle, GRECT *rect) {
+
+	// Lock window for update.
+	wind_update(BEG_UPDATE);
+
+	// Turn mouse off.
+	graf_mouse(M_OFF, 0L);
+	
+	// Get coordinates of window's work rectangle.
+	short current_x, current_y, current_w, current_h;
+	wind_get(window_handle, WF_WORKXYWH, &current_x, &current_y, &current_w, &current_h);
+
+	short pxy[4], y, x;
+	pxy[0] = current_x;
+	pxy[1] = current_y;
+	pxy[2] = current_x + current_w - 1;
+	pxy[3] = current_y + current_h - 1;
+
+	// Turn clipping on.
+	vs_clip(vdi_handle, TRUE, pxy);
+
+	// Set drawing color to background color.
+	vsf_color(vdi_handle, 0);
+
+	// Draw the background in the window's work area.
+	vr_recfl(vdi_handle, pxy);
+
+	// Write the text to the window.
+	y = current_y + box_h;
+	for (x=0; x < num_lines; ++x) {
+		v_gtext(vdi_handle, current_x + 8, y, text[x]);
+		y += box_h;
+	}
+
+	// Turn clipping off.
+	vs_clip(vdi_handle, FALSE, pxy);
+	
+	// Turn mouse on.
+	graf_mouse(M_ON, 0L );
+
+	// Unlock window after update.
+	wind_update(END_UPDATE);
 }
 
 void show_dialog(void) {
@@ -83,10 +138,19 @@ int main(void) {
 		return 1;
 	}
 
+	// Get graphics handle, initialize the GEM arrays and open a virtual workstation.
+	short work_in[11], work_out[57];
+	vdi_handle = graf_handle(&char_w, &char_h, &box_w, &box_h);
+	for (int i=0; i < 10; work_in[i++] = 1);
+	work_in[10] = 2;
+	v_opnvwk(work_in, &vdi_handle, work_out);
+
+	// Change mouse pointer to arrow.
 	graf_mouse(ARROW, 0L);
 
 	short mouse_x, mouse_y, mouse_button_state, mouse_click, key_state, key;
 
+	// Process events until the user decides to quit in the main loop.
 	while (!done) {
 		event = evnt_multi(
 			MU_KEYBD | MU_MESAG, // short Type,
@@ -118,10 +182,10 @@ int main(void) {
 			int key_ascii = key & 0xFF;
 			switch (key_ascii) {
 				case '1':
-					open_window(&window1.handle, "Window 1", "Open from the keyboard");
+					open_window(&window1.handle, "Window 1", "Open from the keyboard", 50, 40, 200, 100);
 					break;
 				case '2':
-					open_window(&window2.handle, "Window 2", "Open from the keyboard");
+					open_window(&window2.handle, "Window 2", "Open from the keyboard", 250, 80, 200, 100);
 					break;
 				case 'd':
 				case 'D':
@@ -145,10 +209,10 @@ int main(void) {
 							done = 1;
 							break;
 						case MENU_WINDOW1:
-							open_window(&window1.handle, "Window 1", "Open from the menu");
+							open_window(&window1.handle, "Window 1", "Open from the menu", 50, 40, 200, 100);
 							break;
 						case MENU_WINDOW2:
-							open_window(&window2.handle, "Window 2", "Open from the menu");
+							open_window(&window2.handle, "Window 2", "Open from the menu", 250, 80, 200, 100);
 							break;
 						case MENU_ALERT:
 							show_dialog();
@@ -167,6 +231,7 @@ int main(void) {
 					maximize_window(msg[3]);
 					break;
 				case WM_REDRAW:
+					draw_window(msg[3], (GRECT *)&msg[4]);
 					break;
 				case WM_CLOSED:
 					if (msg[3] == window1.handle) {
@@ -185,8 +250,17 @@ int main(void) {
 		wind_close(window1.handle);
 	if (window2.handle >= 0)
 		wind_close(window2.handle);
+
+	// Remove the menu bar.
 	menu_bar(menu_tree, 0);
+
+	// Free the resources.
 	rsrc_free();
+
+	// Close virtual workstation.
+	v_clsvwk(vdi_handle);
+
+	// Cleanup application.
 	appl_exit();
 
 	return 0;

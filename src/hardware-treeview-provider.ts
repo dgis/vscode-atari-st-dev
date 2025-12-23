@@ -248,7 +248,7 @@ const hardwareTree: HardwareTreeElement[] = [
 
 export class HardwareTreeviewProvider implements vscode.TreeDataProvider<HardwareTreeElement> {
 
-	private debug = true;
+	private debug = false;
 	private _onDidChangeTreeData: vscode.EventEmitter<HardwareTreeElement | undefined | null | void> = new vscode.EventEmitter<HardwareTreeElement | undefined | null | void>();
     private debuggingActivate = false;
 

@@ -1,7 +1,7 @@
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 (function () {
-    const debug = true;
+    const debug = false;
     const vscode = acquireVsCodeApi();
     const currentState = vscode.getState() || {
         address: 0,
