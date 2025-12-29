@@ -7,25 +7,17 @@ typedef short BOOL;
 #define TRUE 1
 
 short vdi_handle, char_w, char_h, box_w, box_h;
-
-struct window {
-	short handle; // window handle
-};
-struct window window1 = {
-		.handle = -1
-	}, window2 = {
-		.handle = -1
-	};
-
 OBJECT *menu_tree;
 
-char *text[] = {
-	"This is some sample text",
-	"for use in the C-manship",
-	"window demonstration found",
-	"in Chapter 18."
+short window_handle1 = -1, window_handle2 = -1;
+char *window_text[] = {
+	"  A  TTTTT  A   RRRR  III     SSS  TTTTT",
+	" A A   T   A A  R   R  I     S       T  ",
+	"A   A  T  A   A RRRR   I      SSS    T  ",
+	"AAAAA  T  AAAAA R  R   I         S   T  ",
+	"A   A  T  A   A R   R III    SSS     T  "
 };
-int num_lines = 4;
+int window_num_lines = sizeof(window_text) / sizeof(window_text[0]); 
 
 void open_window(short *handle, char *title, char *info, short x, short y, short w, short h) {
 	if (*handle < 0) {
@@ -37,7 +29,8 @@ void open_window(short *handle, char *title, char *info, short x, short y, short
 			wind_set_ptr(*handle, WF_INFO, info);
 			wind_open(*handle, x, y, w, h);
 		}
-	}
+	} else
+		wind_set_int(*handle, WF_TOP, 0);
 }
 
 BOOL is_window_maximized(short handle) {
@@ -73,44 +66,62 @@ void maximize_window(short handle) {
 }
 
 void draw_window(short window_handle, GRECT *rect) {
-
 	// Lock window for update.
 	wind_update(BEG_UPDATE);
 
 	// Turn mouse off.
 	graf_mouse(M_OFF, 0L);
-	
+
 	// Get coordinates of window's work rectangle.
 	short current_x, current_y, current_w, current_h;
 	wind_get(window_handle, WF_WORKXYWH, &current_x, &current_y, &current_w, &current_h);
 
-	short pxy[4], y, x;
-	pxy[0] = current_x;
-	pxy[1] = current_y;
-	pxy[2] = current_x + current_w - 1;
-	pxy[3] = current_y + current_h - 1;
+	short current_pxy[4], y, x;
+	current_pxy[0] = current_x;
+	current_pxy[1] = current_y;
+	current_pxy[2] = current_x + current_w - 1;
+	current_pxy[3] = current_y + current_h - 1;
 
-	// Turn clipping on.
-	vs_clip(vdi_handle, TRUE, pxy);
+	// Get first rectangle from list.
+	GRECT clip_rectangle;
+	wind_get(window_handle, WF_FIRSTXYWH, &clip_rectangle.g_x, &clip_rectangle.g_y, &clip_rectangle.g_w, &clip_rectangle.g_h);
 
-	// Set drawing color to background color.
-	vsf_color(vdi_handle, 0);
+	// Loop through entire rectangle list, redrawing where necessary.
+	while (clip_rectangle.g_w && clip_rectangle.g_h) {
+		if (rc_intersect(rect, &clip_rectangle)) {
 
-	// Draw the background in the window's work area.
-	vr_recfl(vdi_handle, pxy);
+			// Set up clipping rectangle.
+			short clip_pxy[4];
+			clip_pxy[0] = clip_rectangle.g_x;
+			clip_pxy[1] = clip_rectangle.g_y;
+			clip_pxy[2] = clip_rectangle.g_x + clip_rectangle.g_w - 1;
+			clip_pxy[3] = clip_rectangle.g_y + clip_rectangle.g_h - 1;
 
-	// Write the text to the window.
-	y = current_y + box_h;
-	for (x=0; x < num_lines; ++x) {
-		v_gtext(vdi_handle, current_x + 8, y, text[x]);
-		y += box_h;
+			// Turn clipping on.
+			vs_clip(vdi_handle, TRUE, clip_pxy);
+
+			// Set drawing color to background color.
+			vsf_color(vdi_handle, 0);
+
+			// Draw the background in the window's work area.
+			vr_recfl(vdi_handle, current_pxy);
+
+			// Write the text to the window.
+			y = current_y + box_h;
+			for (x=0; x < window_num_lines; ++x) {
+				v_gtext(vdi_handle, current_x + 8, y, window_text[x]);
+				y += box_h;
+			}
+
+			// Turn clipping off.
+			vs_clip(vdi_handle, FALSE, clip_pxy);
+		}
+		wind_get(window_handle, WF_NEXTXYWH, &clip_rectangle.g_x, &clip_rectangle.g_y, &clip_rectangle.g_w, &clip_rectangle.g_h);
 	}
 
-	// Turn clipping off.
-	vs_clip(vdi_handle, FALSE, pxy);
-	
 	// Turn mouse on.
 	graf_mouse(M_ON, 0L );
+
 
 	// Unlock window after update.
 	wind_update(END_UPDATE);
@@ -123,7 +134,7 @@ void show_dialog(void) {
 int main(void) {
 	short msg[8];
 	short event, done = 0;
-	
+
 	short application_id = appl_init();
 	if (application_id >= 0) {
 		if (rsrc_load("MAIN.RSC")) {
@@ -141,7 +152,7 @@ int main(void) {
 	// Get graphics handle, initialize the GEM arrays and open a virtual workstation.
 	short work_in[11], work_out[57];
 	vdi_handle = graf_handle(&char_w, &char_h, &box_w, &box_h);
-	for (int i=0; i < 10; work_in[i++] = 1);
+	for (int i = 0; i < 10; work_in[i++] = 1);
 	work_in[10] = 2;
 	v_opnvwk(work_in, &vdi_handle, work_out);
 
@@ -154,102 +165,102 @@ int main(void) {
 	while (!done) {
 		event = evnt_multi(
 			MU_KEYBD | MU_MESAG, // short Type,
-			1, // short Clicks,
-			1, // short WhichButton,
-			1, // short WhichState,
-			0, // short EnterExit1,
-			0, // short In1X,
-			0, // short In1Y,
-			0, // short In1W,
-			0, // short In1H,
-			0, // short EnterExit2,
-			0, // short In2X,
-			0, // short In2Y,
-			0, // short In2W,
-			0, // short In2H,
-			msg, // short MessagBuf[],
-			0, // unsigned long Interval,
-			&mouse_x, // short *OutX,
-			&mouse_y, // short *OutY,
+			1,					 // short Clicks,
+			1,					 // short WhichButton,
+			1,					 // short WhichState,
+			0,					 // short EnterExit1,
+			0,					 // short In1X,
+			0,					 // short In1Y,
+			0,					 // short In1W,
+			0,					 // short In1H,
+			0,					 // short EnterExit2,
+			0,					 // short In2X,
+			0,					 // short In2Y,
+			0,					 // short In2W,
+			0,					 // short In2H,
+			msg,				 // short MessagBuf[],
+			0,					 // unsigned long Interval,
+			&mouse_x,			 // short *OutX,
+			&mouse_y,			 // short *OutY,
 			&mouse_button_state, // short *ButtonState,
-			&key_state, // short *KeyState,
-			&key, // short *Key,
-			&mouse_click // short *ReturnCount
+			&key_state,			 // short *KeyState,
+			&key,				 // short *Key,
+			&mouse_click		 // short *ReturnCount
 		);
-		
+
 		if (event & MU_KEYBD) {
 			int key_code = key >> 8;
 			int key_ascii = key & 0xFF;
 			switch (key_ascii) {
-				case '1':
-					open_window(&window1.handle, "Window 1", "Open from the keyboard", 50, 40, 200, 100);
-					break;
-				case '2':
-					open_window(&window2.handle, "Window 2", "Open from the keyboard", 250, 80, 200, 100);
-					break;
-				case 'd':
-				case 'D':
-					show_dialog();
-					break;
-				case 'q':
-				case 'Q':
-					done = 1;
-					break;
+			case '1':
+				open_window(&window_handle1, "Window 1", "Open from the keyboard", 50, 40, 200, 100);
+				break;
+			case '2':
+				open_window(&window_handle2, "Window 2", "Open from the keyboard", 250, 80, 200, 100);
+				break;
+			case 'd':
+			case 'D':
+				show_dialog();
+				break;
+			case 'q':
+			case 'Q':
+				done = 1;
+				break;
 			}
 		}
-		
+
 		if (event & MU_MESAG) {
 			switch (msg[0]) {
-				case MN_SELECTED:
-					switch (msg[4]) {
-						case MENU_ABOUT:
-							form_alert(1, "[1][Sample GEM Application|Version 1.0][OK]");
-							break;
-						case MENU_QUIT:
-							done = 1;
-							break;
-						case MENU_WINDOW1:
-							open_window(&window1.handle, "Window 1", "Open from the menu", 50, 40, 200, 100);
-							break;
-						case MENU_WINDOW2:
-							open_window(&window2.handle, "Window 2", "Open from the menu", 250, 80, 200, 100);
-							break;
-						case MENU_ALERT:
-							show_dialog();
-							break;
-					}
-					menu_tnormal(menu_tree, msg[3], 1);
+			case MN_SELECTED:
+				switch (msg[4]) {
+				case MENU_ABOUT:
+					form_alert(1, "[1][Sample GEM Application|Version 1.0][OK]");
 					break;
-				case WM_TOPPED:
-					wind_set_int(msg[3], WF_TOP, 0);
+				case MENU_QUIT:
+					done = 1;
 					break;
-				case WM_MOVED:
-				case WM_SIZED:
-					wind_set(msg[3], WF_CURRXYWH, msg[4], msg[5], msg[6], msg[7]);
+				case MENU_WINDOW1:
+					open_window(&window_handle1, "Window 1", "Open from the menu", 50, 40, 200, 100);
 					break;
-				case WM_FULLED:
-					maximize_window(msg[3]);
+				case MENU_WINDOW2:
+					open_window(&window_handle2, "Window 2", "Open from the menu", 250, 80, 200, 100);
 					break;
-				case WM_REDRAW:
-					draw_window(msg[3], (GRECT *)&msg[4]);
+				case MENU_ALERT:
+					show_dialog();
 					break;
-				case WM_CLOSED:
-					if (msg[3] == window1.handle) {
-						wind_close(window1.handle);
-						window1.handle = -1;
-					} else if (msg[3] == window2.handle) {
-						wind_close(window2.handle);
-						window2.handle = -1;
-					}
-					break;
+				}
+				menu_tnormal(menu_tree, msg[3], 1);
+				break;
+			case WM_TOPPED:
+				wind_set_int(msg[3], WF_TOP, 0);
+				break;
+			case WM_MOVED:
+			case WM_SIZED:
+				wind_set(msg[3], WF_CURRXYWH, msg[4], msg[5], msg[6], msg[7]);
+				break;
+			case WM_FULLED:
+				maximize_window(msg[3]);
+				break;
+			case WM_REDRAW:
+				draw_window(msg[3], (GRECT *)&msg[4]);
+				break;
+			case WM_CLOSED:
+				if (msg[3] == window_handle1) {
+					wind_close(window_handle1);
+					window_handle1 = -1;
+				} else if (msg[3] == window_handle2) {
+					wind_close(window_handle2);
+					window_handle2 = -1;
+				}
+				break;
 			}
 		}
 	}
-	
-	if (window1.handle >= 0)
-		wind_close(window1.handle);
-	if (window2.handle >= 0)
-		wind_close(window2.handle);
+
+	if (window_handle1 >= 0)
+		wind_close(window_handle1);
+	if (window_handle2 >= 0)
+		wind_close(window_handle2);
 
 	// Remove the menu bar.
 	menu_bar(menu_tree, 0);
