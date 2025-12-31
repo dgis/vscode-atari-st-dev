@@ -7,7 +7,6 @@ typedef short BOOL;
 #define TRUE 1
 
 short vdi_handle, char_w, char_h, box_w, box_h;
-OBJECT *menu_tree;
 
 short window_handle1 = -1, window_handle2 = -1;
 char *window_text[] = {
@@ -128,12 +127,32 @@ void draw_window(short window_handle, GRECT *rect) {
 }
 
 void show_dialog(void) {
-	form_alert(1, "[1][Sample Dialog|This is a simple dialog box.][OK]");
+	OBJECT *tree_addr; // Pointer to our object structure.
+	rsrc_gaddr(R_TREE, DIALOG_MAIN, &tree_addr);
+
+	short dial_x, dial_y, dial_w, dial_h;
+	form_center(tree_addr, &dial_x, &dial_y, &dial_w, &dial_h);
+	form_dial(FMD_START, 0, 0, 10, 10, dial_x, dial_y, dial_w, dial_h);
+	form_dial(FMD_GROW, 0, 0, 10, 10, dial_x, dial_y, dial_w, dial_h);
+	objc_draw(tree_addr, 0, 2, dial_x, dial_y, dial_w, dial_h);
+
+	short dialog_result;
+	do {
+		dialog_result = form_do(tree_addr, DIALOG_EDIT_NAME);
+	} while (!(
+		dialog_result == DIALOG_BUTTON_OK
+		|| dialog_result == DIALOG_BUTTON_CANCEL
+	));
+
+	form_dial(FMD_SHRINK, 0, 0, 10, 10, dial_x, dial_y, dial_w, dial_h);
+	form_dial(FMD_FINISH, 0, 0, 10, 10, dial_x, dial_y, dial_w, dial_h);
 }
 
 int main(void) {
 	short msg[8];
 	short event, done = 0;
+
+	OBJECT *menu_tree;
 
 	short application_id = appl_init();
 	if (application_id >= 0) {
@@ -225,7 +244,7 @@ int main(void) {
 				case MENU_WINDOW2:
 					open_window(&window_handle2, "Window 2", "Open from the menu", 250, 80, 200, 100);
 					break;
-				case MENU_ALERT:
+				case MENU_DIALOG:
 					show_dialog();
 					break;
 				}

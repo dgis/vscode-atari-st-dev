@@ -5,19 +5,19 @@
  */
 
 /*
- * Number of Strings:        15
+ * Number of Strings:        25
  * Number of Bitblks:        0
- * Number of Iconblks:       0
+ * Number of Iconblks:       1
  * Number of Color Iconblks: 0
  * Number of Color Icons:    0
- * Number of Tedinfos:       0
+ * Number of Tedinfos:       1
  * Number of Free Strings:   0
  * Number of Free Images:    0
- * Number of Objects:        22
- * Number of Trees:          1
+ * Number of Objects:        32
+ * Number of Trees:          2
  * Number of Userblks:       0
- * Number of Images:         0
- * Total file size:          778
+ * Number of Images:         2
+ * Total file size:          1470
  */
 
 #undef RSC_NAME
@@ -35,17 +35,17 @@
 # define RSC_STATIC_FILE 0
 #endif
 #if !RSC_STATIC_FILE
-#define NUM_STRINGS 15
+#define NUM_STRINGS 25
 #define NUM_FRSTR 0
 #define NUM_UD 0
-#define NUM_IMAGES 0
+#define NUM_IMAGES 2
 #define NUM_BB 0
 #define NUM_FRIMG 0
-#define NUM_IB 0
+#define NUM_IB 1
 #define NUM_CIB 0
-#define NUM_TI 0
-#define NUM_OBS 22
-#define NUM_TREE 1
+#define NUM_TI 1
+#define NUM_OBS 32
+#define NUM_TREE 2
 #endif
 
 
@@ -55,7 +55,18 @@
 #define MENU_QUIT                         17 /* STRING in tree MENU_MAIN */
 #define MENU_WINDOW1                      19 /* STRING in tree MENU_MAIN */
 #define MENU_WINDOW2                      20 /* STRING in tree MENU_MAIN */
-#define MENU_ALERT                        21 /* STRING in tree MENU_MAIN */
+#define MENU_DIALOG                       21 /* STRING in tree MENU_MAIN */
+
+#define DIALOG_MAIN                        1 /* form/dialog */
+#define DIALOG_BUTTON_OK                   1 /* BUTTON in tree DIALOG_MAIN */
+#define DIALOG_BUTTON_CANCEL               2 /* BUTTON in tree DIALOG_MAIN */
+#define DIALOG_STRING_TITLE                3 /* STRING in tree DIALOG_MAIN */
+#define DIALOG_ICON                        4 /* ICON in tree DIALOG_MAIN */
+#define DIALOG_BOX_1                       5 /* BOX in tree DIALOG_MAIN */
+#define DIALOG_STRING_RADIO_BUTTONS        6 /* STRING in tree DIALOG_MAIN */
+#define DIALOG_RADIO_BUTTON_1              7 /* BUTTON in tree DIALOG_MAIN */
+#define DIALOG_RADIO_BUTTON_2              8 /* BUTTON in tree DIALOG_MAIN */
+#define DIALOG_EDIT_NAME                   9 /* FTEXT in tree DIALOG_MAIN */
 
 
 
