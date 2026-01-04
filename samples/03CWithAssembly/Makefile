@@ -5,8 +5,18 @@ endif
 
 # Compiler and flags
 CC = m68k-atari-mintelf-gcc
-CFLAGS = -I../libcmini-elf/include -std=c99 -g
-LDFLAGS = ../libcmini-elf/lib/crt0.o -nostdlib -L../libcmini-elf/lib -lcmini -lgcc
+
+CFLAGS = -std=c99 -g
+LDFLAGS = -lgem -lm
+
+# CFLAGS = -mshort -std=c99 -g
+# LDFLAGS = -mshort -lgem -lm
+
+# CFLAGS = -I../libcmini-elf/include -std=c99 -g
+# LDFLAGS = ../libcmini-elf/lib/crt0.o -nostdlib -L../libcmini-elf/lib -lcmini -lgcc -lgem -lm
+
+# CFLAGS = -mshort -I../libcmini-elf/include -std=c99 -g
+# LDFLAGS = -mshort ../libcmini-elf/lib/mshort/crt0.o -nostdlib -L../libcmini-elf/lib/mshort -lcmini -lgcc -lgem -lm
 
 ASM=vasmm68k_mot
 ASMFLAGS=-Felf -m68000 -no-opt -dwarf=3 -quiet -x

@@ -143,9 +143,19 @@ void show_dialog(void) {
 		dialog_result == DIALOG_BUTTON_OK
 		|| dialog_result == DIALOG_BUTTON_CANCEL
 	));
+	tree_addr[dialog_result].ob_state = OS_NORMAL;
 
 	form_dial(FMD_SHRINK, 0, 0, 10, 10, dial_x, dial_y, dial_w, dial_h);
 	form_dial(FMD_FINISH, 0, 0, 10, 10, dial_x, dial_y, dial_w, dial_h);
+
+	char result_buffer[128];
+	sprintf(result_buffer, "[1][Dialog result| radio button 1: %d| radio button 2: %d| name: %s| numbers: %s][OK]",
+		tree_addr[DIALOG_RADIO_BUTTON_1].ob_state,
+		tree_addr[DIALOG_RADIO_BUTTON_2].ob_state,
+		tree_addr[DIALOG_EDIT_NAME].ob_spec.tedinfo->te_ptext,
+		tree_addr[DIALOG_EDIT_NUMBER].ob_spec.tedinfo->te_ptext
+	);
+	form_alert(1, result_buffer);
 }
 
 int main(void) {
