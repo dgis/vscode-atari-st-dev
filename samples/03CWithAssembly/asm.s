@@ -23,17 +23,29 @@ demoASM:
 	move.l	$70.w,backup_vbl		; Backup VBL.
 	move.l	$120.w,backup_hbl		; Backup HBL.
 	move.b	$fffffa07,backup_a_enable	; Backup MFP Interrupt A Enable.
+	move.b	$fffffa09,backup_b_enable	; backup MFP Interrupt B Enable.
 	move.b	$fffffa13,backup_a_mask		; Backup MFP Interrupt A Mask.
 	move.b	$fffffa15,backup_b_mask		; Backup MFP Interrupt B Mask.
 	move.b	$fffffa1b,backup_b_ctl		; Backup MFP Timer B Control.
 	move.b	$fffffa21,backup_b_data		; Backup MFP Timer B Data.
 
 	; Configure Timer B (HBL), explained in "The Atari ST MC68000 Assembly Language Tutorials" written by Perihelion.
-	clr.b	$fffffa1b			; Disable timer b.
-	bset	#0,$fffffa07			; Turn on timer b in MFP Interrupt A Enable.
-	bset	#0,$fffffa13			; Turn on timer b in MFP Interrupt A Mask.
-	move.b	#1,$fffffa21			; Number of counts, #1 for every scan line.
-	move.b	#8,$fffffa1b			; Set timer b to event count mode (#8).
+	; clr.b	$fffffa1b			; Disable timer b.
+	; bset	#0,$fffffa07			; Turn on timer b in MFP Interrupt A Enable.
+	; bset	#0,$fffffa13			; Turn on timer b in MFP Interrupt A Mask.
+	; move.b	#1,$fffffa21			; Number of counts, #1 for every scan line.
+	; move.b	#8,$fffffa1b			; Set timer b to event count mode (#8).
+
+	; Configure Timer B (HBL) stopping all other interrupts.
+	and.b	#$ef,$fffa13
+	and.b	#$ef,$fffa0f
+	and.b	#$ef,$fffa0b
+	clr.b	$fffa07
+	clr.b	$fffa1b
+	clr.b	$fffa09
+	or.b	#1,$fffa07
+	or.b	#1,$fffa13
+	move.b	#1,$fffa21
 
 	move.l	#palette,current_color		; Set the palette change current color pointer for the HBL.
 	move.l	#.vbl,$70			; Set new VBL interrupt.
@@ -42,7 +54,9 @@ demoASM:
 .loop:
 	move.l	#100,d0
 .wait	dbra	d0,.wait
-	cmpi.b	#$1c,$fffffc02			; Check for ESC key press.
+	cmpi.b	#$39,$fffffc02			; Check for SPACE key press.
+	; cmpi.b	#$01,$fffffc02			; Check for ESC key press.
+	; cmpi.b	#$1c,$fffffc02			; Check for ENTER key press.
 	bne	.loop
 
 	; Restore interrupts.
@@ -50,6 +64,7 @@ demoASM:
 	move.b	backup_b_ctl,$fffffa1b		; Restore MFP Timer B Control.
 	move.b	backup_b_mask,$fffffa15		; Restore MFP Interrupt B Mask.
 	move.b	backup_a_mask,$fffffa13		; Restore MFP Interrupt A Mask.
+	move.b	backup_b_enable,$fffffa09	; restore MFP Interrupt B Enable.
 	move.b	backup_a_enable,$fffffa07	; Restore MFP Interrupt A Enable.
 	move.l	backup_hbl,$120			; Restore HBL.
 	move.l	backup_vbl,$70			; Restore VBL.
@@ -66,7 +81,6 @@ demoASM:
 
 .vbl	move.l	a0,-(sp)
 	move.l	current_color,a0
-	add.l	#2,a0
 	cmp.w	#$ffff,(a0)			; This is the end of the palette?
 	bne	.vbl_next
 	move.l	#palette,current_color		; Restart from the beginning of the palette.
@@ -87,6 +101,8 @@ demoASM:
 	rte
 .hbl_palette_end
 	clr.b	$fffffa1b			; Disable timer B for the remainder of the VBL.
+	add.l	#2,a0
+	move.l	a0,current_color
 	bra	.hbl_end			; Go back to end of HBL.
 
 	bss
@@ -96,6 +112,7 @@ stack_backup	ds.l	1
 backup_vbl	ds.l	1
 backup_hbl	ds.l	1
 backup_a_enable	ds.b	1
+backup_b_enable	ds.b	1
 backup_a_mask	ds.b	1
 backup_b_mask	ds.b	1
 backup_b_ctl	ds.b	1
