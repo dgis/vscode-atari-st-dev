@@ -21,17 +21,17 @@
             "windows": {
                 "miDebuggerPath": "${config:atariSTDev.path}\\opt\\cross-mint\\bin\\m68k-atari-mintelf-gdb.exe",
                 "debugServerPath": "${config:atariSTDev.path}\\hatari\\hatari.exe",
-                "debugServerArgs": "--tos ${config:atariSTDev.path}\\hatari\\etos512fr.img --confirm-quit no --fast-forward yes --parse ${config:atariSTDev.path}\\hatari\\db.ini ${workspaceFolder}\\main.prg",
+                "debugServerArgs": "--tos ${config:atariSTDev.path}\\hatari\\etos512fr.img --confirm-quit no --memsize 1 --fast-forward yes --parse ${config:atariSTDev.path}\\hatari\\db.ini ${workspaceFolder}\\main.prg",
             },
             "osx": {
                 "miDebuggerPath": "${config:atariSTDev.path}/opt/cross-mint/bin/m68k-atari-mintelf-gdb",
                 "debugServerPath": "${config:atariSTDev.path}/hatari/Hatari.app/Contents/MacOS/Hatari",
-                "debugServerArgs": "--tos ${config:atariSTDev.path}/hatari/etos512fr.img --confirm-quit no --fast-forward yes --parse ${config:atariSTDev.path}/hatari/db.ini ${workspaceFolder}/main.prg",
+                "debugServerArgs": "--tos ${config:atariSTDev.path}/hatari/etos512fr.img --confirm-quit no --memsize 1 --fast-forward yes --parse ${config:atariSTDev.path}/hatari/db.ini ${workspaceFolder}/main.prg",
             },
             "linux": {
                 "miDebuggerPath": "${config:atariSTDev.path}/opt/cross-mint/bin/m68k-atari-mintelf-gdb",
                 "debugServerPath": "${config:atariSTDev.path}/hatari/hatari",
-                "debugServerArgs": "--tos ${config:atariSTDev.path}/hatari/etos512fr.img --confirm-quit no --fast-forward yes --parse ${config:atariSTDev.path}/hatari/db.ini ${workspaceFolder}/main.prg",
+                "debugServerArgs": "--tos ${config:atariSTDev.path}/hatari/etos512fr.img --confirm-quit no --memsize 1 --fast-forward yes --parse ${config:atariSTDev.path}/hatari/db.ini ${workspaceFolder}/main.prg",
             },
             "preLaunchTask": "Atari ST: make",
             // "logging": {

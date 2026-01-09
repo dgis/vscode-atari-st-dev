@@ -1,0 +1,1 @@
+This sample illustrates a simple "hello world" program in C language.
