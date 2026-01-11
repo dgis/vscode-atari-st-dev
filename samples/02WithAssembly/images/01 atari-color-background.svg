@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   fill="#000000"
+   width="320"
+   height="200"
+   viewBox="0 0 9.6 6"
+   role="img"
+   version="1.1"
+   id="svg23"
+   sodipodi:docname="atari-color-background.svg"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs27">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient1030">
+      <stop
+         style="stop-color:#ff0000;stop-opacity:1;"
+         offset="0"
+         id="stop1026" />
+      <stop
+         style="stop-color:#ffff00;stop-opacity:1;"
+         offset="0.15643549"
+         id="stop2486" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:1;"
+         offset="0.32728708"
+         id="stop2488" />
+      <stop
+         style="stop-color:#00ffff;stop-opacity:1;"
+         offset="0.49960569"
+         id="stop3218" />
+      <stop
+         style="stop-color:#0000ff;stop-opacity:1;"
+         offset="0.66620666"
+         id="stop3220" />
+      <stop
+         style="stop-color:#ff00ff;stop-opacity:1;"
+         offset="0.8331033"
+         id="stop3222" />
+      <stop
+         style="stop-color:#ff0000;stop-opacity:1;"
+         offset="1"
+         id="stop1028" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1030"
+       id="linearGradient1032"
+       x1="11.585313"
+       y1="2.3585312"
+       x2="11.585313"
+       y2="21.693304"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.2952144,0,0,0.2952144,1.2574269,-0.54257311)" />
+  </defs>
+  <sodipodi:namedview
+     id="namedview25"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="1"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     showgrid="false"
+     inkscape:zoom="3.2739044"
+     inkscape:cx="145.54487"
+     inkscape:cy="94.382719"
+     inkscape:window-width="1920"
+     inkscape:window-height="1129"
+     inkscape:window-x="3832"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg23" />
+  <path
+     d="m 1.2574269,5.8497048 c 0,0 0.9311063,-0.104801 1.6567433,-0.7037911 C 3.6046767,4.5761498 3.8544282,4.0855034 4.0271286,3.5293195 4.1995338,2.9728403 4.2252175,1.6343381 4.2252175,1.2372747 V 0.15 H 3.7956805 V 0.55296768 C 3.7885953,1.1555003 3.7366376,2.3000466 3.4606121,3.0457582 2.7934275,4.8427284 1.2574269,5.0000777 1.2574269,5.0000777 Z m 7.0851462,0 c 0,0 -0.9311063,-0.104801 -1.6561529,-0.7037911 C 5.995028,4.5761498 5.7455717,4.0855034 5.5728713,3.5293195 5.4007613,2.9728403 5.3747824,1.6343381 5.3747824,1.2372747 V 0.15 H 5.803729 l 2.952e-4,0.40296768 C 5.8111142,1.1555003 5.8636572,2.3000466 6.1399783,3.0457582 6.8065724,4.8427284 8.3422779,5.0000777 8.3422779,5.0000777 Z M 4.4041174,0.15059043 H 5.1967681 V 5.85 H 4.4044126 Z"
+     id="path21"
+     style="fill:url(#linearGradient1032);fill-opacity:1;stroke-width:0.295211;stroke-dasharray:none" />
+</svg>
