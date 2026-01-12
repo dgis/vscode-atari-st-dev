@@ -149,7 +149,7 @@ void show_dialog(void) {
 	form_dial(FMD_FINISH, 0, 0, 10, 10, dial_x, dial_y, dial_w, dial_h);
 
 	char result_buffer[128];
-	sprintf(result_buffer, "[1][Dialog result| radio button 1: %d| radio button 2: %d| name: %s| numbers: %s][OK]",
+	sprintf(result_buffer, "[1][Dialog results| radio button 1: %d| radio button 2: %d| name: %s| numbers: %s][OK]",
 		tree_addr[DIALOG_RADIO_BUTTON_1].ob_state,
 		tree_addr[DIALOG_RADIO_BUTTON_2].ob_state,
 		tree_addr[DIALOG_EDIT_NAME].ob_spec.tedinfo->te_ptext,
@@ -222,10 +222,10 @@ int main(void) {
 			int key_ascii = key & 0xFF;
 			switch (key_ascii) {
 			case '1':
-				open_window(&window_handle1, "Window 1", "Open from the keyboard", 50, 40, 200, 100);
+				open_window(&window_handle1, "Window 1", "Open from the keyboard", 10, 40, 200, 100);
 				break;
 			case '2':
-				open_window(&window_handle2, "Window 2", "Open from the keyboard", 250, 80, 200, 100);
+				open_window(&window_handle2, "Window 2", "Open from the keyboard", 50, 80, 200, 100);
 				break;
 			case 'd':
 			case 'D':
@@ -249,10 +249,10 @@ int main(void) {
 					done = 1;
 					break;
 				case MENU_WINDOW1:
-					open_window(&window_handle1, "Window 1", "Open from the menu", 50, 40, 200, 100);
+					open_window(&window_handle1, "Window 1", "Open from the menu", 10, 40, 200, 100);
 					break;
 				case MENU_WINDOW2:
-					open_window(&window_handle2, "Window 2", "Open from the menu", 250, 80, 200, 100);
+					open_window(&window_handle2, "Window 2", "Open from the menu", 50, 80, 200, 100);
 					break;
 				case MENU_DIALOG:
 					show_dialog();
