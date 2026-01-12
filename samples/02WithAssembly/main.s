@@ -143,7 +143,10 @@ y_speed	equ	1			; how many y coord to move each VBL
 	; pre-shift of mask done, all 16 sprite possitions saved in mask
 
 
-
+; save the old palette
+	move.l	#palette_backup,a0	; put backup address in a0
+	movem.l	$ffff8240,d0-d7		; copy all palettes into d0-d7
+	movem.l	d0-d7,(a0)		; move data into palette_backup
 
 ; copy the palette to the screen
 	movem.l	backgrnd+2,d0-d7
@@ -168,13 +171,17 @@ y_speed	equ	1			; how many y coord to move each VBL
 
 	move.l	old_70,$70		; restore old $70
 
+; restores the old palette
+	move.l 	#palette_backup,a0	; palette pointer in a0
+	movem.l	(a0),d0-d7		; copy old palette data into registers
+	movem.l	d0-d7,$ffff8240		; restore the palette
 
 	move.l	stack_backup,-(sp)	; restore stack pointer
 	move.w	#$20,-(sp)		; Super() go into user mode.
 	trap	#1			; call GEMDOS
 	addq.l	#6,sp
 
-	; End of the program
+; End of the program
 	clr.w	-(sp)			; Pterm0()
 	trap	#1			; call GEMDOS
 
@@ -184,9 +191,7 @@ vbl:
 
 	jsr	restore_background
 	jsr	move_sprite
-	jsr	save_background
-	jsr	apply_mask
-	jsr	put_sprite
+	jsr	display_sprite_all_in_one
 
 	movem.l	(a7)+,d0-d7/a0-a6	; restore registers
 
@@ -232,7 +237,51 @@ move_sprite:
 .y_move_down
 	add.w	#y_speed,y_coord	; move sprte down
 .y_move_done
-; finnished moving sprite
+; finished moving sprite
+
+	rts
+
+display_sprite_all_in_one:
+	jsr	get_coordinates
+	; a1 points to sprite position on the screen
+	; d0 gives x % 16 position
+	
+	move.l	#bgsave,a0
+
+	mulu	#768,d0		; multiply position with full sprite width size
+	; lsl.w	#8,d0
+	; add.w	d0,d0
+	; add.w	d0,d0
+	
+
+	move.l	#mask,a2
+	add.l	d0,a2			; add value to mask pointer
+
+	move.l	#sprite,a3
+	add.l	d0,a3			; add value to sprite pointer
+
+	move.l	#32-1,d7		; sprite is 32 scan lines
+.sprite_loop:
+	rept	6			; sprite is 6*4 bytes width
+	
+	; saves the background into bgsave
+	move.l	(a1),(a0)+		; copy background to save buffer
+
+	; applies the mask to the background
+	move.l	(a2)+,d0		; mask data in d0
+	move.l	(a1),d1			; background data in d1
+	and.l	d0,d1			; and mask and picture data
+	move.l	d1,(a1)			; move masked data to background
+
+	; paints the sprite to the screen
+	move.l	(a3)+,d0		; sprite data in d0
+	move.l	(a1),d1			; background data in d1
+	or.l	d0,d1			; or sprite and background data
+	move.l	d1,(a1)+		; move ored sprite data to background
+
+	endr
+	add.l	#136,a1		; next scan line
+	dbf	d7,.sprite_loop
 
 	rts
 
@@ -339,6 +388,7 @@ sprite		ds.l	3072		; 32/2+8*32 bytes 16 positions / 4 for long
 mask		ds.l	3072		; same as above
 bgsave		ds.l	192		; 32/2+8*32 bytes / 4 for long
 
+palette_backup	ds.l	8
 stack_backup	ds.l	1
 
 		end
