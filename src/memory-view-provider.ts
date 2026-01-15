@@ -1,3 +1,11 @@
+//
+// VSCODE-ATARI-ST-DEV - memory-view-provider.ts
+//
+// This file is distributed under the GNU General Public License, version 3
+// or at your option any later version. Read the file gpl.txt for details.
+//
+// This file shows the "Memory" views (Memory1, Memory2, Memory3 and Memory4).
+
 // The module "vscode" contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";

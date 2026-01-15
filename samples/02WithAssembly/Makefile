@@ -29,7 +29,8 @@ $(TARGET): $(OBJS)
 	$(CC) $^ $(LDFLAGS) -o $@
 
 # Compile Assembly source files into object files
-%.o: %.s
+# %.o: %.s
+main.o: main.s sprite.pi1 backgrnd.pi1 curve.bin
 	$(info Compiling Assembly $<)
 	$(ASM) $(ASMFLAGS) $< -o $@
 

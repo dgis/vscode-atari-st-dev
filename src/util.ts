@@ -1,3 +1,11 @@
+//
+// VSCODE-ATARI-ST-DEV - util.ts
+//
+// This file is distributed under the GNU General Public License, version 3
+// or at your option any later version. Read the file gpl.txt for details.
+//
+// This file contains utility functions.
+
 export function getNonce() {
 	let text = "";
 	const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

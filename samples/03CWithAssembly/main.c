@@ -75,8 +75,9 @@ BOOL generate_raster() {
 
         // This places bands points around the ellipse, spaced band_angle_step degrees apart.
         for (short band_i = 0; band_i < band_number; band_i++) {
-            band_x[band_i] = (unsigned short)(elipse_center_x + COSQ(frame_angle - (float)band_i * band_angle_step) * elipse_width);
-            band_y[band_i] = (unsigned short)(elipse_center_y - SINQ(frame_angle - (float)band_i * band_angle_step) * elipse_height);
+            float band_angle = (float)band_i * band_angle_step;
+            band_x[band_i] = (unsigned short)(elipse_center_x + COSQ(frame_angle - band_angle) * elipse_width);
+            band_y[band_i] = (unsigned short)(elipse_center_y - SINQ(frame_angle - band_angle) * elipse_height);
             band_color_sorted[band_i] = band_i;
         }
 

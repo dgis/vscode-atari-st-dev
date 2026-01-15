@@ -1,3 +1,11 @@
+//
+// VSCODE-ATARI-ST-DEV - debugger-service.ts
+//
+// This file is distributed under the GNU General Public License, version 3
+// or at your option any later version. Read the file gpl.txt for details.
+//
+// This file manages the communication with the HATARI emulator debugger.
+
 import * as vscode from "vscode";
 import { asciiToHexa } from "./util";
 
