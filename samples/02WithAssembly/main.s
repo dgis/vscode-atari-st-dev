@@ -1,5 +1,8 @@
 	xdef _start
 
+SPRITE_NUMBER equ 5			; number of sprite positions (0-15)
+
+
 	text
 
 _start:					; start of the executable
@@ -42,10 +45,11 @@ main:					; start of the program
 	move.l	(a0)+,(a1)+		; move one longword to screen
 	dbf	d0,.pic_loop		; background painted
 
+	; initialize curve positions
+	rept SPRITE_NUMBER
+	move.l	#curve+2*REPTN*10,curve_pos+4*REPTN
+	endr
 
-	; jsr	save_background		; something in restore buffer
-
-	move.l	#curve,curve_pos	; initialize curve position
 
 	move.l	$70,vbl_backup		; backup $70
 	move.l	#vbl,$70                ; put in main routine
@@ -70,33 +74,116 @@ main:					; start of the program
 	clr.w	-(sp)			; Pterm0()
 	trap	#1			; call GEMDOS
 
+MOVE_SPRITE macro
+; moves the sprite coordinates
+	move.l	curve_pos+4*\1,a0	; get curve position
+	cmp.w	#-1,(a0)		; check for end of curve
+	bne	.curve_continue\@	; if 0, end of curve reached
+	move.l	#curve,a0		; initialize curve position
+.curve_continue\@:
+	move.w	(a0)+,x_coord+2*\1	; get x movement
+	move.w	(a0)+,y_coord+2*\1	; get y movement
+	move.l	a0,curve_pos+4*\1	; set new curve position
+
+	endm
+
+GET_COORDINATES macro
+; makes a1 point to correct place on screen
+; sprite position in d0.w
+	move.l	$44e,a1			; screen memory in a1
+	
+	clr.l	d2			; clear sprite offset
+
+	move.w	y_coord+2*\1,d0		; put y coordinate in d0
+	mulu	#160,d0		; 160 bytes to a scan line
+	add.l	d0,d2			; add to sprite offset
+	move.w	x_coord+2*\1,d0		; put x coordinate in d0
+	divu.w	#16,d0			; number of clusters in low, bit in high
+	clr.l	d1			; clear d1
+	move.w	d0,d1			; move cluster part to d1
+	mulu.w	#8,d1			; 8 bytes to a cluster
+	add.l	d1,d2			; add cluster part to sprite offset
+	move.l	d2,last_sprite_offset+4*\1	; add sprite offset to last sprite offset
+	add.l	d2,a1			; add sprite offset to screen memory pointer
+
+	clr.w	d0			; clear out the cluster value
+	swap	d0			; bit to alter in low part of d0
+
+	endm
+
 
 vbl:
-	move.w	#$700,$ffff8240
+	; move.w	#$700,$ffff8240
 	movem.l d0-d7/a0-a6,-(sp)	; backup registers
 
-	jsr	move_sprite
+	rept SPRITE_NUMBER
+	move.l	last_sprite_offset+4*REPTN,d3
+	; jsr hide_sprite
+	endr
+
+	rept SPRITE_NUMBER
+	; move.l	#curve+2*REPTN*10,curve_pos+4*REPTN
+	; jsr	move_sprite
+	MOVE_SPRITE REPTN
+
+	; move.l	last_sprite_offset+4*REPTN,d3
+	; jsr	get_coordinates
+	GET_COORDINATES REPTN
+	; a1 points to sprite position on the screen
+	; d0 gives x % 16 position
+
 	jsr	display_sprite
+	endr
+	; jsr	move_sprite
+	; jsr	display_sprite
 
 	movem.l	(sp)+,d0-d7/a0-a6	; restore registers
-	move.w	backgrnd+2,$ffff8240
+	; move.w	backgrnd+2,$ffff8240
 	rte
 
-move_sprite:
-; moves the sprite coordinates
-	move.l	curve_pos,a0		; get curve position
-	cmp.w	#-1,(a0)		; check for end of curve
-	bne	.curve_continue		; if 0, end of curve reached
-	move.l	#curve,a0		; initialize curve position
-.curve_continue:
-	move.w	(a0)+,x_coord		; get x movement
-	move.w	(a0)+,y_coord		; get y movement
-	move.l	a0,curve_pos		; set new curve position
 
-	rts
 
-display_sprite:
-	move.l	last_sprite_offset,d3
+; move_sprite:
+; ; moves the sprite coordinates
+; 	move.l	curve_pos,a0		; get curve position
+; 	cmp.w	#-1,(a0)		; check for end of curve
+; 	bne	.curve_continue		; if 0, end of curve reached
+; 	move.l	#curve,a0		; initialize curve position
+; .curve_continue:
+; 	move.w	(a0)+,x_coord		; get x movement
+; 	move.w	(a0)+,y_coord		; get y movement
+; 	move.l	a0,curve_pos		; set new curve position
+
+; 	rts
+
+; get_coordinates
+; ; makes a1 point to correct place on screen
+; ; sprite position in d0.w
+; 	move.l	$44e,a1			; screen memory in a1
+	
+; 	clr.l	d2			; clear sprite offset
+
+; 	move.w	y_coord,d0		; put y coordinate in d0
+; 	mulu	#160,d0		; 160 bytes to a scan line
+; 	add.l	d0,d2			; add to sprite offset
+; 	move.w	x_coord,d0		; put x coordinate in d0
+; 	divu.w	#16,d0			; number of clusters in low, bit in high
+; 	clr.l	d1			; clear d1
+; 	move.w	d0,d1			; move cluster part to d1
+; 	mulu.w	#8,d1			; 8 bytes to a cluster
+; 	add.l	d1,d2			; add cluster part to sprite offset
+; 	move.l	d2,last_sprite_offset	; add sprite offset to last sprite offset
+; 	add.l	d2,a1			; add sprite offset to screen memory pointer
+
+; 	clr.w	d0			; clear out the cluster value
+; 	swap	d0			; bit to alter in low part of d0
+
+; 	rts
+
+; hides the sprite at the last sprite offset
+; inputs:
+;	d3 = last sprite offset
+hide_sprite:
 	move.l	#backgrnd+34,a4
 	move.l	$44e,a5
 	add.l	d3,a4			; add last sprite offset to background
@@ -111,10 +198,33 @@ display_sprite:
 	add.l	#136,a4		; next scan line
 	add.l	#136,a5		; next scan line
 	dbf	d7,.background_loop
+	rts
 
-	jsr	get_coordinates
-	; a1 points to sprite position on the screen
-	; d0 gives x % 16 position
+
+; displays the sprite at the coordinates
+; inputs:
+;	a1 = screen memory position
+;	d0 = x % 16 position
+;	d3 = last sprite offset
+display_sprite:
+; 	move.l	#backgrnd+34,a4
+; 	move.l	$44e,a5
+; 	add.l	d3,a4			; add last sprite offset to background
+; 	add.l	d3,a5			; add last sprite offset to screen memory
+
+; 	; restores the background using data from backgrnd image
+; 	move.l	#32-1,d7		; sprite is 32 scan lines
+; .background_loop:
+; 	rept	6			; sprite is 6*4 bytes width
+; 	move.l	(a4)+,(a5)+		; copy background to screen memory
+; 	endr
+; 	add.l	#136,a4		; next scan line
+; 	add.l	#136,a5		; next scan line
+; 	dbf	d7,.background_loop
+
+	; jsr	get_coordinates
+	; ; a1 points to sprite position on the screen
+	; ; d0 gives x % 16 position
 
 	mulu	#768,d0		; multiply position with full sprite width size
 
@@ -140,30 +250,6 @@ display_sprite:
 	endr
 	add.l	#136,a1		; next scan line
 	dbf	d7,.sprite_loop
-
-	rts
-
-get_coordinates
-; makes a1 point to correct place on screen
-; sprite position in d0.w
-	move.l	$44e,a1			; screen memory in a1
-	
-	clr.l	d2			; clear sprite offset
-
-	move.w	y_coord,d0		; put y coordinate in d0
-	mulu	#160,d0		; 160 bytes to a scan line
-	add.l	d0,d2			; add to sprite offset
-	move.w	x_coord,d0		; put x coordinate in d0
-	divu.w	#16,d0			; number of clusters in low, bit in high
-	clr.l	d1			; clear d1
-	move.w	d0,d1			; move cluster part to d1
-	mulu.w	#8,d1			; 8 bytes to a cluster
-	add.l	d1,d2			; add cluster part to sprite offset
-	move.l	d2,last_sprite_offset	; add sprite offset to last sprite offset
-	add.l	d2,a1			; add sprite offset to screen memory pointer
-
-	clr.w	d0			; clear out the cluster value
-	swap	d0			; bit to alter in low part of d0
 
 	rts
 
@@ -285,9 +371,7 @@ init_sprite_data:
 	rts
 
 		section data
-x_coord		dc.w	0
-y_coord		dc.w	0
-last_sprite_offset	dc.l	0
+last_sprite_offset	dcb.l	SPRITE_NUMBER,0
 
 
 spr_dat		incbin	sprite.pi1
@@ -303,6 +387,7 @@ sprite		ds.l	3072		; 32/2+8*32 bytes 16 positions / 4 for long
 mask		ds.l	3072		; same as above
 bgsave		ds.l	192		; 32/2+8*32 bytes / 4 for long
 
-
-curve_pos	ds.l	0
+x_coord		ds.w	SPRITE_NUMBER
+y_coord		ds.w	SPRITE_NUMBER
+curve_pos	ds.l	SPRITE_NUMBER
 		end
