@@ -14,6 +14,7 @@ import * as path from "path";
 import { CPUViewProvider } from "./cpu-view-provider";
 import { HardwareTreeviewProvider } from "./hardware-treeview-provider";
 import { MemoryViewProvider } from "./memory-view-provider";
+import { GraphicInspectorViewProvider } from "./graphic-inspector-view-provider";
 
 let isExtensionActivated = false;
 let ATARIST_TOOLS: string;
@@ -120,6 +121,7 @@ export async function activateExtension(context: vscode.ExtensionContext) {
 	providers.set("atariSTDev.memoryView2", new MemoryViewProvider(context.extensionUri, 2));
 	providers.set("atariSTDev.memoryView3", new MemoryViewProvider(context.extensionUri, 3));
 	providers.set("atariSTDev.memoryView4", new MemoryViewProvider(context.extensionUri, 4));
+	providers.set("atariSTDev.graphicInspectorView", new GraphicInspectorViewProvider(context.extensionUri, 4));
 	providers.forEach((provider, viewId) => {
 		context.subscriptions.push(vscode.window.registerWebviewViewProvider(viewId, provider));
 		if (provider instanceof MemoryViewProvider) {
@@ -135,6 +137,22 @@ export async function activateExtension(context: vscode.ExtensionContext) {
 					memoryViewProvider.showInMemory(parseInt(addressString, 16));
 			}));
 			context.subscriptions.push(vscode.commands.registerCommand(`atariSTDev.refreshMemory${memoryViewProvider.index}`, () => {
+				memoryViewProvider.refreshMemory();
+			}));
+		}
+		if (provider instanceof GraphicInspectorViewProvider) {
+			const memoryViewProvider = provider as GraphicInspectorViewProvider;
+			context.subscriptions.push(vscode.commands.registerCommand(`atariSTDev.showInGraphicInspector`, itemContext => {
+				const sourceProvider = providers.get(itemContext.webview) as GraphicInspectorViewProvider | undefined;
+				let addressString = itemContext?.variable?.memoryReference || itemContext?.value;
+				if (!addressString) {
+					if (sourceProvider)
+						addressString = sourceProvider.getLastContextSelection();
+				}
+				if (addressString)
+					memoryViewProvider.showInMemory(parseInt(addressString, 16));
+			}));
+			context.subscriptions.push(vscode.commands.registerCommand(`atariSTDev.refreshGraphicInspector`, () => {
 				memoryViewProvider.refreshMemory();
 			}));
 		}

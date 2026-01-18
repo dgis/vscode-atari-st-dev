@@ -1,0 +1,38 @@
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	display: flex;
+    flex-direction: column;
+	background-color: transparent;
+	padding: 0px 5px;
+}
+
+.inspector-screen-toolbar, .inspector-palette-toolbar {
+	display: flex;
+}
+
+.inspector-screen-address-input, .inspector-palette-address-input {
+	flex: 1 1 auto;
+	width: auto;
+}
+
+.inspector-screen-container {
+	flex: 1 1 auto;
+	overflow: auto;
+}
+
+.inspector-palette-container {
+	overflow: auto;
+}
+
+fieldset {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+fieldset:disabled {
+	opacity: 0.4;
+}

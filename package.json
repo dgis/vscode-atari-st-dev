@@ -166,6 +166,11 @@
         "category": "Atari ST"
       },
       {
+        "command": "atariSTDev.showInGraphicInspector",
+        "title": "Show in Graphic Inspector",
+        "category": "Atari ST"
+      },
+      {
         "command": "atariSTDev.refreshMemory1",
         "title": "Refresh Memory1",
         "category": "Atari ST",
@@ -186,6 +191,12 @@
       {
         "command": "atariSTDev.refreshMemory4",
         "title": "Refresh Memory4",
+        "category": "Atari ST",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "atariSTDev.refreshGraphicInspector",
+        "title": "Refresh Graphic Inspector",
         "category": "Atari ST",
         "icon": "$(refresh)"
       }
@@ -238,6 +249,14 @@
           "icon": "$(file-binary)",
           "visibility": "hidden",
           "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
+        },
+        {
+          "type": "webview",
+          "id": "atariSTDev.graphicInspectorView",
+          "name": "Graphic Inspector",
+          "icon": "$(file-binary)",
+          "visibility": "hidden",
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         }
       ]
     },
@@ -261,6 +280,11 @@
         {
           "command": "atariSTDev.refreshMemory4",
           "when": "view == atariSTDev.memoryView4",
+          "group": "navigation"
+        },
+        {
+          "command": "atariSTDev.refreshGraphicInspector",
+          "when": "view == atariSTDev.graphicInspectorView",
           "group": "navigation"
         }
       ],
@@ -300,6 +324,9 @@
         },
         {
           "command": "atariSTDev.showInMemory4"
+        },
+        {
+          "command": "atariSTDev.showInGraphicInspector"
         }
       ]
     },

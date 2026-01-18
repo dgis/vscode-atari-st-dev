@@ -82,9 +82,10 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 
 # TODO
 * Improve README.md
-* Improve samples
+* Improve samples.
+* Add address suggestion list with symbols.
+* Replace string bufer in ArrayBuffer.
 * Assembly symbols addresses cannot be seen.
-* Add a graphic inspector view
 * Add profiling
 
 

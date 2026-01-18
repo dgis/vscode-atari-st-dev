@@ -3,21 +3,22 @@
 (function () {
     const debug = false;
     const vscode = acquireVsCodeApi();
-    const currentState = vscode.getState() || {
-        address: 0,
-        data: "",
-        width: 0,
-        height: 0,
-        columnMode: "auto",
-        numberOfDisplayColumn: 0,
-        numberOfDisplayLine: 0,
-        bufferSize: 0
-    };
+    const currentState = vscode.getState() || {};
+    currentState.address ??= 0;
+    currentState.data ??= "";
+    currentState.width ??= 0;
+    currentState.height ??= 0;
+    currentState.columnMode ??= "auto";
+    currentState.numberOfDisplayColumn ??= 0;
+    currentState.numberOfDisplayLine ??= 0;
+    currentState.bufferSize ??= 0;
+
     const previousState = {
         address: 0,
         data: "",
         bufferSize: 0
     };
+    let symbols = null;
 
     let debuggingActivate = false;
     const dumpTextWidthCanvas = document.createElement("canvas");
@@ -56,6 +57,8 @@
     const memoryToolbar = document.querySelector(".memory-toolbar");
     const memoryDump = document.querySelector(".memory-dump");
     const memoryAddressInput = document.querySelector(".memory-address-input");
+    const symbolDatalist = document.getElementById("symbolList");
+
     const memoryColumnSelect = document.querySelector(".memory-column-select");
 
     memoryColumnSelect.addEventListener("input", () => {
@@ -66,11 +69,20 @@
         }
     });
 
+    function symbolToAddress(addressInput) {
+        if (symbols && symbols[addressInput] !== undefined)
+            return symbols[addressInput];
+        else {
+            const addressText = addressInput.toLowerCase();
+            return addressText.startsWith("0x") ? parseInt(addressText, 16) : parseInt(addressText);
+        }
+    }
+
     function clickRefreshButton() {
         debug && console.log("Refresh button clicked");
 
-        const addressText = memoryAddressInput.value.toLowerCase();
-        const address = addressText.startsWith("0x") ? parseInt(addressText, 16) : parseInt(addressText);
+        // const addressText = memoryAddressInput.value.toLowerCase();
+        const address = symbolToAddress(memoryAddressInput.value); //addressText.startsWith("0x") ? parseInt(addressText, 16) : parseInt(addressText);
         if (!isNaN(address)) {
             requestReadMemory(address);
         }
@@ -143,6 +155,7 @@
                 debuggingActivate = message.debugSessionStarted;
                 if (debuggingActivate) {
                     requestReadMemory();
+                    loadSymbolsIntoDatalist(message.symbols);
                 }
                 break;
             case "debugSessionStarted":
@@ -151,10 +164,12 @@
                 break;
             case "debugSessionUpdated":
                 requestReadMemory();
+                loadSymbolsIntoDatalist(message.symbols);
                 break;
             case "debugSessionEnded":
                 debuggingActivate = false;
                 refreshMemory();
+                clearSymbolsIntoDatalist();
                 break;
             case "memoryRead":
                 updateMemory(message.address, message.data, message.unreadableBytes);
@@ -170,6 +185,22 @@
                 break;
         }
     });
+
+    function loadSymbolsIntoDatalist(symbolsList) {
+        if (symbolsList && !symbols) {
+            symbols = symbolsList;
+            symbolDatalist.innerHTML = "";
+            for (const [name, address] of Object.entries(symbols)) {
+                const option = document.createElement("option");
+                option.value = name;
+                symbolDatalist.appendChild(option);
+            }
+        }
+    }
+    function clearSymbolsIntoDatalist() {
+        symbols = null;
+        symbolDatalist.innerHTML = "";
+    }
 
     function getTextWidth(text) {
         const metrics = dumpTextWidthCanvasContext.measureText(text);

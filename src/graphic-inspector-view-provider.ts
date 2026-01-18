@@ -1,5 +1,5 @@
 //
-// VSCODE-ATARI-ST-DEV - memory-view-provider.ts
+// VSCODE-ATARI-ST-DEV - graphic-inspector-view-provider.ts
 //
 // This file is distributed under the GNU General Public License, version 3
 // or at your option any later version. Read the file gpl.txt for details.
@@ -12,7 +12,7 @@ import * as vscode from "vscode";
 import { getNonce, makeDeferred } from "./util";
 import debuggerService, { DebuggerContext } from "./debugger-service";
 
-export class MemoryViewProvider implements vscode.WebviewViewProvider {
+export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider {
 
 	private debug = false;
 	private view?: vscode.WebviewView;
@@ -70,7 +70,7 @@ export class MemoryViewProvider implements vscode.WebviewViewProvider {
 			}
 		});
 		vscode.debug.onDidReceiveDebugSessionCustomEvent((event: vscode.DebugSessionCustomEvent) => {
-			this.debug && console.log(`MemoryViewProvider::onDidReceiveDebugSessionCustomEvent(${JSON.stringify(event, null, '\t')})`);
+			this.debug && console.log(`GraphicInspectorViewProvider::onDidReceiveDebugSessionCustomEvent(${JSON.stringify(event, null, '\t')})`);
 		});
 		vscode.debug.onDidTerminateDebugSession((session: vscode.DebugSession) => {
 			if (session.type === "cppdbg") {
@@ -78,7 +78,7 @@ export class MemoryViewProvider implements vscode.WebviewViewProvider {
 			}
 		});
 		vscode.debug.onDidChangeActiveStackItem(async (event: any) => {
-			this.debug && console.log(`MemoryViewProvider::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
+			this.debug && console.log(`GraphicInspectorViewProvider::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
 			if (event?.session && event.session.type === "cppdbg") {
 				const symbols = await debuggerService.getSymbols();
 				this.view?.webview.postMessage({ type: "debugSessionUpdated", symbols });
@@ -109,12 +109,12 @@ export class MemoryViewProvider implements vscode.WebviewViewProvider {
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
 		// Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
-		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "memory-view.js"));
+		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "graphic-inspector-view.js"));
 
 		// Do the same for the stylesheet.
 		const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "reset.css"));
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "vscode.css"));
-		const styleViewUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "memory-view.css"));
+		const styleViewUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", "graphic-inspector-view.css"));
 
 		// Use a nonce to only allow a specific script to be run.
 		const nonce = getNonce();
@@ -142,20 +142,27 @@ export class MemoryViewProvider implements vscode.WebviewViewProvider {
 				<title>Memory</title>
 			</head>
 			<body>
-				<fieldset class="memory-toolbar">
-					<input class="memory-address-input" placeholder="Address or symbol (0xf8000)" title="Address or symbol (0xf8000)" type="text" list="symbolList">
+				<fieldset class="inspector-screen-toolbar">
+					<input class="inspector-screen-address-input" placeholder="Screen address or symbol (0xf8000)" title="Screen address or symbol (0xf8000)" type="text" list="symbolList">
 					<datalist id="symbolList"></datalist>
-					<select class="memory-column-select">
+					<select class="inspector-format-select">
 						<option value="auto" selected>Auto</option>
+						<option value="1">1</option>
 						<option value="2">2</option>
 						<option value="4">4</option>
-						<option value="8">8</option>
-						<option value="16">16</option>
-						<option value="32">32</option>
-						<option value="64">64</option>
 					</select>
+					<input class="inspector-bytes-per-line-input" placeholder="Bytes/line (160)" title="Bytes/line (160)" type="text">
+					<input class="inspector-height-input" placeholder="Height (200)" title="Height (200)" type="text">
 				</fieldset>
-				<div class="memory-dump" tabindex="0" data-vscode-context='{"webviewSection": "to-memory-view"}'></div>
+				<div class="inspector-screen-container">
+					<canvas class="inspector-screen-canvas" width="320" height="200"></canvas>
+				</div>
+				<fieldset class="inspector-palette-toolbar">
+					<input class="inspector-palette-address-input" placeholder="Palette address or symbol (0xffff8240)" title="Palette address or symbol (0xffff8240)" type="text" list="symbolList">
+				</fieldset>
+				<div class="inspector-palette-container">
+					<canvas class="inspector-palette-canvas" width="128" height="8"></canvas>
+				</div>
 				<script type="module" nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;

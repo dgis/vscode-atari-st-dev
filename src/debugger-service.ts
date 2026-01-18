@@ -17,7 +17,7 @@ class DebuggerService {
 
 	private currentFrameId = "";
 
-	private debug = false;
+	private debug = true;
 
 	private fastStart = true;
 
@@ -25,6 +25,11 @@ class DebuggerService {
 		vscode.debug.onDidStartDebugSession((session: vscode.DebugSession) => {
 			if (session.type === "cppdbg") {
 				this.fastStart = true;
+			}
+		});
+		vscode.debug.onDidTerminateDebugSession((session: vscode.DebugSession) => {
+			if (session.type === "cppdbg") {
+				this.clearSymbols();
 			}
 		});
 		vscode.debug.onDidChangeActiveStackItem((event: any) => {
@@ -49,6 +54,8 @@ class DebuggerService {
 			switch (data.type) {
 				case "readMemory": {
 					const response = await this.readMemory(data.address, data.offset, data.count);
+					if (data.requestId)
+						response.requestId = data.requestId;
 					response.type = "memoryRead";
 					return context?.postMessageView.postMessage(response);
 				}
@@ -146,6 +153,42 @@ class DebuggerService {
 			this.debug && console.error("DebuggerService::evaluateGDBCommand() No valid currentFrameId.");
 		}
 		return "";
+	}
+	
+	#symbols: { [key: string]: number } | null = null;
+
+	public async getSymbols() {
+		this.debug && console.log(`DebuggerService::getSymbols()`);
+		if (this.#symbols === null) {
+			const response = await this.evaluateGDBCommand("-exec monitor symbols");
+			if(response) {
+				// -exec monitor symbols
+				// 0x00000005 A SPRITE_NUMBER
+				// 0x00012948 T _start
+				// 0x000276c2 W write
+				// 0x00038048 D wildabbr
+				// 0x00055f02 B timezone
+				// 20 CPU symbols (of 20) sorted by name.
+				// text (T), data (D) and BSS (B) symbols
+				// (W) ?? (A) ??
+				this.#symbols = {};
+				response.split("\n").forEach(line => {
+					const match = line.match(/^0x([0-9a-fA-F]+)\s+[TDBWAS]\s+(.+)$/);
+					if (match && match.length === 3) {
+						const address = parseInt(match[1], 16);
+						const name = match[2];
+						if (this.#symbols !== null) {
+							this.#symbols[name] = address;
+						}
+					}
+				});
+			}
+		}
+		return this.#symbols;
+	}
+
+	public clearSymbols() {
+		this.#symbols = null;
 	}
 }
 
