@@ -25,6 +25,7 @@ body {
 }
 
 .inspector-palette-container {
+	flex: 0 0 auto;
 	overflow: auto;
 }
 

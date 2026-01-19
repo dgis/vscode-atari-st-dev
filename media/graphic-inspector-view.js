@@ -8,20 +8,20 @@ import { makeDeferred } from "./helpers.js";
     const currentState = vscode.getState() || {};
     currentState.screenAddress ??= 0xf8000;
     currentState.screenData ??= "";
-    currentState.format ??= "auto";
+    currentState.format ??= "4";
     currentState.bytesPerLine ??= 160;
     currentState.width ??= 0;
     currentState.height ??= 200;
     currentState.screenBufferSize ??= 0;
     currentState.paletteAddress ??= 0xffff8240;
     currentState.paletteData ??= "";
-    const previousState = {
-        screenAddress: 0,
-        screenData: "",
-        screenBufferSize: 0,
-        paletteAddress: 0,
-        paletteData: ""
-    };
+    // const previousState = {
+    //     screenAddress: 0,
+    //     screenData: "",
+    //     screenBufferSize: 0,
+    //     paletteAddress: 0,
+    //     paletteData: ""
+    // };
     let requestId = 1;
     const requestList = {};
 
@@ -47,9 +47,8 @@ import { makeDeferred } from "./helpers.js";
     formatSelect.addEventListener("input", () => {
         debug && console.log(`onInspectorFormatSelectEvent(${formatSelect.value}`);
         currentState.format = formatSelect.value;
-        // if (refreshShape()) {
-        //     requestReadMemory();
-        // }
+        refreshShape();
+        requestReadMemory();
     });
 
     function symbolToAddress(addressInput) {
@@ -75,38 +74,80 @@ import { makeDeferred } from "./helpers.js";
         }
     });
 
+    bytesPerLineInput.addEventListener("keydown", (event) => {
+        switch(event.key) {
+            case "Enter":
+                currentState.bytesPerLine = parseInt(bytesPerLineInput.value);
+                if (currentState.bytesPerLine === NaN || currentState.bytesPerLine < 1)
+                    currentState.bytesPerLine = 1;
+                refreshShape();
+                requestReadMemory();
+                break;
+        }
+    });
+    
+    heightInput.addEventListener("keydown", (event) => {
+        switch(event.key) {
+            case "Enter":
+                currentState.height = parseInt(heightInput.value);
+                if (currentState.height === NaN || currentState.height < 1)
+                    currentState.height = 1;
+                refreshShape();
+                requestReadMemory();
+                break;
+        }
+    });
+
     paletteAddressInput.addEventListener("keydown", (event) => {
         switch(event.key) {
             case "Enter":
+                refreshShape();
                 clickRefreshButton();
                 break;
         }
     });
 
     screenCanvas.addEventListener("wheel", function(event) {
-      if (event.deltaY < 0) {
-        screenZoom *= 1.25;
-      } else if (event.deltaY > 0) {
-        screenZoom /= 1.25;
-      }
-      if (screenZoom < 0.1)
-        screenZoom = 0.1;
-      screenCanvas.style = `zoom: ${screenZoom};`;
+        if (!event.ctrlKey) return;
+        if (event.deltaY < 0) {
+            screenZoom *= 1.25;
+        } else if (event.deltaY > 0) {
+            screenZoom /= 1.25;
+        }
+        if (screenZoom < 0.1)
+            screenZoom = 0.1;
+        screenCanvas.style = `zoom: ${screenZoom};`;
 
-      debug && console.log(`deltaY: ${event.deltaY}, deltaMode: ${event.deltaMode}`);
+        debug && console.log(`deltaY: ${event.deltaY}, deltaMode: ${event.deltaMode}`);
     }, { passive: true });
 
-    paletteCanvas.addEventListener("wheel", function(event) {
-      if (event.deltaY < 0) {
-        paletteZoom *= 1.25;
-      } else if (event.deltaY > 0) {
-        paletteZoom /= 1.25;
-      }
-      if (paletteZoom < 1.0)
-        paletteZoom = 1.0;
-      paletteCanvas.style = `zoom: ${paletteZoom};`;
+    screenCanvas.addEventListener("mousemove", function(event) {
+        const rect = screenCanvas.getBoundingClientRect();
+        
+        // Get mouse position relative to the canvas element
+        const canvasX = event.clientX - rect.left;
+        const canvasY = event.clientY - rect.top;
+        
+        // Account for zoom level
+        const actualPixelX = Math.floor(canvasX / screenZoom);
+        const actualPixelY = Math.floor(canvasY / screenZoom);
+        
+        // Log or use the coordinates
+        debug && console.log(`Pixel: (${actualPixelX}, ${actualPixelY})`);
+    });
 
-      debug && console.log(`deltaY: ${event.deltaY}, deltaMode: ${event.deltaMode}`);
+    paletteCanvas.addEventListener("wheel", function (event) {
+        if (!event.ctrlKey) return;
+        if (event.deltaY < 0) {
+            paletteZoom *= 1.25;
+        } else if (event.deltaY > 0) {
+            paletteZoom /= 1.25;
+        }
+        if (paletteZoom < 1.0)
+            paletteZoom = 1.0;
+        paletteCanvas.style = `zoom: ${paletteZoom};`;
+
+        debug && console.log(`deltaY: ${event.deltaY}, deltaMode: ${event.deltaMode}`);
     }, { passive: true });
 
     // Handle messages sent from the extension to the webview
@@ -196,11 +237,11 @@ import { makeDeferred } from "./helpers.js";
         const screenAddressResponse = await requestReadMemoryAsync(screenAddress, currentState.screenBufferSize);
         const paletteAddressResponse = await requestReadMemoryAsync(paletteAddress, 2 * 16);
 
-        previousState.screenAddress = currentState.screenAddress;
-        previousState.screenData = currentState.screenData;
-        previousState.screenBufferSize = currentState.screenBufferSize;
-        previousState.paletteAddress = currentState.paletteAddress;
-        previousState.paletteData = currentState.paletteData;
+        // previousState.screenAddress = currentState.screenAddress;
+        // previousState.screenData = currentState.screenData;
+        // previousState.screenBufferSize = currentState.screenBufferSize;
+        // previousState.paletteAddress = currentState.paletteAddress;
+        // previousState.paletteData = currentState.paletteData;
 
         currentState.screenAddress = screenAddressResponse.address;
         currentState.screenData = screenAddressResponse.data;
@@ -227,15 +268,27 @@ import { makeDeferred } from "./helpers.js";
 
     function refreshShape() {
         debug && console.log(`refreshShape()`);
-        let bufferSizeChanged = false;
         currentState.width = 320;
-        currentState.height = 200;
-        const screenBufferSize = 4 * currentState.width * currentState.height / 8;
-        bufferSizeChanged = screenBufferSize !== currentState.screenBufferSize;
+        switch (currentState.format) {
+            case "1":
+                currentState.width = currentState.bytesPerLine * 8;
+                break;
+            case "2":
+                currentState.width = currentState.bytesPerLine * 4;
+                break;
+            case "4":
+                currentState.width = currentState.bytesPerLine * 2;
+                break;
+        }
+        //currentState.height = 200;
+        // const screenBufferSize = 4 * currentState.width * currentState.height / 8;
+        const screenBufferSize = currentState.bytesPerLine * currentState.height;
+        // let bufferSizeChanged = false;
+        // bufferSizeChanged = screenBufferSize !== currentState.screenBufferSize;
         currentState.screenBufferSize = screenBufferSize;
-        if (bufferSizeChanged)
-            vscode.setState(currentState);
-        return bufferSizeChanged;
+        // if (bufferSizeChanged)
+        vscode.setState(currentState);
+        // return bufferSizeChanged;
     }
 
     function refreshMemory() {
@@ -252,14 +305,18 @@ import { makeDeferred } from "./helpers.js";
                 const b = (byte2 & 0x07) << 1;
                 palette[i] = `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
             }
-            const paletteContex = paletteCanvas.getContext("2d");
+            const paletteContex = paletteCanvas.getContext("2d", { alpha: false });
+            paletteContex.clearRect(0, 0, paletteCanvas.width, paletteCanvas.height);
             for (let i = 0; i < 16; i++) {
                 paletteContex.fillStyle = palette[i];
                 paletteContex.fillRect(i * 8, 0, 8, 8);
             }
 
 
-            const screenContex = screenCanvas.getContext("2d");
+            const screenContex = screenCanvas.getContext("2d", { alpha: false });
+            screenCanvas.width = currentState.width;
+            screenCanvas.height = currentState.height;
+            screenContex.clearRect(0, 0, screenCanvas.width, screenCanvas.height);
 
             const buffer = currentState.screenData;
             let currentRelativeOffset = 0;
@@ -306,6 +363,8 @@ import { makeDeferred } from "./helpers.js";
     screenAddressInput.value = `0x${currentState.screenAddress.toString(16)}`;
     paletteAddressInput.value = `0x${currentState.paletteAddress.toString(16)}`;
     // memoryColumnSelect.value = currentState.columnMode ?? "auto";
+    bytesPerLineInput.value = currentState.bytesPerLine;
+    heightInput.value = currentState.height;
 
     // screenToolbar.disabled = paletteToolbar.disabled = !debuggingActivate;
     

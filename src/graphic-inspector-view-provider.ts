@@ -146,10 +146,9 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 					<input class="inspector-screen-address-input" placeholder="Screen address or symbol (0xf8000)" title="Screen address or symbol (0xf8000)" type="text" list="symbolList">
 					<datalist id="symbolList"></datalist>
 					<select class="inspector-format-select">
-						<option value="auto" selected>Auto</option>
 						<option value="1">1</option>
 						<option value="2">2</option>
-						<option value="4">4</option>
+						<option value="4" selected>4</option>
 					</select>
 					<input class="inspector-bytes-per-line-input" placeholder="Bytes/line (160)" title="Bytes/line (160)" type="text">
 					<input class="inspector-height-input" placeholder="Height (200)" title="Height (200)" type="text">
