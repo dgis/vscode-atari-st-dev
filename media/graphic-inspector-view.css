@@ -37,3 +37,33 @@ fieldset {
 fieldset:disabled {
 	opacity: 0.4;
 }
+
+.pixel-tooltip {
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.9);
+	color: white;
+	padding: 8px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	pointer-events: none;
+	z-index: 1000;
+	white-space: nowrap;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	display: none;
+}
+
+.pixel-tooltip.visible {
+	display: block;
+}
+
+.pixel-tooltip-color {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	margin-left: 8px;
+	border: 1px solid rgba(255, 255, 255, 0.5);
+	vertical-align: middle;
+	border-radius: 2px;
+	background-color: var(--tooltip-color, white);
+}
+

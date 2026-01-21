@@ -15,13 +15,6 @@ import { makeDeferred } from "./helpers.js";
     currentState.screenBufferSize ??= 0;
     currentState.paletteAddress ??= 0xffff8240;
     currentState.paletteData ??= "";
-    // const previousState = {
-    //     screenAddress: 0,
-    //     screenData: "",
-    //     screenBufferSize: 0,
-    //     paletteAddress: 0,
-    //     paletteData: ""
-    // };
     let requestId = 1;
     const requestList = {};
 
@@ -29,10 +22,12 @@ import { makeDeferred } from "./helpers.js";
 
     let screenZoom = 1.0;
     let paletteZoom = 1.0;
+    let paletteWidth = 8;
 
     let debuggingActivate = false;
     
     const screenToolbar = document.querySelector(".inspector-screen-toolbar");
+    const screenCanvasContainer = document.querySelector(".inspector-screen-container");
     const screenCanvas = document.querySelector(".inspector-screen-canvas");
     const screenAddressInput = document.querySelector(".inspector-screen-address-input");
     const symbolDatalist = document.getElementById("symbolList");
@@ -42,7 +37,16 @@ import { makeDeferred } from "./helpers.js";
 
     const paletteToolbar = document.querySelector(".inspector-palette-toolbar");
     const paletteCanvas = document.querySelector(".inspector-palette-canvas");
+    const paletteCanvasContainer = document.querySelector(".inspector-palette-container");
     const paletteAddressInput = document.querySelector(".inspector-palette-address-input");
+
+    // Create tooltip element
+    const tooltip = document.createElement("div");
+    tooltip.className = "pixel-tooltip";
+    document.body.appendChild(tooltip);
+
+    let cachedPalette = [];
+    let cachedTruePalette = [];
 
     formatSelect.addEventListener("input", () => {
         debug && console.log(`onInspectorFormatSelectEvent(${formatSelect.value}`);
@@ -121,20 +125,114 @@ import { makeDeferred } from "./helpers.js";
         debug && console.log(`deltaY: ${event.deltaY}, deltaMode: ${event.deltaMode}`);
     }, { passive: true });
 
+    // Get color at pixel position from screen data
+    function getPixelColor(pixelX, pixelY) {
+        if (pixelY < 0 || pixelY >= currentState.height || pixelX < 0 || pixelX >= currentState.width) {
+            return null;
+        }
+
+        const buffer = currentState.screenData;
+        const byteOffset = pixelY * currentState.bytesPerLine;
+        const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
+        const pixelIndex = Math.floor(pixelX / pixelChunk);
+        const byteIndex = byteOffset + pixelIndex * 8;
+        const bitPosition = pixelX % 16;
+        const byte0 = buffer.charCodeAt(byteIndex);
+        const byte1 = buffer.charCodeAt(byteIndex + 1);
+        const byte2 = buffer.charCodeAt(byteIndex + 2);
+        const byte3 = buffer.charCodeAt(byteIndex + 3);
+        const byte4 = buffer.charCodeAt(byteIndex + 4);
+        const byte5 = buffer.charCodeAt(byteIndex + 5);
+        const byte6 = buffer.charCodeAt(byteIndex + 6);
+        const byte7 = buffer.charCodeAt(byteIndex + 7);
+
+        let colorIndex;
+        if (bitPosition < 8) {
+            const bit = 7 - bitPosition;
+            colorIndex = ((byte0 >> bit) & 0x01) << 0
+                       | ((byte2 >> bit) & 0x01) << 1
+                       | ((byte4 >> bit) & 0x01) << 2
+                       | ((byte6 >> bit) & 0x01) << 3;
+        } else {
+            const bit = 15 - bitPosition;
+            colorIndex = ((byte1 >> bit) & 0x01) << 0
+                       | ((byte3 >> bit) & 0x01) << 1
+                       | ((byte5 >> bit) & 0x01) << 2
+                       | ((byte7 >> bit) & 0x01) << 3;
+        }
+
+        return { colorIndex, color: cachedPalette[colorIndex] };
+    }
+
+    // Mouse move event for tooltip
     screenCanvas.addEventListener("mousemove", function(event) {
         const rect = screenCanvas.getBoundingClientRect();
-        
-        // Get mouse position relative to the canvas element
-        const canvasX = event.clientX - rect.left;
-        const canvasY = event.clientY - rect.top;
-        
-        // Account for zoom level
-        const actualPixelX = Math.floor(canvasX / screenZoom);
-        const actualPixelY = Math.floor(canvasY / screenZoom);
-        
-        // Log or use the coordinates
-        debug && console.log(`Pixel: (${actualPixelX}, ${actualPixelY})`);
+        const pixelX = Math.floor(event.clientX / screenZoom - rect.x);
+        const pixelY = Math.floor(event.clientY / screenZoom - rect.y);
+        const pixelInfo = getPixelColor(pixelX, pixelY);
+        if (pixelInfo) {
+            tooltip.innerHTML = `(${pixelX}, ${pixelY}) [${pixelInfo.colorIndex}]=0x${cachedTruePalette[pixelInfo.colorIndex]} <div class="pixel-tooltip-color"></div>`;
+            tooltip.style.setProperty('--tooltip-color', pixelInfo.color);
+            tooltip.classList.add("visible");
+            const containerRect = screenCanvasContainer.getBoundingClientRect();
+            const mouseXInCanvasContainer = event.clientX - containerRect.left;
+            const mouseYInCanvasContainer = event.clientY - containerRect.top;
+            if (mouseXInCanvasContainer > containerRect.width / 2)
+                tooltip.style.left = (event.clientX - 150) + "px";
+            else
+                tooltip.style.left = (event.clientX + 10) + "px";
+            if (mouseYInCanvasContainer > containerRect.height / 2)
+                tooltip.style.top = (event.clientY - 50) + "px";
+            else
+                tooltip.style.top = (event.clientY + 10) + "px";
+        } else
+            tooltip.classList.remove("visible");
     });
+
+    // Hide tooltip on mouse leave
+    screenCanvas.addEventListener("mouseleave", function() {
+        tooltip.classList.remove("visible");
+    });
+
+    // Mouse move event for tooltip
+    paletteCanvas.addEventListener("mousemove", function(event) {
+        const rect = paletteCanvas.getBoundingClientRect();
+        const pixelX = Math.floor(event.clientX / paletteZoom - rect.x);
+        const colorIndex = Math.floor(pixelX / paletteWidth);
+        if (colorIndex >= 0 && colorIndex < 16) {
+            const containerRect = paletteCanvasContainer.getBoundingClientRect();
+            const mouseXInCanvasContainer = event.clientX - containerRect.left;
+            tooltip.innerHTML = `[${colorIndex}]=0x${cachedTruePalette[colorIndex]} <div class="pixel-tooltip-color"></div>`;
+            tooltip.style.setProperty('--tooltip-color', cachedPalette[colorIndex]);
+            tooltip.classList.add("visible");
+            if (mouseXInCanvasContainer > containerRect.width / 2)
+                tooltip.style.left = (event.clientX - 80) + "px";
+            else
+                tooltip.style.left = (event.clientX + 10) + "px";
+            tooltip.style.top = (event.clientY - 50) + "px";
+        } else
+            tooltip.classList.remove("visible");
+    });
+
+    // Hide tooltip on mouse leave
+    paletteCanvas.addEventListener("mouseleave", function() {
+        tooltip.classList.remove("visible");
+    });
+
+    // screenCanvas.addEventListener("mousemove", function(event) {
+    //     const rect = screenCanvas.getBoundingClientRect();
+        
+    //     // Get mouse position relative to the canvas element
+    //     const canvasX = event.clientX - rect.left;
+    //     const canvasY = event.clientY - rect.top;
+        
+    //     // Account for zoom level
+    //     const actualPixelX = Math.floor(canvasX / screenZoom);
+    //     const actualPixelY = Math.floor(canvasY / screenZoom);
+        
+    //     // Log or use the coordinates
+    //     debug && console.log(`Pixel: (${actualPixelX}, ${actualPixelY})`);
+    // });
 
     paletteCanvas.addEventListener("wheel", function (event) {
         if (!event.ctrlKey) return;
@@ -299,17 +397,20 @@ import { makeDeferred } from "./helpers.js";
             const palette = [];
             for (let i = 0; i < 16; i++) {
                 const byte1 = currentState.paletteData.charCodeAt(2 * i);
-                const r = (byte1 & 0x07) << 1;
+                const r = byte1 & 0x07;
                 const byte2 = currentState.paletteData.charCodeAt(2 * i + 1);
-                const g = ((byte2 >> 4) & 0x07) << 1;
-                const b = (byte2 & 0x07) << 1;
-                palette[i] = `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
+                const g = (byte2 >> 4) & 0x07;
+                const b = byte2 & 0x07;
+                cachedTruePalette[i] = ((byte1 << 8) | byte2).toString(16).padStart(4, '0');
+                palette[i] = `#${(r << 1).toString(16)}${(g << 1).toString(16)}${(b << 1).toString(16)}`;
             }
+            // Cache palette for tooltip
+            cachedPalette = palette;
             const paletteContex = paletteCanvas.getContext("2d", { alpha: false });
             paletteContex.clearRect(0, 0, paletteCanvas.width, paletteCanvas.height);
             for (let i = 0; i < 16; i++) {
                 paletteContex.fillStyle = palette[i];
-                paletteContex.fillRect(i * 8, 0, 8, 8);
+                paletteContex.fillRect(i * paletteWidth, 0, paletteWidth, paletteWidth);
             }
 
 
