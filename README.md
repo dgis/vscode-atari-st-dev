@@ -1,7 +1,7 @@
 # Atari ST Visual Studio Code Extension
 
-
 Atari ST Dev is a Visual Studio Code extension for building, running and debugging C, C++ and 68k assembly projects targeting Atari ST/TT/Falcon systems. It integrates a cross-toolchain using GCC/GDB, provides debug-time views for CPU registers, memory and hardware information, and hooks into Hatari's debugger via the `cppdbg` debug adapter.
+
 
 **Features**
 - **Compile & Debug:** Integration with a bundled cross-toolchain (m68k-atari-mintelf) and with the VS Code C++ debug adapter (`cppdbg`) to run and debug Atari executables.
@@ -11,6 +11,7 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 - **Show in Memory Context Menu:** Right-click integration in Variable/Watch/Hover/Hardware views and some views to open a memory view at a chosen address.
 - **Walkthrough & Samples:** A built-in walkthrough to get started (`atariSTDev.gettingStarted` command) and a command (`atariSTDev.getSamples`) to copy sample projects into the active workspace.
 - **Debugger Console Integration:** Use the Debug Console to run custom GDB commands via `-exec <gdb command>` and Hatari debugger commands via `-exec monitor <hatari debugger command>`.
+
 
 **Quick Start**
 1. **Open an empty folder:** Open an empty folder.
@@ -29,6 +30,7 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
     * for gdb: `> -exec info registers`
     * for hatari debugger: `> -exec monitor disasm`
 
+
 **Notes**
 - **C/C++ extension:** The extension depends on `ms-vscode.cpptools` for the `cppdbg` debug adapter features.
 - **Included SDK:** A packaged SDK with Hatari and cross-compilers is included in the extension for the platform Linux, Windows and MacOS.
@@ -37,6 +39,39 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
         "atariSTDev.activate": true
     }`
 - **Debug and watch a variable in hexadecimal** While debugging, to see a variable in hexadecimal instead of decimal, just add the suffix ",h" to the variable name in the watch view. For example, to watch the variable name "myVariable" in hexa, rename your variable to "myVariable,h". There is the same for binary ",b" and octal ",o". To watch a variable address, just put "&" before the variable name like "&my_variable".
+
+
+**Debug Console Usage**
+- **GDB commands:** In the Debug Console you can run `-exec <gdb command>` to forward commands to GDB, for example:
+```
+    -exec help
+    -exec info registers
+    -exec x/5i $pc
+```
+- **Hatari monitor commands:** Use `-exec monitor <hatari command>` to query Hatari's internal debugger, for example:
+```
+    -exec monitor help
+    -exec monitor info
+    -exec monitor cpureg
+    -exec monitor disasm
+    -exec monitor memdump
+```
+
+**Known Issues & Limitations**
+- **TRAP and Step Over:** If a function contains a `TRAP` instruction, the debugger may be unable to 'step over' it — set a breakpoint after the call and continue instead.
+- **Filenames and GEMDOS:** Avoid program filenames that rely on more than 8.3 compatibility; GEMDOS code (in the Hatari emulator) can confuse similar short names.
+- **Disassembly syntax:** The Disassembly view (VS Code built-in) may show GDB-style output instead of classic DevPack syntax.
+- **Encoding:** Use code page 437 or a font that matches Atari ST characters when viewing Atari source files for best visual fidelity.
+
+**Repository & Support**
+- **Repository:** `https://github.com/dgis/vscode-atari-st-dev`
+- **Issue tracker:** Use the repository issues to report bugs or feature requests.
+
+
+**License**
+- Licensed under the GNU General Public License v3.0
+
+# Extensions details
 
 **Contributed Commands**
 - **`atariSTDev.getSamples`**: Copy sample projects into the active workspace and (if present) open the provided workspace file.
@@ -52,32 +87,6 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 **Configuration Settings**
 - **`atariSTDev.activate`**: (boolean, workspace scope) Enable the extension in this workspace. Default is `false` — set to `true` in `.vscode/settings.json` to activate features and views.
 - **`atariSTDev.path`**: (string, workspace scope) Path to an Atari toolchain. This settings is automatically set by this extension.
-
-**Debug Console Usage**
-- **GDB commands:** In the Debug Console you can run `-exec <gdb command>` to forward commands to GDB, for example:
-    `-exec help`
-    `-exec info registers`
-    `-exec x/5i $pc`
-- **Hatari monitor commands:** Use `-exec monitor <hatari command>` to query Hatari's internal debugger, for example:
-    `-exec monitor help`
-    `-exec monitor info`
-    `-exec monitor cpureg`
-    `-exec monitor disasm`
-    `-exec monitor memdump`
-
-**Known Issues & Limitations**
-- **TRAP and Step Over:** If a function contains a `TRAP` instruction, the debugger may be unable to 'step over' it — set a breakpoint after the call and continue instead.
-- **Filenames and GEMDOS:** Avoid program filenames that rely on more than 8.3 compatibility; GEMDOS code (in the Hatari emulator) can confuse similar short names.
-- **Disassembly syntax:** The Disassembly view (VS Code built-in) may show GDB-style output instead of classic DevPack syntax.
-- **Encoding:** Use code page 437 or a font that matches Atari ST characters when viewing Atari source files for best visual fidelity.
-
-**Repository & Support**
-- **Repository:** `https://github.com/dgis/vscode-atari-st-dev`
-- **Issue tracker:** Use the repository issues to report bugs or feature requests.
-
-
-**License**
-- Licensed under the GNU General Public License v3.0
 
 
 # TODO
