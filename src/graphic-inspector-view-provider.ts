@@ -89,7 +89,7 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 	public async showInMemory(address?: number) {
 		if (!this.view)
 			this.deferredView = makeDeferred<vscode.WebviewView>();
-		await vscode.commands.executeCommand(`atariSTDev.memoryView${this.index}.focus`);
+		await vscode.commands.executeCommand(`atariSTDev.graphicInspectorView${this.index}.focus`);
 		if (!this.view)
 			await this.deferredView.promise;
 		if (this.view) {
@@ -145,7 +145,7 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 				<fieldset class="inspector-screen-toolbar">
 					<input class="inspector-screen-address-input" placeholder="Screen address or symbol (0xf8000)" title="Screen address or symbol (0xf8000)" type="text" list="symbolList">
 					<datalist id="symbolList"></datalist>
-					<select class="inspector-format-select">
+					<select class="inspector-format-select" title="Depth (4 low, 2 medium, 1 monochrome)">
 						<option value="1">1</option>
 						<option value="2">2</option>
 						<option value="4" selected>4</option>
