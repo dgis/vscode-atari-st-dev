@@ -166,8 +166,13 @@
         "category": "Atari ST"
       },
       {
-        "command": "atariSTDev.showInGraphicInspector",
-        "title": "Show in Graphic Inspector",
+        "command": "atariSTDev.showInGraphicInspector1",
+        "title": "Show in Graphic Inspector1",
+        "category": "Atari ST"
+      },
+      {
+        "command": "atariSTDev.showInGraphicInspector2",
+        "title": "Show in Graphic Inspector2",
         "category": "Atari ST"
       },
       {
@@ -195,8 +200,14 @@
         "icon": "$(refresh)"
       },
       {
-        "command": "atariSTDev.refreshGraphicInspector",
-        "title": "Refresh Graphic Inspector",
+        "command": "atariSTDev.refreshGraphicInspector1",
+        "title": "Refresh Graphic Inspector1",
+        "category": "Atari ST",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "atariSTDev.refreshGraphicInspector2",
+        "title": "Refresh Graphic Inspector2",
         "category": "Atari ST",
         "icon": "$(refresh)"
       }
@@ -252,8 +263,16 @@
         },
         {
           "type": "webview",
-          "id": "atariSTDev.graphicInspectorView",
-          "name": "Graphic Inspector",
+          "id": "atariSTDev.graphicInspectorView1",
+          "name": "Graphic Inspector1",
+          "icon": "$(file-binary)",
+          "visibility": "hidden",
+          "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
+        },
+        {
+          "type": "webview",
+          "id": "atariSTDev.graphicInspectorView2",
+          "name": "Graphic Inspector2",
           "icon": "$(file-binary)",
           "visibility": "hidden",
           "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
@@ -283,8 +302,13 @@
           "group": "navigation"
         },
         {
-          "command": "atariSTDev.refreshGraphicInspector",
-          "when": "view == atariSTDev.graphicInspectorView",
+          "command": "atariSTDev.refreshGraphicInspector1",
+          "when": "view == atariSTDev.graphicInspectorView1",
+          "group": "navigation"
+        },
+        {
+          "command": "atariSTDev.refreshGraphicInspector2",
+          "when": "view == atariSTDev.graphicInspectorView2",
           "group": "navigation"
         }
       ],
@@ -326,7 +350,10 @@
           "command": "atariSTDev.showInMemory4"
         },
         {
-          "command": "atariSTDev.showInGraphicInspector"
+          "command": "atariSTDev.showInGraphicInspector1"
+        },
+        {
+          "command": "atariSTDev.showInGraphicInspector2"
         }
       ]
     },

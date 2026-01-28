@@ -3,7 +3,7 @@ import { makeDeferred } from "./helpers.js";
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 (function () {
-    const debug = true;
+    const debug = false;
     const vscode = acquireVsCodeApi();
     const currentState = vscode.getState() || {};
     currentState.screenAddress ??= 0xf8000;
@@ -161,7 +161,7 @@ import { makeDeferred } from "./helpers.js";
                        | ((byte7 >> bit) & 0x01) << 3;
         }
 
-        return { colorIndex, color: cachedPalette[colorIndex] };
+        return { colorIndex, color: cachedPalette[colorIndex], chunkAddress: currentState.screenAddress + byteIndex, chunkOffset: byteIndex, pixelPositionInChunk: bitPosition };
     }
 
     // Mouse move event for tooltip
@@ -171,7 +171,8 @@ import { makeDeferred } from "./helpers.js";
         const pixelY = Math.floor(event.clientY / screenZoom - rect.y);
         const pixelInfo = getPixelColor(pixelX, pixelY);
         if (pixelInfo) {
-            tooltip.innerHTML = `(${pixelX}, ${pixelY}) [${pixelInfo.colorIndex}]=0x${cachedTruePalette[pixelInfo.colorIndex]} <div class="pixel-tooltip-color"></div>`;
+            tooltip.innerHTML = `(${pixelX}, ${pixelY}) [${pixelInfo.colorIndex}]=0x${cachedTruePalette[pixelInfo.colorIndex]} <div class="pixel-tooltip-color"></div><br>
+                Chunk addr: 0x${(pixelInfo.chunkAddress).toString(16)} (Offset: ${pixelInfo.chunkOffset}, Pixel pos in chunk: ${pixelInfo.pixelPositionInChunk})`;
             tooltip.style.setProperty('--tooltip-color', pixelInfo.color);
             tooltip.classList.add("visible");
             const containerRect = screenCanvasContainer.getBoundingClientRect();
@@ -421,37 +422,107 @@ import { makeDeferred } from "./helpers.js";
 
             const buffer = currentState.screenData;
             let currentRelativeOffset = 0;
-            const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
-            const octetChunk = 8; // 4 bits per pixel -> 16 pixels -> 8 bytes
-            for (let y = 0; y < currentState.height; y++) {
-                for (let x = 0; x < currentState.width; x += pixelChunk) {
-                    const byte0 = buffer.charCodeAt(currentRelativeOffset);
-                    const byte1 = buffer.charCodeAt(currentRelativeOffset + 1);
-                    const byte2 = buffer.charCodeAt(currentRelativeOffset + 2);
-                    const byte3 = buffer.charCodeAt(currentRelativeOffset + 3);
-                    const byte4 = buffer.charCodeAt(currentRelativeOffset + 4);
-                    const byte5 = buffer.charCodeAt(currentRelativeOffset + 5);
-                    const byte6 = buffer.charCodeAt(currentRelativeOffset + 6);
-                    const byte7 = buffer.charCodeAt(currentRelativeOffset + 7);
-                    for (let bit = 0; bit < 8; bit++) {
-                        const colorIndex = ((byte0 >> (7 - bit)) & 0x01) << 0
-                                          | ((byte2 >> (7 - bit)) & 0x01) << 1
-                                          | ((byte4 >> (7 - bit)) & 0x01) << 2
-                                          | ((byte6 >> (7 - bit)) & 0x01) << 3;
+            if (currentState.format === "1") {
+                const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                const octetChunk = 8; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                for (let y = 0; y < currentState.height; y++) {
+                    for (let x = 0; x < currentState.width; x += pixelChunk) {
+                        const byte0 = buffer.charCodeAt(currentRelativeOffset);
+                        const byte1 = buffer.charCodeAt(currentRelativeOffset + 1);
+                        const byte2 = buffer.charCodeAt(currentRelativeOffset + 2);
+                        const byte3 = buffer.charCodeAt(currentRelativeOffset + 3);
+                        const byte4 = buffer.charCodeAt(currentRelativeOffset + 4);
+                        const byte5 = buffer.charCodeAt(currentRelativeOffset + 5);
+                        const byte6 = buffer.charCodeAt(currentRelativeOffset + 6);
+                        const byte7 = buffer.charCodeAt(currentRelativeOffset + 7);
+                        for (let bit = 0; bit < 8; bit++) {
+                            const colorIndex = ((byte0 >> (7 - bit)) & 0x01) << 0
+                                            | ((byte2 >> (7 - bit)) & 0x01) << 1
+                                            | ((byte4 >> (7 - bit)) & 0x01) << 2
+                                            | ((byte6 >> (7 - bit)) & 0x01) << 3;
 
-                        screenContex.fillStyle = palette[colorIndex];
-                        screenContex.fillRect(x + bit, y, 1, 1);
-                    }
-                    for (let bit = 0; bit < 8; bit++) {
-                        const colorIndex = ((byte1 >> (7 - bit)) & 0x01) << 0
-                                          | ((byte3 >> (7 - bit)) & 0x01) << 1
-                                          | ((byte5 >> (7 - bit)) & 0x01) << 2
-                                          | ((byte7 >> (7 - bit)) & 0x01) << 3;
-                        screenContex.fillStyle = palette[colorIndex];
-                        screenContex.fillRect(x + bit + 8, y, 1, 1);
-                    }
+                            screenContex.fillStyle = palette[colorIndex];
+                            screenContex.fillRect(x + bit, y, 1, 1);
+                        }
+                        for (let bit = 0; bit < 8; bit++) {
+                            const colorIndex = ((byte1 >> (7 - bit)) & 0x01) << 0
+                                            | ((byte3 >> (7 - bit)) & 0x01) << 1
+                                            | ((byte5 >> (7 - bit)) & 0x01) << 2
+                                            | ((byte7 >> (7 - bit)) & 0x01) << 3;
+                            screenContex.fillStyle = palette[colorIndex];
+                            screenContex.fillRect(x + bit + 8, y, 1, 1);
+                        }
 
-                    currentRelativeOffset += octetChunk;
+                        currentRelativeOffset += octetChunk;
+                    }
+                }
+            } else if (currentState.format === "2") {
+                const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                const octetChunk = 8; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                for (let y = 0; y < currentState.height; y++) {
+                    for (let x = 0; x < currentState.width; x += pixelChunk) {
+                        const byte0 = buffer.charCodeAt(currentRelativeOffset);
+                        const byte1 = buffer.charCodeAt(currentRelativeOffset + 1);
+                        const byte2 = buffer.charCodeAt(currentRelativeOffset + 2);
+                        const byte3 = buffer.charCodeAt(currentRelativeOffset + 3);
+                        const byte4 = buffer.charCodeAt(currentRelativeOffset + 4);
+                        const byte5 = buffer.charCodeAt(currentRelativeOffset + 5);
+                        const byte6 = buffer.charCodeAt(currentRelativeOffset + 6);
+                        const byte7 = buffer.charCodeAt(currentRelativeOffset + 7);
+                        for (let bit = 0; bit < 8; bit++) {
+                            const colorIndex = ((byte0 >> (7 - bit)) & 0x01) << 0
+                                            | ((byte2 >> (7 - bit)) & 0x01) << 1
+                                            | ((byte4 >> (7 - bit)) & 0x01) << 2
+                                            | ((byte6 >> (7 - bit)) & 0x01) << 3;
+
+                            screenContex.fillStyle = palette[colorIndex];
+                            screenContex.fillRect(x + bit, y, 1, 1);
+                        }
+                        for (let bit = 0; bit < 8; bit++) {
+                            const colorIndex = ((byte1 >> (7 - bit)) & 0x01) << 0
+                                            | ((byte3 >> (7 - bit)) & 0x01) << 1
+                                            | ((byte5 >> (7 - bit)) & 0x01) << 2
+                                            | ((byte7 >> (7 - bit)) & 0x01) << 3;
+                            screenContex.fillStyle = palette[colorIndex];
+                            screenContex.fillRect(x + bit + 8, y, 1, 1);
+                        }
+
+                        currentRelativeOffset += octetChunk;
+                    }
+                }
+            } else if (currentState.format === "4") {
+                const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                const octetChunk = 8; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                for (let y = 0; y < currentState.height; y++) {
+                    for (let x = 0; x < currentState.width; x += pixelChunk) {
+                        const byte0 = buffer.charCodeAt(currentRelativeOffset);
+                        const byte1 = buffer.charCodeAt(currentRelativeOffset + 1);
+                        const byte2 = buffer.charCodeAt(currentRelativeOffset + 2);
+                        const byte3 = buffer.charCodeAt(currentRelativeOffset + 3);
+                        const byte4 = buffer.charCodeAt(currentRelativeOffset + 4);
+                        const byte5 = buffer.charCodeAt(currentRelativeOffset + 5);
+                        const byte6 = buffer.charCodeAt(currentRelativeOffset + 6);
+                        const byte7 = buffer.charCodeAt(currentRelativeOffset + 7);
+                        for (let bit = 0; bit < 8; bit++) {
+                            const colorIndex = ((byte0 >> (7 - bit)) & 0x01) << 0
+                                            | ((byte2 >> (7 - bit)) & 0x01) << 1
+                                            | ((byte4 >> (7 - bit)) & 0x01) << 2
+                                            | ((byte6 >> (7 - bit)) & 0x01) << 3;
+
+                            screenContex.fillStyle = palette[colorIndex];
+                            screenContex.fillRect(x + bit, y, 1, 1);
+                        }
+                        for (let bit = 0; bit < 8; bit++) {
+                            const colorIndex = ((byte1 >> (7 - bit)) & 0x01) << 0
+                                            | ((byte3 >> (7 - bit)) & 0x01) << 1
+                                            | ((byte5 >> (7 - bit)) & 0x01) << 2
+                                            | ((byte7 >> (7 - bit)) & 0x01) << 3;
+                            screenContex.fillStyle = palette[colorIndex];
+                            screenContex.fillRect(x + bit + 8, y, 1, 1);
+                        }
+
+                        currentRelativeOffset += octetChunk;
+                    }
                 }
             }
         }

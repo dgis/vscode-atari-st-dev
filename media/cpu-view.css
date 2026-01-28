@@ -19,8 +19,18 @@ body {
 	margin-bottom: 10px;
 }
 
+.register-sr-bit-set {
+	color: var(--vscode-editor-background);
+	background-color: var(--vscode-foreground);
+}
+
 .modified-byte {
 	color: red;
+}
+
+.register-sr-bit-set.modified-byte {
+	color: var(--vscode-foreground);
+	background-color: red;
 }
 
 .highlight-on-hover:hover {

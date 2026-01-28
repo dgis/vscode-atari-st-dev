@@ -123,8 +123,8 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 					</div>
 					<div class="cpureg-active" style="display: none;">
 						<div class="cpu" data-vscode-context='{"webviewSection": "cpu"}'>
-							PC: <span class="pc highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span><br>
-							SR: <span class="sr"></span><br>
+							PC: <span class="pc highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span>&nbsp;
+							SR: <span class="sr"></span> (<span class="srT"></span><span class="srS">S</span><span class="srM">M</span>|<span class="srX">X</span><span class="srN">N</span><span class="srZ">Z</span><span class="srV">V</span><span class="srC">C</span>&nbsp;<span class="srSTP">STP</span>&nbsp;IM: <span class="srIM"></span>)<br>
 							<br>
 							&gt;&gt;&nbsp;<span class="nextInstruction"></span>
 						</div>
@@ -137,12 +137,10 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 							D5: <span class="d5 highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span> &nbsp; A5: <span class="a5 highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span><br>
 							D6: <span class="d6 highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span> &nbsp; A6: <span class="a6 highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span><br>
 							D7: <span class="d7 highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span> &nbsp; A7: <span class="a7 highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span><br>
-							USP: <span class="usp highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span><br>
-							ISP: <span class="isp highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span><br>
+							USP: <span class="usp highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span> &nbsp; ISP: <span class="isp highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span><br>
 						</div>
 						<div class="hatari" data-vscode-context='{"webviewSection": "hatari"}'>
-							VBL: <span class="vbl"></span><br>
-							HBL: <span class="hbl"></span><br>
+							VBL: <span class="vbl"></span> &nbsp; HBL: <span class="hbl"></span><br>
 						</div>
 					</div>
 				</div>

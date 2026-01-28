@@ -64,6 +64,17 @@
 
     const domCpuPC = document.querySelector(".pc");
     const domCpuSR = document.querySelector(".sr");
+    const domCpuSRT = document.querySelector(".srT");
+    const domCpuSRS = document.querySelector(".srS");
+    const domCpuSRM = document.querySelector(".srM");
+    const domCpuSRX = document.querySelector(".srX");
+    const domCpuSRN = document.querySelector(".srN");
+    const domCpuSRZ = document.querySelector(".srZ");
+    const domCpuSRV = document.querySelector(".srV");
+    const domCpuSRC = document.querySelector(".srC");
+    const domCpuSRSTP = document.querySelector(".srSTP");
+    const domCpuSRIM = document.querySelector(".srIM");
+
     const domCpuNextInstruction = document.querySelector(".nextInstruction");
 
     const domCpuD0 = document.querySelector(".d0");
@@ -239,9 +250,21 @@
             domCpuregActive.style = "display: block;";
 
             domCpuPC.innerHTML = currentState.pc?.toString(16).padStart(8, '0');
-            domCpuPC.class = currentState.pc === previousState.pc ? "" : "modified-byte";
+            domCpuPC.classList.toggle("modified-byte", currentState.pc !== previousState.pc);
             domCpuSR.innerHTML = currentState.sr?.toString(16).padStart(8, '0');
-            domCpuSR.class = currentState.sr === previousState.sr ? "" : "modified-byte";
+            domCpuSR.classList.toggle("modified-byte", currentState.sr !== previousState.sr);
+            domCpuSRT.innerHTML = 'T' + currentState.srT?.toString(16).padStart(2, '0');
+            domCpuSRT.classList.toggle("modified-byte", currentState.srT !== previousState.srT);
+            domCpuSRS.classList.toggle("modified-byte", currentState.srS !== previousState.srS); domCpuSRS.classList.toggle("register-sr-bit-set", currentState.srS);
+            domCpuSRM.classList.toggle("modified-byte", currentState.srM !== previousState.srM); domCpuSRM.classList.toggle("register-sr-bit-set", currentState.srM);
+            domCpuSRX.classList.toggle("modified-byte", currentState.srX !== previousState.srX); domCpuSRX.classList.toggle("register-sr-bit-set", currentState.srX);
+            domCpuSRN.classList.toggle("modified-byte", currentState.srN !== previousState.srN); domCpuSRN.classList.toggle("register-sr-bit-set", currentState.srN);
+            domCpuSRZ.classList.toggle("modified-byte", currentState.srZ !== previousState.srZ); domCpuSRZ.classList.toggle("register-sr-bit-set", currentState.srZ);
+            domCpuSRV.classList.toggle("modified-byte", currentState.srV !== previousState.srV); domCpuSRV.classList.toggle("register-sr-bit-set", currentState.srV);
+            domCpuSRC.classList.toggle("modified-byte", currentState.srC !== previousState.srC); domCpuSRC.classList.toggle("register-sr-bit-set", currentState.srC);
+            domCpuSRSTP.classList.toggle("modified-byte", currentState.srSTP !== previousState.srSTP); domCpuSRSTP.classList.toggle("register-sr-bit-set", currentState.srSTP);
+            domCpuSRIM.innerHTML = currentState.srIM;
+            domCpuSRIM.classList.toggle("modified-byte", currentState.srIM !== previousState.srIM);
             domCpuNextInstruction.innerHTML = currentState.nextInstruction;
 
             domCpuD0.innerHTML = currentState.d0?.toString(16).padStart(8, '0');

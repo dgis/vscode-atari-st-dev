@@ -17,7 +17,7 @@ class DebuggerService {
 
 	private currentFrameId = "";
 
-	private debug = true;
+	private debug = false;
 
 	private fastStart = true;
 
@@ -46,7 +46,7 @@ class DebuggerService {
 		});
 	}
 
-	public async onDidReceiveMessage(context: DebuggerContext, data : any) {
+	public async onDidReceiveMessage(context: DebuggerContext, data: any) {
 		if (!context) {
 			return;
 		}
@@ -129,7 +129,7 @@ class DebuggerService {
 		}
 	}
 
-	public async evaluateGDBCommand(gdbCommand: string) : Promise<string> {
+	public async evaluateGDBCommand(gdbCommand: string): Promise<string> {
 		this.debug && console.log(`DebuggerService::evaluateGDBCommand(gdbCommand: "${gdbCommand}")`);
 		if (this.currentFrameId) {
 			const activeDebugSession = vscode.debug.activeDebugSession;
@@ -154,14 +154,14 @@ class DebuggerService {
 		}
 		return "";
 	}
-	
+
 	#symbols: { [key: string]: number } | null = null;
 
 	public async getSymbols() {
 		this.debug && console.log(`DebuggerService::getSymbols()`);
 		if (this.#symbols === null) {
 			const response = await this.evaluateGDBCommand("-exec monitor symbols");
-			if(response) {
+			if (response) {
 				// -exec monitor symbols
 				// 0x00000005 A SPRITE_NUMBER
 				// 0x00012948 T _start
