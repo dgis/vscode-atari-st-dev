@@ -7,6 +7,7 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 - **Compile & Debug:** Integration with a bundled cross-toolchain (m68k-atari-mintelf) and with the VS Code C++ debug adapter (`cppdbg`) to run and debug Atari executables.
 - **CPU Registers View:** A view that displays PC, SR, D0–D7, A0–A7, USP/ISP and the next instruction while a debug session is active.
 - **Multiple Memory Views:** Four memory views (`Memory1`..`Memory4`) that let you inspect memory dumps, enter addresses (hex), choose column widths.
+- **Multiple Graphic Inspector Views:** Two graphic inspector views (`Graphic Inspector1`,`Graphic Inspector2`) that let you inspect memory graphically, enter addresses (hex), choose bitmap format.
 - **Hardware Tree View:** A tree view of common Atari vectors and hardware addresses (exception vectors, trap vectors, auto-vectors, VBL/HBL, ...). Values are read and updated while debugging.
 - **Show in Memory Context Menu:** Right-click integration in Variable/Watch/Hover/Hardware views and some views to open a memory view at a chosen address.
 - **Walkthrough & Samples:** A built-in walkthrough to get started (`atariSTDev.gettingStarted` command) and a command (`atariSTDev.getSamples`) to copy sample projects into the active workspace.
@@ -32,8 +33,9 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 
 
 **Notes**
-- **C/C++ extension:** The extension depends on `ms-vscode.cpptools` for the `cppdbg` debug adapter features.
+- **C/C++ extension:** The extension depends on `ms-vscode.cpptools` for the `cppdbg` debug adapter features. It must be install if VS Code ask for it.
 - **Included SDK:** A packaged SDK with Hatari and cross-compilers is included in the extension for the platform Linux, Windows and MacOS.
+- **Command make on Linux and MacOS:** If the command make does not exist on Linux or MacOS, please install it.
 - **Activate the extension:** Like you can see in the samples, this extension is activated when you add the following setting in the current project. In `.vscode/settings.json` set:
     `{
         "atariSTDev.activate": true
@@ -223,9 +225,11 @@ git clone https://github.com/dgis/hatari.git
 cd hatari
 mkdir -p Release
 cd Release/
-cmake ..
+#cmake ..
+cmake -DCMAKE_DISABLE_FIND_PACKAGE_Capstone=TRUE ..
 cmake --build . -j$(getconf _NPROCESSORS_ONLN)
 ```
+(I prevent to use libcapstone to have less dependencies.)
 The built Hatari binary is "./Release/src/hatari".
 ```
 strip Release/src/hatari
