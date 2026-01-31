@@ -1,3 +1,5 @@
+import { attachSymbolSuggester } from './helpers.js';
+
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
 (function () {
@@ -57,9 +59,15 @@
     const memoryToolbar = document.querySelector(".memory-toolbar");
     const memoryDump = document.querySelector(".memory-dump");
     const memoryAddressInput = document.querySelector(".memory-address-input");
-    const symbolDatalist = document.getElementById("symbolList");
+    const symbolListContainer = document.querySelector(".symbol-list");
 
     const memoryColumnSelect = document.querySelector(".memory-column-select");
+
+    let symbolNames = [];
+
+    // Use the shared symbol suggester
+    const symbolSuggester = attachSymbolSuggester([memoryAddressInput], () => symbols);
+
 
     memoryColumnSelect.addEventListener("input", () => {
         debug && console.log(`onMemoryColumnSelectEvent(${memoryColumnSelect.value}`);
@@ -189,17 +197,15 @@
     function loadSymbolsIntoDatalist(symbolsList) {
         if (symbolsList && !symbols) {
             symbols = symbolsList;
-            symbolDatalist.innerHTML = "";
-            for (const [name, address] of Object.entries(symbols)) {
-                const option = document.createElement("option");
-                option.value = name;
-                symbolDatalist.appendChild(option);
-            }
+            symbolNames = Object.keys(symbols).sort();
+            // suggestions are shown dynamically when user types
         }
     }
     function clearSymbolsIntoDatalist() {
         symbols = null;
-        symbolDatalist.innerHTML = "";
+        symbolNames = [];
+        symbolListContainer.innerHTML = "";
+        symbolListContainer.style.display = "none";
     }
 
     function getTextWidth(text) {

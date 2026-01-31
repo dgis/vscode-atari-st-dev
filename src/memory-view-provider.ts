@@ -143,8 +143,8 @@ export class MemoryViewProvider implements vscode.WebviewViewProvider {
 			</head>
 			<body>
 				<fieldset class="memory-toolbar">
-					<input class="memory-address-input" placeholder="Address or symbol (0xf8000)" title="Address or symbol (0xf8000)" type="text" list="symbolList">
-					<datalist id="symbolList"></datalist>
+				<input class="memory-address-input" placeholder="Address or symbol (0xf8000)" title="Address or symbol (0xf8000)" type="text" autocomplete="off">
+				<div class="symbol-list" aria-hidden="true"></div> 
 					<select class="memory-column-select" title="Column size">
 						<option value="auto" selected>Auto</option>
 						<option value="2">2</option>

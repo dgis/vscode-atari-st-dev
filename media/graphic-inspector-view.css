@@ -67,3 +67,29 @@ fieldset:disabled {
 	background-color: var(--tooltip-color, white);
 }
 
+/* Symbol suggestion dropdown */
+.symbol-list {
+	position: fixed;
+	box-sizing: border-box;
+	z-index: 2000;
+	background: var(--vscode-editor-background);
+	border: 1px solid rgba(0,0,0,0.2);
+	box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+	display: none;
+	overflow-y: auto;
+	max-height: 240px;
+	font-family: var(--vscode-editor-font-family);
+	font-size: 12px;
+	color: var(--vscode-editor-foreground);
+}
+.symbol-list-item {
+	padding: 6px 8px;
+	cursor: pointer;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.symbol-list-item:hover, .symbol-list-item.active {
+	background: var(--vscode-list-focusBackground, rgba(100,100,100,0.12));
+} 
+

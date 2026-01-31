@@ -54,23 +54,23 @@ suite('MemoryViewProvider Tests', () => {
 	});
 
 	test('resolveWebviewView sets up webview options', () => {
-		const mockWebview: any = {
+		const mockWebview1: any = {
 			options: {},
 			html: '',
 			onDidReceiveMessage: () => ({ dispose: () => {} }),
 			postMessage: () => {},
 			asWebviewUri: (uri: vscode.Uri) => uri
 		};
-		const mockWebviewView: any = { webview: mockWebview };
+		const mockWebviewView1: any = { webview: mockWebview1 };
 
-		provider.resolveWebviewView(mockWebviewView, {} as any, {} as any);
+		provider.resolveWebviewView(mockWebviewView1, {} as any, {} as any);
 
-		assert.strictEqual(mockWebview.options.enableScripts, true);
-		assert.ok(mockWebview.html.includes('<!DOCTYPE html>'));
+		assert.strictEqual(mockWebview1.options.enableScripts, true);
+		assert.ok(mockWebview1.html.includes('<!DOCTYPE html>'));
 	});
 
 	test('resolveWebviewView generates HTML with memory toolbar', () => {
-		const mockWebview: any = {
+		const mockWebview2: any = {
 			options: {},
 			html: '',
 			onDidReceiveMessage: () => ({ dispose: () => {} }),
@@ -78,18 +78,21 @@ suite('MemoryViewProvider Tests', () => {
 			asWebviewUri: (uri: vscode.Uri) => uri,
 			cspSource: 'test-csp'
 		};
-		const mockWebviewView: any = { webview: mockWebview };
+		const mockWebviewView2: any = { webview: mockWebview2 };
 
-		provider.resolveWebviewView(mockWebviewView, {} as any, {} as any);
+		provider.resolveWebviewView(mockWebviewView2, {} as any, {} as any);
 
-		assert.ok(mockWebview.html.includes('memory-toolbar'));
-		assert.ok(mockWebview.html.includes('memory-address-input'));
-		assert.ok(mockWebview.html.includes('memory-column-select'));
+		assert.ok(mockWebview2.html.includes('memory-toolbar'));
+		assert.ok(mockWebview2.html.includes('memory-address-input'));
+		assert.ok(mockWebview2.html.includes('memory-column-select'));
+	// New: symbol suggestion container should be present and datalist removed
+	assert.ok(mockWebview2.html.includes('symbol-list'));
+	assert.ok(!mockWebview2.html.includes('<datalist'));
 	});
 
-	test('onDidReceiveMessage handles initialize message', () => {
+	test('onDidReceiveMessage handles initialize message', async () => {
 		const postMessageSpy = sandbox.spy();
-		const mockWebview: any = {
+		const mockWebview3: any = {
 			options: {},
 			html: '',
 			onDidReceiveMessage: (callback: any) => {
@@ -99,16 +102,19 @@ suite('MemoryViewProvider Tests', () => {
 			postMessage: postMessageSpy,
 			asWebviewUri: (uri: vscode.Uri) => uri
 		};
-		const mockWebviewView: any = { webview: mockWebview };
+		const mockWebviewView3: any = { webview: mockWebview3 };
 
-		provider.resolveWebviewView(mockWebviewView, {} as any, {} as any);
+		provider.resolveWebviewView(mockWebviewView3, {} as any, {} as any);
+
+		// wait for async initialize handler
+		await new Promise(resolve => setTimeout(resolve, 0));
 
 		assert.ok(postMessageSpy.calledOnce);
 		assert.strictEqual(postMessageSpy.firstCall.args[0].type, 'initialize');
 	});
 
 	test('onDidReceiveMessage handles contextSelection message', () => {
-		const mockWebview: any = {
+		const mockWebview4: any = {
 			options: {},
 			html: '',
 			onDidReceiveMessage: (callback: any) => {
@@ -118,16 +124,16 @@ suite('MemoryViewProvider Tests', () => {
 			postMessage: () => {},
 			asWebviewUri: (uri: vscode.Uri) => uri
 		};
-		const mockWebviewView: any = { webview: mockWebview };
+		const mockWebviewView4: any = { webview: mockWebview4 };
 
-		provider.resolveWebviewView(mockWebviewView, {} as any, {} as any);
+		provider.resolveWebviewView(mockWebviewView4, {} as any, {} as any);
 
 		assert.strictEqual(provider.getLastContextSelection(), 'memory-selection');
 	});
 
 	test('onDidReceiveMessage forwards other messages to debuggerService', () => {
 		const onDidReceiveMessageSpy = sandbox.spy(debuggerService, 'onDidReceiveMessage');
-		const mockWebview: any = {
+		const mockWebview5: any = {
 			options: {},
 			html: '',
 			onDidReceiveMessage: (callback: any) => {
@@ -137,9 +143,9 @@ suite('MemoryViewProvider Tests', () => {
 			postMessage: () => {},
 			asWebviewUri: (uri: vscode.Uri) => uri
 		};
-		const mockWebviewView: any = { webview: mockWebview };
+		const mockWebviewView5: any = { webview: mockWebview5 };
 
-		provider.resolveWebviewView(mockWebviewView, {} as any, {} as any);
+		provider.resolveWebviewView(mockWebviewView5, {} as any, {} as any);
 
 		assert.ok(onDidReceiveMessageSpy.called);
 		assert.strictEqual(onDidReceiveMessageSpy.firstCall.args[1].type, 'readMemory');

@@ -1,4 +1,4 @@
-import { makeDeferred } from "./helpers.js";
+import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
 
 // This script will be run within the webview itself
 // It cannot access the main VS Code APIs directly.
@@ -30,15 +30,21 @@ import { makeDeferred } from "./helpers.js";
     const screenCanvasContainer = document.querySelector(".inspector-screen-container");
     const screenCanvas = document.querySelector(".inspector-screen-canvas");
     const screenAddressInput = document.querySelector(".inspector-screen-address-input");
-    const symbolDatalist = document.getElementById("symbolList");
+    const symbolListContainer = document.querySelector(".symbol-list");
     const formatSelect = document.querySelector(".inspector-format-select");
     const bytesPerLineInput = document.querySelector(".inspector-bytes-per-line-input");
     const heightInput = document.querySelector(".inspector-height-input");
+    const paletteAddressInput = document.querySelector(".inspector-palette-address-input");
+
+    let symbolNames = [];
+
+    // Use shared symbol suggester
+    const symbolSuggester = attachSymbolSuggester([screenAddressInput, paletteAddressInput], () => symbols);
+
 
     const paletteToolbar = document.querySelector(".inspector-palette-toolbar");
     const paletteCanvas = document.querySelector(".inspector-palette-canvas");
     const paletteCanvasContainer = document.querySelector(".inspector-palette-container");
-    const paletteAddressInput = document.querySelector(".inspector-palette-address-input");
 
     // Create tooltip element
     const tooltip = document.createElement("div");
@@ -289,17 +295,15 @@ import { makeDeferred } from "./helpers.js";
     function loadSymbolsIntoDatalist(symbolsList) {
         if (symbolsList && !symbols) {
             symbols = symbolsList;
-            symbolDatalist.innerHTML = "";
-            for (const [name, address] of Object.entries(symbols)) {
-                const option = document.createElement("option");
-                option.value = name;
-                symbolDatalist.appendChild(option);
-            }
+            symbolNames = Object.keys(symbols).sort();
+            // suggestions are shown dynamically when user types
         }
     }
     function clearSymbolsIntoDatalist() {
         symbols = null;
-        symbolDatalist.innerHTML = "";
+        symbolNames = [];
+        symbolListContainer.innerHTML = "";
+        symbolListContainer.style.display = "none";
     }
     
     function requestStartInfo() {

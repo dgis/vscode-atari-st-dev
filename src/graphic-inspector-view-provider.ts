@@ -143,8 +143,8 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 			</head>
 			<body>
 				<fieldset class="inspector-screen-toolbar">
-					<input class="inspector-screen-address-input" placeholder="Screen address or symbol (0xf8000)" title="Screen address or symbol (0xf8000)" type="text" list="symbolList">
-					<datalist id="symbolList"></datalist>
+				<input class="inspector-screen-address-input" placeholder="Screen address or symbol (0xf8000)" title="Screen address or symbol (0xf8000)" type="text" autocomplete="off">
+				<div class="symbol-list" aria-hidden="true"></div> 
 					<select class="inspector-format-select" title="Depth (4 low, 2 medium, 1 monochrome)">
 						<option value="1">1</option>
 						<option value="2">2</option>
@@ -157,7 +157,7 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 					<canvas class="inspector-screen-canvas" width="320" height="200"></canvas>
 				</div>
 				<fieldset class="inspector-palette-toolbar">
-					<input class="inspector-palette-address-input" placeholder="Palette address or symbol (0xffff8240)" title="Palette address or symbol (0xffff8240)" type="text" list="symbolList">
+					<input class="inspector-palette-address-input" placeholder="Palette address or symbol (0xffff8240)" title="Palette address or symbol (0xffff8240)" type="text" autocomplete="off">
 				</fieldset>
 				<div class="inspector-palette-container">
 					<canvas class="inspector-palette-canvas" width="128" height="8"></canvas>
