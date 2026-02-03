@@ -92,9 +92,7 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 
 
 # TODO
-* Improve README.md
-* Improve samples.
-* Improve address suggestion list with symbols (vscode bug https://github.com/microsoft/vscode/issues/129999).
+* Improve address suggestion list with math operator with Math.js.
 * Replace string buffer with ArrayBuffer (when vscode supports Uint8Array.fromBase64() with Chromium version 140).
 * Add profiling
 

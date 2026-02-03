@@ -124,7 +124,8 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 					<div class="cpureg-active" style="display: none;">
 						<div class="cpu" data-vscode-context='{"webviewSection": "cpu"}'>
 							PC: <span class="pc highlight-on-hover" data-vscode-context='{"webviewSection": "to-memory-view"}'></span>&nbsp;
-							SR: <span class="sr"></span> (<span class="srT"></span><span class="srS">S</span><span class="srM">M</span>|<span class="srX">X</span><span class="srN">N</span><span class="srZ">Z</span><span class="srV">V</span><span class="srC">C</span>&nbsp;<span class="srSTP">STP</span>&nbsp;IM: <span class="srIM"></span>)<br>
+							SR: <span class="sr"></span><br>
+							(<span class="srT"></span><span class="srS">S</span><span class="srM">M</span>|<span class="srX">X</span><span class="srN">N</span><span class="srZ">Z</span><span class="srV">V</span><span class="srC">C</span>&nbsp;<span class="srSTP">STP</span>&nbsp;IM: <span class="srIM"></span>)<br>
 							<br>
 							&gt;&gt;&nbsp;<span class="nextInstruction"></span>
 						</div>

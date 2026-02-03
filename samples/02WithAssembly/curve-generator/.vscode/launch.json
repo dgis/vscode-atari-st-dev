@@ -1,0 +1,42 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug in Hatari",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.prg",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "localhost:2345",
+            "serverStarted": "You have entered debug mode.",
+            "filterStderr": true,
+            "serverLaunchTimeout": 30000,
+            "windows": {
+                "miDebuggerPath": "${config:atariSTDev.path}\\opt\\cross-mint\\bin\\m68k-atari-mintelf-gdb.exe",
+                "debugServerPath": "${config:atariSTDev.path}\\hatari\\hatari.exe",
+                "debugServerArgs": "--tos ${config:atariSTDev.path}\\hatari\\etos512us.img --confirm-quit no --sound off --fast-forward yes --parse ${config:atariSTDev.path}\\hatari\\db.ini ${workspaceFolder}\\main.prg",
+            },
+            "osx": {
+                "miDebuggerPath": "${config:atariSTDev.path}/opt/cross-mint/bin/m68k-atari-mintelf-gdb",
+                "debugServerPath": "${config:atariSTDev.path}/hatari/Hatari.app/Contents/MacOS/Hatari",
+                "debugServerArgs": "--tos ${config:atariSTDev.path}/hatari/etos512us.img --confirm-quit no --sound off --fast-forward yes --parse ${config:atariSTDev.path}/hatari/db.ini ${workspaceFolder}/main.prg",
+            },
+            "linux": {
+                "miDebuggerPath": "${config:atariSTDev.path}/opt/cross-mint/bin/m68k-atari-mintelf-gdb",
+                "debugServerPath": "${config:atariSTDev.path}/hatari/hatari",
+                "debugServerArgs": "--tos ${config:atariSTDev.path}/hatari/etos512us.img --confirm-quit no --sound off --fast-forward yes --parse ${config:atariSTDev.path}/hatari/db.ini ${workspaceFolder}/main.prg",
+            },
+            "preLaunchTask": "Atari ST: make",
+            // "logging": {
+            //     "engineLogging": true
+            // }
+        }
+    ]
+}
