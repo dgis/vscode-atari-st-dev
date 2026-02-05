@@ -35,16 +35,13 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
     const bytesPerLineInput = document.querySelector(".inspector-bytes-per-line-input");
     const heightInput = document.querySelector(".inspector-height-input");
     const paletteAddressInput = document.querySelector(".inspector-palette-address-input");
-
-    let symbolNames = [];
-
-    // Use shared symbol suggester
-    const symbolSuggester = attachSymbolSuggester([screenAddressInput, paletteAddressInput], () => symbols);
-
-
     const paletteToolbar = document.querySelector(".inspector-palette-toolbar");
     const paletteCanvas = document.querySelector(".inspector-palette-canvas");
     const paletteCanvasContainer = document.querySelector(".inspector-palette-container");
+
+    // Use shared symbol suggester
+    let symbolNames = [];
+    const symbolSuggester = attachSymbolSuggester([screenAddressInput, paletteAddressInput], () => symbols);
 
     // Create tooltip element
     const tooltip = document.createElement("div");
@@ -139,32 +136,58 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
 
         const buffer = currentState.screenData;
         const byteOffset = pixelY * currentState.bytesPerLine;
-        const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
+        const pixelChunk = 16;
         const pixelIndex = Math.floor(pixelX / pixelChunk);
         const byteIndex = byteOffset + pixelIndex * 8;
         const bitPosition = pixelX % 16;
         const byte0 = buffer.charCodeAt(byteIndex);
         const byte1 = buffer.charCodeAt(byteIndex + 1);
-        const byte2 = buffer.charCodeAt(byteIndex + 2);
-        const byte3 = buffer.charCodeAt(byteIndex + 3);
-        const byte4 = buffer.charCodeAt(byteIndex + 4);
-        const byte5 = buffer.charCodeAt(byteIndex + 5);
-        const byte6 = buffer.charCodeAt(byteIndex + 6);
-        const byte7 = buffer.charCodeAt(byteIndex + 7);
+        let colorIndex = 0;
+        if (currentState.format === "1") {
+             // 1 bits per pixel -> 16 pixels -> 2 bytes
+            if (bitPosition < 8) {
+                const bit = 7 - bitPosition;
+                colorIndex = ((byte0 >> bit) & 0x01);
+            } else {
+                const bit = 15 - bitPosition;
+                colorIndex = ((byte1 >> bit) & 0x01);
+            }
+        } else if (currentState.format === "2") {
+            // 2 bits per pixel -> 16 pixels -> 4 bytes
+            const byte2 = buffer.charCodeAt(byteIndex + 2);
+            const byte3 = buffer.charCodeAt(byteIndex + 3);
 
-        let colorIndex;
-        if (bitPosition < 8) {
-            const bit = 7 - bitPosition;
-            colorIndex = ((byte0 >> bit) & 0x01) << 0
-                       | ((byte2 >> bit) & 0x01) << 1
-                       | ((byte4 >> bit) & 0x01) << 2
-                       | ((byte6 >> bit) & 0x01) << 3;
-        } else {
-            const bit = 15 - bitPosition;
-            colorIndex = ((byte1 >> bit) & 0x01) << 0
-                       | ((byte3 >> bit) & 0x01) << 1
-                       | ((byte5 >> bit) & 0x01) << 2
-                       | ((byte7 >> bit) & 0x01) << 3;
+            if (bitPosition < 8) {
+                const bit = 7 - bitPosition;
+                colorIndex = ((byte0 >> bit) & 0x01) << 0
+                        | ((byte2 >> bit) & 0x01) << 1;
+            } else {
+                const bit = 15 - bitPosition;
+                colorIndex = ((byte1 >> bit) & 0x01) << 0
+                        | ((byte3 >> bit) & 0x01) << 1;
+            }
+        } else if (currentState.format === "4") {
+            // 4 bits per pixel -> 16 pixels -> 8 bytes
+            const byte2 = buffer.charCodeAt(byteIndex + 2);
+            const byte3 = buffer.charCodeAt(byteIndex + 3);
+            const byte4 = buffer.charCodeAt(byteIndex + 4);
+            const byte5 = buffer.charCodeAt(byteIndex + 5);
+            const byte6 = buffer.charCodeAt(byteIndex + 6);
+            const byte7 = buffer.charCodeAt(byteIndex + 7);
+
+            if (bitPosition < 8) {
+                const bit = 7 - bitPosition;
+                colorIndex = ((byte0 >> bit) & 0x01) << 0
+                        | ((byte2 >> bit) & 0x01) << 1
+                        | ((byte4 >> bit) & 0x01) << 2
+                        | ((byte6 >> bit) & 0x01) << 3;
+            } else {
+                const bit = 15 - bitPosition;
+                colorIndex = ((byte1 >> bit) & 0x01) << 0
+                        | ((byte3 >> bit) & 0x01) << 1
+                        | ((byte5 >> bit) & 0x01) << 2
+                        | ((byte7 >> bit) & 0x01) << 3;
+            }
         }
 
         return { colorIndex, color: cachedPalette[colorIndex], chunkAddress: currentState.screenAddress + byteIndex, chunkOffset: byteIndex, pixelPositionInChunk: bitPosition };
@@ -225,21 +248,6 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
     paletteCanvas.addEventListener("mouseleave", function() {
         tooltip.classList.remove("visible");
     });
-
-    // screenCanvas.addEventListener("mousemove", function(event) {
-    //     const rect = screenCanvas.getBoundingClientRect();
-        
-    //     // Get mouse position relative to the canvas element
-    //     const canvasX = event.clientX - rect.left;
-    //     const canvasY = event.clientY - rect.top;
-        
-    //     // Account for zoom level
-    //     const actualPixelX = Math.floor(canvasX / screenZoom);
-    //     const actualPixelY = Math.floor(canvasY / screenZoom);
-        
-    //     // Log or use the coordinates
-    //     debug && console.log(`Pixel: (${actualPixelX}, ${actualPixelY})`);
-    // });
 
     paletteCanvas.addEventListener("wheel", function (event) {
         if (!event.ctrlKey) return;
@@ -340,12 +348,6 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
         const screenAddressResponse = await requestReadMemoryAsync(screenAddress, currentState.screenBufferSize);
         const paletteAddressResponse = await requestReadMemoryAsync(paletteAddress, 2 * 16);
 
-        // previousState.screenAddress = currentState.screenAddress;
-        // previousState.screenData = currentState.screenData;
-        // previousState.screenBufferSize = currentState.screenBufferSize;
-        // previousState.paletteAddress = currentState.paletteAddress;
-        // previousState.paletteData = currentState.paletteData;
-
         currentState.screenAddress = screenAddressResponse.address;
         currentState.screenData = screenAddressResponse.data;
 
@@ -383,15 +385,8 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
                 currentState.width = currentState.bytesPerLine * 2;
                 break;
         }
-        //currentState.height = 200;
-        // const screenBufferSize = 4 * currentState.width * currentState.height / 8;
-        const screenBufferSize = currentState.bytesPerLine * currentState.height;
-        // let bufferSizeChanged = false;
-        // bufferSizeChanged = screenBufferSize !== currentState.screenBufferSize;
-        currentState.screenBufferSize = screenBufferSize;
-        // if (bufferSizeChanged)
+        currentState.screenBufferSize = currentState.bytesPerLine * currentState.height;
         vscode.setState(currentState);
-        // return bufferSizeChanged;
     }
 
     function refreshMemory() {
@@ -400,7 +395,13 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
         if (debuggingActivate) {
 
             const palette = [];
-            for (let i = 0; i < 16; i++) {
+            let paletteLength = 16;
+            if (currentState.format === "1") {
+                paletteLength = 2;
+            } if (currentState.format === "2") {
+                paletteLength = 4;
+            }
+            for (let i = 0; i < paletteLength; i++) {
                 const byte1 = currentState.paletteData.charCodeAt(2 * i);
                 const r = byte1 & 0x07;
                 const byte2 = currentState.paletteData.charCodeAt(2 * i + 1);
@@ -413,7 +414,7 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
             cachedPalette = palette;
             const paletteContex = paletteCanvas.getContext("2d", { alpha: false });
             paletteContex.clearRect(0, 0, paletteCanvas.width, paletteCanvas.height);
-            for (let i = 0; i < 16; i++) {
+            for (let i = 0; i < palette.length; i++) {
                 paletteContex.fillStyle = palette[i];
                 paletteContex.fillRect(i * paletteWidth, 0, paletteWidth, paletteWidth);
             }
@@ -427,32 +428,19 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
             const buffer = currentState.screenData;
             let currentRelativeOffset = 0;
             if (currentState.format === "1") {
-                const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
-                const octetChunk = 8; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                const pixelChunk = 16; // 1 bits per pixel -> 16 pixels -> 2 bytes
+                const octetChunk = 2;
                 for (let y = 0; y < currentState.height; y++) {
                     for (let x = 0; x < currentState.width; x += pixelChunk) {
                         const byte0 = buffer.charCodeAt(currentRelativeOffset);
                         const byte1 = buffer.charCodeAt(currentRelativeOffset + 1);
-                        const byte2 = buffer.charCodeAt(currentRelativeOffset + 2);
-                        const byte3 = buffer.charCodeAt(currentRelativeOffset + 3);
-                        const byte4 = buffer.charCodeAt(currentRelativeOffset + 4);
-                        const byte5 = buffer.charCodeAt(currentRelativeOffset + 5);
-                        const byte6 = buffer.charCodeAt(currentRelativeOffset + 6);
-                        const byte7 = buffer.charCodeAt(currentRelativeOffset + 7);
                         for (let bit = 0; bit < 8; bit++) {
-                            const colorIndex = ((byte0 >> (7 - bit)) & 0x01) << 0
-                                            | ((byte2 >> (7 - bit)) & 0x01) << 1
-                                            | ((byte4 >> (7 - bit)) & 0x01) << 2
-                                            | ((byte6 >> (7 - bit)) & 0x01) << 3;
-
+                            const colorIndex = ((byte0 >> (7 - bit)) & 0x01);
                             screenContex.fillStyle = palette[colorIndex];
                             screenContex.fillRect(x + bit, y, 1, 1);
                         }
                         for (let bit = 0; bit < 8; bit++) {
-                            const colorIndex = ((byte1 >> (7 - bit)) & 0x01) << 0
-                                            | ((byte3 >> (7 - bit)) & 0x01) << 1
-                                            | ((byte5 >> (7 - bit)) & 0x01) << 2
-                                            | ((byte7 >> (7 - bit)) & 0x01) << 3;
+                            const colorIndex = ((byte1 >> (7 - bit)) & 0x01);
                             screenContex.fillStyle = palette[colorIndex];
                             screenContex.fillRect(x + bit + 8, y, 1, 1);
                         }
@@ -461,32 +449,23 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
                     }
                 }
             } else if (currentState.format === "2") {
-                const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
-                const octetChunk = 8; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                const pixelChunk = 16; // 2 bits per pixel -> 16 pixels -> 4 bytes
+                const octetChunk = 4;
                 for (let y = 0; y < currentState.height; y++) {
                     for (let x = 0; x < currentState.width; x += pixelChunk) {
                         const byte0 = buffer.charCodeAt(currentRelativeOffset);
                         const byte1 = buffer.charCodeAt(currentRelativeOffset + 1);
                         const byte2 = buffer.charCodeAt(currentRelativeOffset + 2);
                         const byte3 = buffer.charCodeAt(currentRelativeOffset + 3);
-                        const byte4 = buffer.charCodeAt(currentRelativeOffset + 4);
-                        const byte5 = buffer.charCodeAt(currentRelativeOffset + 5);
-                        const byte6 = buffer.charCodeAt(currentRelativeOffset + 6);
-                        const byte7 = buffer.charCodeAt(currentRelativeOffset + 7);
                         for (let bit = 0; bit < 8; bit++) {
                             const colorIndex = ((byte0 >> (7 - bit)) & 0x01) << 0
-                                            | ((byte2 >> (7 - bit)) & 0x01) << 1
-                                            | ((byte4 >> (7 - bit)) & 0x01) << 2
-                                            | ((byte6 >> (7 - bit)) & 0x01) << 3;
-
+                                            | ((byte2 >> (7 - bit)) & 0x01) << 1;
                             screenContex.fillStyle = palette[colorIndex];
                             screenContex.fillRect(x + bit, y, 1, 1);
                         }
                         for (let bit = 0; bit < 8; bit++) {
                             const colorIndex = ((byte1 >> (7 - bit)) & 0x01) << 0
-                                            | ((byte3 >> (7 - bit)) & 0x01) << 1
-                                            | ((byte5 >> (7 - bit)) & 0x01) << 2
-                                            | ((byte7 >> (7 - bit)) & 0x01) << 3;
+                                            | ((byte3 >> (7 - bit)) & 0x01) << 1;
                             screenContex.fillStyle = palette[colorIndex];
                             screenContex.fillRect(x + bit + 8, y, 1, 1);
                         }
@@ -496,7 +475,7 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
                 }
             } else if (currentState.format === "4") {
                 const pixelChunk = 16; // 4 bits per pixel -> 16 pixels -> 8 bytes
-                const octetChunk = 8; // 4 bits per pixel -> 16 pixels -> 8 bytes
+                const octetChunk = 8;
                 for (let y = 0; y < currentState.height; y++) {
                     for (let x = 0; x < currentState.width; x += pixelChunk) {
                         const byte0 = buffer.charCodeAt(currentRelativeOffset);
@@ -512,7 +491,6 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
                                             | ((byte2 >> (7 - bit)) & 0x01) << 1
                                             | ((byte4 >> (7 - bit)) & 0x01) << 2
                                             | ((byte6 >> (7 - bit)) & 0x01) << 3;
-
                             screenContex.fillStyle = palette[colorIndex];
                             screenContex.fillRect(x + bit, y, 1, 1);
                         }

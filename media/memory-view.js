@@ -180,7 +180,7 @@ import { attachSymbolSuggester } from './helpers.js';
                 clearSymbolsIntoDatalist();
                 break;
             case "memoryRead":
-                updateMemory(message.address, message.data, message.unreadableBytes);
+                updateMemory(message.address, message.data);
                 break;
             case "memoryWritten":
                 requestReadMemory();
@@ -270,8 +270,8 @@ import { attachSymbolSuggester } from './helpers.js';
         });
     }
 
-    function updateMemory(address, data, unreadableBytes) {
-        debug && console.log(`updateMemory(address: ${address.toString(16)}, data(.length): ${data.length} bytes, unreadableBytes: ${unreadableBytes})`);
+    function updateMemory(address, data) {
+        debug && console.log(`updateMemory(address: ${address.toString(16)}, data(.length): ${data.length} bytes)`);
 
         previousState.address = currentState.address;
         previousState.data = currentState.data;
