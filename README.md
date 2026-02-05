@@ -79,10 +79,13 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 - **`atariSTDev.getSamples`**: Copy sample projects into the active workspace and (if present) open the provided workspace file.
 - **`atariSTDev.showInMemory1..4`**: Open the corresponding memory view at a provided address.
 - **`atariSTDev.refreshMemory1..4`**: Refresh the contents of a memory view (exposed in the view title menu). This can be useful when modifying memory in another way, for example with the GDB or Hatari debugger.
+- **`atariSTDev.showInGraphicInspector1..4`**: Open the corresponding graphic inspector view at a provided address.
+- **`atariSTDev.refreshGraphicInspector1..4`**: Refresh the contents of a graphic inspector view (exposed in the view title menu). This can be useful when modifying memory in another way, for example with the GDB or Hatari debugger.
 
 **Views & UI Elements**
 - **`Atari ST: CPU`**: Webview showing CPU registers and a small hatari/hardware summary. Visible in the Debug view when `atariSTDev.showDebugViews` context is true and `cppdbg` is used.
 - **`Memory1`..`Memory4`**: Webviews for hex/ASCII memory dump exploration. Memory panes can be focused via commands and show content using debug adapter custom requests.
+- **`Graphic Inspector1`..`Graphic Inspector4`**: Webviews for graphic memory dump exploration. Graphic Inspector panes can be focused via commands and show content using debug adapter custom requests.
 - **`Atari ST: Hardware`**: Tree view listing vectors and hardware addresses with live values while debugging.
 - **Walkthrough**: `atariSTDev.gettingStarted` walkthrough to guide copying samples and opening views.
 
@@ -92,7 +95,8 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 
 
 # TODO
-* Improve address suggestion list with math operator with Math.js.
+* Stop debugging after a crash.
+* Improve address suggestion list with math operators from Math.js.
 * Replace string buffer with ArrayBuffer (when vscode supports Uint8Array.fromBase64() with Chromium version 140).
 * Add profiling
 
@@ -108,16 +112,72 @@ This Visual Code extension is a puzzle whose pieces mostly come from:
 * Vasm (http://sun.hasenbraten.de/vasm/),
 * and others...
 
+# Build and contribute to this extension
+
+## Build this extension
+
+Follow these steps to build, debug and package the extension locally.
+
+### Prerequisites
+- Node.js and npm (LTS recommended)
+- Visual Studio Code (for debugging the extension)
+- Optional: `@vscode/vsce` (for creating a .vsix package) — you can use `npx` so no global install is required
+
+### 1) Install dependencies
+```bash
+npm install
+```
+
+### 2) Compile the extension
+```bash
+npm run compile        # compile TypeScript once
+npm run watch          # continuously compile on changes during development
+```
+You can also run the VS Code task `npm: compile` (configured in this workspace).
+
+### 3) Run & Debug the extension
+1. Open the extension folder in VS Code.
+2. Press `F5` (Launch Extension) to start a new Extension Development Host window.
+3. In the Extension Development Host you can:
+   - Run the command `atariSTDev.getSamples` (Command Palette) to copy sample projects into a workspace and test runtime/debug features.
+   - Open the Run & Debug view (Ctrl+Shift+D) and start one of the sample `cppdbg` configurations to test the debugger integration.
+
+> Note: To enable the extension features in a workspace, add the setting in `.vscode/settings.json`:
+> ```json
+> {
+>   "atariSTDev.activate": true
+> }
+> ```
+
+### 4) Run tests
+```bash
+npm test
+```
+This runs `npm run compile` and executes the extension tests using the VS Code test runner.
+
+### 5) Create a VSIX package
+Option A — using npx (no global install required):
+```bash
+npx -y @vscode/vsce package
+```
+Option B — install `vsce` globally:
+```bash
+npm install -g @vscode/vsce
+vsce package
+```
+Either command produces a `*.vsix` file (for example `atari-st-dev-0.5.0.vsix`) which you can install in VS Code (`Extensions: Install from VSIX...`) or publish.
+
+To publish to the Visual Studio Marketplace, follow `vsce` documentation — publishing requires configuring a publisher and authentication token.
 
 
-# SDK
+## SDK
 
 This extension comes with a "/sdk" folder that contains what I named an Atari ST SDK.
 
 This SDK allows to build and debug an Atari ST program with Visual Studio Code and a modified Hatari emulator.
 It uses only the Mint ELF version because the debug info contains in an ELF binary is well supported by GDB.
 
-## The propose directory tree
+### The propose directory tree
 ```
 ├── darwin
 │   ├── bin
@@ -177,11 +237,11 @@ It uses only the Mint ELF version because the debug info contains in an ELF bina
 "m68k-atari-mintelf/sys-root/usr/*" contains folders "include/" and "lib/" for MiNTLib (libc), fdlibm (libm) and GEMlib (libgem) coming from https://tho-otto.de/crossmint.php .
 
 
-## Build this SDK
+### Build this SDK
 
 To build this SDK, we need binutils, GCC, GDB and a special Hatari emulator version which accepts to be debugged from GDB.
 
-### To obtain binutils, GCC and GDB
+#### To obtain binutils, GCC and GDB
 
 From https://tho-otto.de/crossmint.php :
 ```
@@ -214,10 +274,10 @@ Need to build GDB for macOS.
 
 For Windows, we also need to copy the Cygwin DLLs that the processes require.
 
-### To build HATARI
+#### To build HATARI
 To build Hatari with HRDB and GDB (Server) support.
 
-#### on Linux and Windows with Mingw64
+##### on Linux and Windows with Mingw64
 ```
 git clone https://github.com/dgis/hatari.git
 cd hatari
@@ -244,7 +304,7 @@ cmake --build . -j$(getconf _NPROCESSORS_ONLN)
 ```
 )
 
-#### on macOS
+##### on macOS
 
 Install homebrew, and clone the source code:
 ```
@@ -343,10 +403,10 @@ zip -r hatari-snapshot.zip hatari-snapshot
 ```
 
 
-### To build GDB:
+#### To build GDB:
 To build GDB with m68k-atari-mintelf support
 
-#### On Linux
+##### On Linux
 
 ```
 sudo apt install wget git gcc libgmp-dev libmpfr-dev texinfo
@@ -404,7 +464,7 @@ cp gdb/gdb $ATARIST_SDK/tools/linux/opt/cross-mint/bin/m68k-atari-mintelf-gdb
 cp gdb/gdb-add-index $ATARIST_SDK/tools/linux/opt/cross-mint/bin/m68k-atari-mintelf-gdb-add-index
 ```
 
-#### On MacOS:
+##### On MacOS:
 
 To build an universal fat binary, we need to build gdb for arm64 and for x86_64,
 and then merge both as a single binary.

@@ -90,7 +90,7 @@ GET_SPRITE_OFFSET macro	; (\1 -> sprite index 0..SPRITE_NUMBER-1)
 	endm
 
 main_loop:
-	; do twice for double buffering (old sprites positions are different from one screen to another)
+	; do twice for double buffering (old sprites positions are differents from one screen to another)
 	rept 2
 SCREEN_NUMBER set REPTN
 
@@ -139,6 +139,13 @@ SCREEN_NUMBER set REPTN
 
 	endr
 
+	; animate the palette by rotating the palette colors every 2 frames
+	move.w	$ffff8240+2,d0
+	movem.l	$ffff8240+4,d1-d6
+	movem.l	d1-d6,$ffff8240+2
+	move.w	d0,$ffff8240+24
+
+
 	cmp.b	#$39,$fffc02			; space pressed?
 	bne	main_loop			; if not, repeat main loop
 
@@ -172,7 +179,7 @@ hide_sprite:
 	move.l	#32-1,d7			; sprite is 32 scan lines
 	.background_loop:
 		rept	6			; sprite is 6*4 bytes width
-		move.l	(a4)+,(a5)+		; copy background to screen memory
+			move.l	(a4)+,(a5)+	; copy background to screen memory
 		endr
 		add.l	#136,a4		; next scan line
 		add.l	#136,a5		; next scan line
@@ -197,15 +204,15 @@ display_sprite:
 	move.l	#32-1,d7			; sprite is 32 scan lines
 	.sprite_loop:
 		rept	6			; sprite is 6*4 bytes width
-		; applies the mask to the background
-		move.l	(a2)+,d0		; mask data in d0
-		move.l	(a1),d1			; background data in d1
-		and.l	d0,d1			; and mask and picture data
+			; applies the mask to the background
+			move.l	(a2)+,d0	; mask data in d0
+			move.l	(a1),d1		; background data in d1
+			and.l	d0,d1		; and mask and picture data
 
-		; paints the sprite to the screen
-		move.l	(a3)+,d0		; sprite data in d0
-		or.l	d0,d1			; or sprite and background data
-		move.l	d1,(a1)+		; move sprite data to background
+			; paints the sprite to the screen
+			move.l	(a3)+,d0	; sprite data in d0
+			or.l	d0,d1		; or sprite and background data
+			move.l	d1,(a1)+	; move sprite data to background
 
 		endr
 		add.l	#136,a1		; next scan line (160-24=136)
@@ -331,9 +338,10 @@ init_sprite_data:
 	; pre-shift of mask done, all 16 sprite positions saved in mask
 	rts
 
-		section data
 
-		even
+	section data
+	even
+
 ; last sprite offsets for each sprite and each screen
 last_sprite_offset	dcb.l	2*SPRITE_NUMBER,0
 
@@ -341,8 +349,9 @@ sprite_file	incbin	sprite.pi1
 background_file	incbin	backgrnd.pi1
 curve_file	incbin	curve.bin
 
-		section bss
-		even
+	section bss
+	even
+
 screen_backup	ds.l    1
 palette_backup	ds.l	8
 stack_backup	ds.l	1
@@ -357,4 +366,4 @@ screen2		ds.l    1
 
 curve_pos	ds.l	SPRITE_NUMBER
 
-		end
+	end
