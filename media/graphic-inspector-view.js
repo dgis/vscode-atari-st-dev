@@ -338,6 +338,20 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
         return request.deferred.promise;
     }
 
+    function memoryRead(message) {
+        debug && console.log(`memoryRead(address: ${message.address.toString(16)}, data(.length): ${message.data.length} bytes, requestId: ${message.requestId})`);
+        const request = requestList[message.requestId];
+        if (request) {
+            if (request.message.count !== message.data.length) {
+                debug && console.warn(`memoryRead(address: ${message.address.toString(16)}, data(.length): ${message.data.length} bytes, requestId: ${message.requestId}) -> Expected ${request.message.count} bytes but got ${message.data.length} bytes for address 0x${message.address.toString(16)}`);
+                request.deferred.reject(message);
+            } else
+                request.deferred.resolve(message);
+            delete requestList[message.requestId];
+            return;
+        }
+    }
+
     async function requestReadMemory(screenAddress, paletteAddress) {
         debug && console.log(`requestReadMemory(screenAddress: ${screenAddress?.toString(16)}, paletteAddress: ${paletteAddress?.toString(16)})`);
         if (screenAddress === undefined)
@@ -345,29 +359,23 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
         if (paletteAddress === undefined)
             paletteAddress = currentState.paletteAddress;
 
-        const screenAddressResponse = await requestReadMemoryAsync(screenAddress, currentState.screenBufferSize);
-        const paletteAddressResponse = await requestReadMemoryAsync(paletteAddress, 2 * 16);
+        try {
+            const screenAddressResponse = await requestReadMemoryAsync(screenAddress, currentState.screenBufferSize);
+            const paletteAddressResponse = await requestReadMemoryAsync(paletteAddress, 2 * 16);
 
-        currentState.screenAddress = screenAddressResponse.address;
-        currentState.screenData = screenAddressResponse.data;
+            currentState.screenAddress = screenAddressResponse.address;
+            currentState.screenData = screenAddressResponse.data;
 
-        currentState.paletteAddress = paletteAddressResponse.address;
-        currentState.paletteData = paletteAddressResponse.data;
+            currentState.paletteAddress = paletteAddressResponse.address;
+            currentState.paletteData = paletteAddressResponse.data;
 
-        vscode.setState(currentState);
-        refreshMemory();
+            vscode.setState(currentState);
+            refreshMemory();
 
-        screenAddressInput.value = `0x${currentState.screenAddress.toString(16)}`;
-        paletteAddressInput.value = `0x${currentState.paletteAddress.toString(16)}`;
-    }
-
-    function memoryRead(message) {
-        debug && console.log(`memoryRead(address: ${message.address.toString(16)}, data(.length): ${message.data.length} bytes, requestId: ${message.requestId})`);
-        const request = requestList[message.requestId];
-        if (request) {
-            request.deferred.resolve(message);
-            delete requestList[message.requestId];
-            return;
+            screenAddressInput.value = `0x${currentState.screenAddress.toString(16)}`;
+            paletteAddressInput.value = `0x${currentState.paletteAddress.toString(16)}`;
+        } catch (error) {
+            debug && console.error(`requestReadMemory(screenAddress: ${screenAddress?.toString(16)}, ...) -> Failed to read memory: ${error}`);
         }
     }
 

@@ -273,17 +273,19 @@ import { attachSymbolSuggester } from './helpers.js';
     function updateMemory(address, data) {
         debug && console.log(`updateMemory(address: ${address.toString(16)}, data(.length): ${data.length} bytes)`);
 
-        previousState.address = currentState.address;
-        previousState.data = currentState.data;
-        previousState.bufferSize = currentState.bufferSize;
+        if (data?.length > 0) {
+            previousState.address = currentState.address;
+            previousState.data = currentState.data;
+            previousState.bufferSize = currentState.bufferSize;
 
-        currentState.address = address;
-        currentState.data = data;
+            currentState.address = address;
+            currentState.data = data;
 
-        vscode.setState(currentState);
-        refreshMemory();
+            vscode.setState(currentState);
+            refreshMemory();
 
-        memoryAddressInput.value = `0x${currentState.address.toString(16)}`;
+            memoryAddressInput.value = `0x${currentState.address.toString(16)}`;
+        }
     }
 
     function refreshShape() {
