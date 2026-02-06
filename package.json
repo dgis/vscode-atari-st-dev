@@ -380,7 +380,25 @@
           "description": "Atari ST tools location."
         }
       }
-    }
+    },
+    "configurationDefaults": {
+      "[m68k]": {
+        "files.encoding": "cp437",
+        "editor.tabSize": 8
+      }
+    },
+    "languages": [
+      {
+        "id": "m68k",
+        "aliases": ["68k Assembly"],
+        "extensions": [".s", ".S", ".asm", ".ASM"]
+      }
+    ],
+    "breakpoints": [
+      {
+        "language": "m68k"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
