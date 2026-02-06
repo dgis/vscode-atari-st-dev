@@ -16,5 +16,11 @@
 			"path": "05GEM"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"debug.allowBreakpointsEverywhere": true,
+		"files.associations": {
+			"*.S": "m68k"
+		},
+		"atariSTDev.activate": true
+	}
 }
