@@ -25,9 +25,11 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 
 5. **Show in memory:** While debugging, right click on a variable or a register address and select 'Show in Memory' to open the Memory View at that address. In one of the memory view, you can select until 4 bytes in the hexa dump and right click and select 'Show in Memory' contextual menu too.
 
-6. **Open Disassembly view:** Open the Disassembly View to see the current disassembly (in GDB format) while debugging. You can right click on the Call Stack view and select 'Open Disassembly View' to open the Disassembly View at that function (This view is a built-in VS Code debug feature).
+6. **Show in Graphic Inspector:** While debugging, right click on a variable or a register address and select 'Show in Graphic Inspector' to open the Graphic Inspector at that address.
 
-7. **Open Debug Console:** Open the Debug Console to access the console. While debugging, in the vscode "Debug console", you can run the following commands:
+7. **Open Disassembly view:** Open the Disassembly View to see the current disassembly (in GDB format) while debugging. You can right click on the Call Stack view and select 'Open Disassembly View' to open the Disassembly View at that function (This view is a built-in VS Code debug feature).
+
+8. **Open Debug Console:** Open the Debug Console to access the console. While debugging, in the vscode "Debug console", you can run the following commands:
     * for gdb: `> -exec info registers`
     * for hatari debugger: `> -exec monitor disasm`
 
@@ -35,7 +37,7 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 **Notes**
 - **C/C++ extension:** The extension depends on `ms-vscode.cpptools` for the `cppdbg` debug adapter features. It must be install if VS Code ask for it.
 - **Included SDK:** A packaged SDK with Hatari and cross-compilers is included in the extension for the platform Linux, Windows and MacOS.
-- **Command make on Linux and MacOS:** If the command make does not exist on Linux or MacOS, please install it.
+- **Command "make" on Linux and MacOS:** If the command make does not exist on your Linux (sudo apt install make, ...) or MacOS (xcode or brew install make), please install it. Else projects will not build.
 - **Activate the extension:** Like you can see in the samples, this extension is activated when you add the following setting in the current project. In `.vscode/settings.json` set:
     `{
         "atariSTDev.activate": true

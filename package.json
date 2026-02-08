@@ -93,6 +93,19 @@
             ]
           },
           {
+            "id": "showAddressInGraphicInspector",
+            "title": "Show Address in Graphic Inspector View",
+            "description": "While debugging, right click on a variable or a register address and select 'Show in Graphic Inspector' to open the Graphic Inspector View at that address.",
+            "media": {
+              "image": "media/atari-color.png",
+              "altText": "Empty image"
+            },
+            "completionEvents": [
+              "onCommand:atariSTDev.showInGraphicInspector1",
+              "onCommand:atariSTDev.showInGraphicInspector2"
+            ]
+          },
+          {
             "id": "openHardwareView",
             "title": "Open Hardware view",
             "description": "[Open the Atari ST Hardware](command:atariSTDev.hardwareView.focus) view to see some hardware variables. It is also possible to right click on hardware items and 'Show in Memory' to open the Memory View at that address.",

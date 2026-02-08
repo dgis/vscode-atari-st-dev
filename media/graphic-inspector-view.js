@@ -201,18 +201,18 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
         const pixelInfo = getPixelColor(pixelX, pixelY);
         if (pixelInfo) {
             tooltip.innerHTML = `(${pixelX}, ${pixelY}) [${pixelInfo.colorIndex}]=0x${cachedTruePalette[pixelInfo.colorIndex]} <div class="pixel-tooltip-color"></div><br>
-                Chunk addr: 0x${(pixelInfo.chunkAddress).toString(16)} (Offset: ${pixelInfo.chunkOffset}, Pixel pos in chunk: ${pixelInfo.pixelPositionInChunk})`;
+                Chunk addr: 0x${(pixelInfo.chunkAddress).toString(16)}<br>&nbsp;Offset: ${pixelInfo.chunkOffset}<br>&nbsp;Pixel pos in chunk: ${pixelInfo.pixelPositionInChunk}`;
             tooltip.style.setProperty('--tooltip-color', pixelInfo.color);
             tooltip.classList.add("visible");
             const containerRect = screenCanvasContainer.getBoundingClientRect();
             const mouseXInCanvasContainer = event.clientX - containerRect.left;
             const mouseYInCanvasContainer = event.clientY - containerRect.top;
             if (mouseXInCanvasContainer > containerRect.width / 2)
-                tooltip.style.left = (event.clientX - 150) + "px";
+                tooltip.style.left = (event.clientX - 170) + "px";
             else
                 tooltip.style.left = (event.clientX + 10) + "px";
             if (mouseYInCanvasContainer > containerRect.height / 2)
-                tooltip.style.top = (event.clientY - 50) + "px";
+                tooltip.style.top = (event.clientY - 90) + "px";
             else
                 tooltip.style.top = (event.clientY + 10) + "px";
         } else
@@ -524,11 +524,8 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
 
     screenAddressInput.value = `0x${currentState.screenAddress.toString(16)}`;
     paletteAddressInput.value = `0x${currentState.paletteAddress.toString(16)}`;
-    // memoryColumnSelect.value = currentState.columnMode ?? "auto";
     bytesPerLineInput.value = currentState.bytesPerLine;
     heightInput.value = currentState.height;
-
-    // screenToolbar.disabled = paletteToolbar.disabled = !debuggingActivate;
     
     refreshShape();
     refreshMemory();
