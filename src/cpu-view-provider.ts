@@ -22,7 +22,25 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 	constructor(
 		private readonly _extensionUri: vscode.Uri
 	) {
-
+		vscode.debug.onDidStartDebugSession((session: vscode.DebugSession) => {
+			if (session.type === "cppdbg") {
+				this.view?.webview.postMessage({ type: "debugSessionStarted" });
+			}
+		});
+		vscode.debug.onDidReceiveDebugSessionCustomEvent((event: vscode.DebugSessionCustomEvent) => {
+			this.debug && console.log(`CPUViewProvider::onDidReceiveDebugSessionCustomEvent(${JSON.stringify(event, null, '\t')})`);
+		});
+		vscode.debug.onDidTerminateDebugSession((session: vscode.DebugSession) => {
+			if (session.type === "cppdbg") {
+				this.view?.webview.postMessage({ type: "debugSessionEnded" });
+			}
+		});
+		vscode.debug.onDidChangeActiveStackItem((event: any) => {
+			this.debug && console.log(`CPUViewProvider::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
+			if (event?.session && event.session.type === "cppdbg") {
+				this.view?.webview.postMessage({ type: "debugSessionUpdated" });
+			}
+		});
 	}
 
 	public resolveWebviewView(
@@ -55,26 +73,6 @@ export class CPUViewProvider implements vscode.WebviewViewProvider {
 				this.lastContextSelection = data.selection;
 			} else
 				debuggerService.onDidReceiveMessage(this.debuggerContext, data);
-		});
-
-		vscode.debug.onDidStartDebugSession((session: vscode.DebugSession) => {
-			if (session.type === "cppdbg") {
-				this.view?.webview.postMessage({ type: "debugSessionStarted" });
-			}
-		});
-		vscode.debug.onDidReceiveDebugSessionCustomEvent((event: vscode.DebugSessionCustomEvent) => {
-			this.debug && console.log(`CPUViewProvider::onDidReceiveDebugSessionCustomEvent(${JSON.stringify(event, null, '\t')})`);
-		});
-		vscode.debug.onDidTerminateDebugSession((session: vscode.DebugSession) => {
-			if (session.type === "cppdbg") {
-				this.view?.webview.postMessage({ type: "debugSessionEnded" });
-			}
-		});
-		vscode.debug.onDidChangeActiveStackItem((event: any) => {
-			this.debug && console.log(`CPUViewProvider::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
-			if (event?.session && event.session.type === "cppdbg") {
-				this.view?.webview.postMessage({ type: "debugSessionUpdated" });
-			}
 		});
 	}
 

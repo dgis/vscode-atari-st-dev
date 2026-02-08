@@ -24,7 +24,26 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 		private readonly _extensionUri: vscode.Uri,
 		public readonly index: number		
 	) {
-
+		vscode.debug.onDidStartDebugSession((session: vscode.DebugSession) => {
+			if (session.type === "cppdbg") {
+				this.view?.webview.postMessage({ type: "debugSessionStarted" });
+			}
+		});
+		vscode.debug.onDidReceiveDebugSessionCustomEvent((event: vscode.DebugSessionCustomEvent) => {
+			this.debug && console.log(`GraphicInspectorViewProvider::onDidReceiveDebugSessionCustomEvent(${JSON.stringify(event, null, '\t')})`);
+		});
+		vscode.debug.onDidTerminateDebugSession((session: vscode.DebugSession) => {
+			if (session.type === "cppdbg") {
+				this.view?.webview.postMessage({ type: "debugSessionEnded" });
+			}
+		});
+		vscode.debug.onDidChangeActiveStackItem(async (event: any) => {
+			this.debug && console.log(`GraphicInspectorViewProvider::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
+			if (event?.session && event.session.type === "cppdbg") {
+				const symbols = await debuggerService.getSymbols();
+				this.view?.webview.postMessage({ type: "debugSessionUpdated", symbols });
+			}
+		});
 	}
 
 	public resolveWebviewView(
@@ -62,27 +81,6 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 				this.lastContextSelection = data.selection;
 			} else
 				debuggerService.onDidReceiveMessage(this.debuggerContext, data);
-		});
-
-		vscode.debug.onDidStartDebugSession((session: vscode.DebugSession) => {
-			if (session.type === "cppdbg") {
-				this.view?.webview.postMessage({ type: "debugSessionStarted" });
-			}
-		});
-		vscode.debug.onDidReceiveDebugSessionCustomEvent((event: vscode.DebugSessionCustomEvent) => {
-			this.debug && console.log(`GraphicInspectorViewProvider::onDidReceiveDebugSessionCustomEvent(${JSON.stringify(event, null, '\t')})`);
-		});
-		vscode.debug.onDidTerminateDebugSession((session: vscode.DebugSession) => {
-			if (session.type === "cppdbg") {
-				this.view?.webview.postMessage({ type: "debugSessionEnded" });
-			}
-		});
-		vscode.debug.onDidChangeActiveStackItem(async (event: any) => {
-			this.debug && console.log(`GraphicInspectorViewProvider::onDidChangeActiveStackItem(${JSON.stringify(event, null, '\t')})`);
-			if (event?.session && event.session.type === "cppdbg") {
-				const symbols = await debuggerService.getSymbols();
-				this.view?.webview.postMessage({ type: "debugSessionUpdated", symbols });
-			}
 		});
 	}
 
