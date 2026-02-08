@@ -34,8 +34,8 @@
             "title": "Open Folder",
             "description": "[Open an empty folder](command:workbench.action.files.openFolder) to copy samples.",
             "media": {
-              "image": "media/atari-color.png",
-              "altText": "Empty image"
+              "svg": "media/atari.svg",
+              "altText": "Atari ST logo"
             },
             "completionEvents": [
               "onCommand:workbench.action.files.openFolder"
@@ -46,8 +46,8 @@
             "title": "Copy Sample Files",
             "description": "[copy the samples](command:atariSTDev.getSamples). A multi-projects workspace should load and this walkthrough should automatically appears to continue.",
             "media": {
-              "image": "media/atari-color.png",
-              "altText": "Empty image"
+              "svg": "media/atari.svg",
+              "altText": "Atari ST logo"
             },
             "completionEvents": [
               "onCommand:atariSTDev.getSamples"
@@ -58,8 +58,8 @@
             "title": "Debug one sample project",
             "description": "[Open the Run and Debug](command:workbench.view.debug) view (Ctrl+Shift+D) and select one of the sample configurations from the dropdown and start debugging (F5) or [Select and Start Debugging](command:workbench.action.debug.selectandstart).\nYou can debug a mix of C, C++ or 68k assembly files.",
             "media": {
-              "image": "media/atari-color.png",
-              "altText": "Empty image"
+              "image": "media/walkthroughs/30-debugOneSample.png",
+              "altText": "Debug one sample project"
             },
             "completionEvents": [
               "onCommand:workbench.view.debug"
@@ -70,8 +70,8 @@
             "title": "Open CPU view",
             "description": "[Open the Atari ST CPU](command:atariSTDev.CPUView.focus) view to see the CPU registers and flags.",
             "media": {
-              "image": "media/atari-color.png",
-              "altText": "Empty image"
+              "image": "media/walkthroughs/40-openCPUView.png",
+              "altText": "Open CPU view"
             },
             "completionEvents": [
               "onCommand:atariSTDev.CPUView.focus"
@@ -82,8 +82,8 @@
             "title": "Show Address in Memory View",
             "description": "While debugging, right click on a variable or a register address and select 'Show in Memory' to open the Memory View at that address.",
             "media": {
-              "image": "media/atari-color.png",
-              "altText": "Empty image"
+              "image": "media/walkthroughs/50-showAddressInMemoryView.png",
+              "altText": "Show Address in Memory View"
             },
             "completionEvents": [
               "onCommand:atariSTDev.showInMemory1",
@@ -97,8 +97,8 @@
             "title": "Show Address in Graphic Inspector View",
             "description": "While debugging, right click on a variable or a register address and select 'Show in Graphic Inspector' to open the Graphic Inspector View at that address.",
             "media": {
-              "image": "media/atari-color.png",
-              "altText": "Empty image"
+              "image": "media/walkthroughs/60-showAddressInGraphicInspector.png",
+              "altText": "Show Address in Graphic Inspector View"
             },
             "completionEvents": [
               "onCommand:atariSTDev.showInGraphicInspector1",
@@ -110,8 +110,8 @@
             "title": "Open Hardware view",
             "description": "[Open the Atari ST Hardware](command:atariSTDev.hardwareView.focus) view to see some hardware variables. It is also possible to right click on hardware items and 'Show in Memory' to open the Memory View at that address.",
             "media": {
-              "svg": "media/atari.svg",
-              "altText": "Empty svg image"
+              "image": "media/walkthroughs/70-openHardwareView.png",
+              "altText": "Open Hardware view"
             },
             "completionEvents": [
               "onCommand:atariSTDev.hardwareView.focus"
@@ -122,8 +122,8 @@
             "title": "Open Disassembly view",
             "description": "[Open the Disassembly View](command:debug.action.openDisassemblyView) to see the current disassembly (in GDB format) while debugging. You can right click on the Call Stack view and select 'Open Disassembly View' to open the Disassembly View at that function (This view is a built-in VS Code debug feature).",
             "media": {
-              "svg": "media/atari.svg",
-              "altText": "Empty svg image"
+              "image": "media/walkthroughs/80-disassemblyView.png",
+              "altText": "Open Disassembly view"
             },
             "completionEvents": [
               "onCommand:debug.action.openDisassemblyView"
@@ -134,8 +134,8 @@
             "title": "Open Debug Console",
             "description": "[Open the Debug Console](command:workbench.panel.repl.view.focus) to access the console. While debugging, you can run the following commands:\nfor gdb: > -exec <gdb command>\n  examples:\n  -exec help\n  -exec info registers\n  -exec x/5i $pc\nfor hatari debugger: > -exec monitor <hatari debugger command>\n  examples:\n  -exec monitor help\n  -exec monitor info\n  -exec monitor cpureg\n  -exec monitor disasm\n  -exec monitor memdump",
             "media": {
-              "svg": "media/atari.svg",
-              "altText": "Empty svg image"
+              "image": "media/walkthroughs/90-openDebugConsole.png",
+              "altText": "Open Debug Console"
             },
             "completionEvents": [
               "onCommand:workbench.panel.repl.view.focus"

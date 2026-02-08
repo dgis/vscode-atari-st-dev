@@ -98,7 +98,7 @@ const hardwareTree: HardwareTreeElement[] = [
 					{
 						id: "vbl",
 						label: "VBL",
-						address: 0x68
+						address: 0x70
 					}
 				]
 			},

@@ -2,6 +2,7 @@
 
 Atari ST Dev is a Visual Studio Code extension for building, running and debugging C, C++ and 68k assembly projects targeting Atari ST/TT/Falcon systems. It integrates a cross-toolchain using GCC/GDB, provides debug-time views for CPU registers, memory and hardware information, and hooks into Hatari's debugger via the `cppdbg` debug adapter.
 
+![Visual Studio Code Atari ST Dev presentation](media/presentation.png "Presentation")
 
 **Features**
 - **Compile & Debug:** Integration with a bundled cross-toolchain (m68k-atari-mintelf) and with the VS Code C++ debug adapter (`cppdbg`) to run and debug Atari executables.
