@@ -34,7 +34,7 @@
             "title": "Open Folder",
             "description": "[Open an empty folder](command:workbench.action.files.openFolder) to copy samples.",
             "media": {
-              "svg": "media/atari.svg",
+              "image": "media/atari-color.png",
               "altText": "Atari ST logo"
             },
             "completionEvents": [
@@ -46,7 +46,7 @@
             "title": "Copy Sample Files",
             "description": "[copy the samples](command:atariSTDev.getSamples). A multi-projects workspace should load and this walkthrough should automatically appears to continue.",
             "media": {
-              "svg": "media/atari.svg",
+              "image": "media/atari-color.png",
               "altText": "Atari ST logo"
             },
             "completionEvents": [
@@ -238,7 +238,7 @@
         {
           "id": "atariSTDev.hardwareView",
           "name": "Atari ST: Hardware",
-          "icon": "media/atari.svg",
+          "icon": "$(chip)",
           "visibility": "collapsed",
           "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         },
@@ -278,7 +278,7 @@
           "type": "webview",
           "id": "atariSTDev.graphicInspectorView1",
           "name": "Graphic Inspector1",
-          "icon": "$(file-binary)",
+          "icon": "$(device-desktop)",
           "visibility": "hidden",
           "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         },
@@ -286,7 +286,7 @@
           "type": "webview",
           "id": "atariSTDev.graphicInspectorView2",
           "name": "Graphic Inspector2",
-          "icon": "$(file-binary)",
+          "icon": "$(device-desktop)",
           "visibility": "hidden",
           "when": "atariSTDev.showDebugViews && (debugConfigurationType == 'cppdbg' || debugConfigurationType == 'cppvsdbg')"
         }
