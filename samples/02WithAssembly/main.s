@@ -139,13 +139,6 @@ SCREEN_NUMBER set REPTN
 
 	endr
 
-	; animate the palette by rotating the palette colors every 2 frames
-	move.w	$ffff8240+2,d0
-	movem.l	$ffff8240+4,d1-d6
-	movem.l	d1-d6,$ffff8240+2
-	move.w	d0,$ffff8240+24
-
-
 	cmp.b	#$39,$fffc02			; space pressed?
 	bne	main_loop			; if not, repeat main loop
 
