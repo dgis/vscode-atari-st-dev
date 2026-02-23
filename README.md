@@ -501,25 +501,7 @@ git apply ../patches/binutils/binutils-m68k-segmentalign.patch
 ```
 
 
-And then, in the script (after), uncomment:
-```
-export MACOSX_DEPLOYMENT_TARGET=11
-ARCHS="-arch arm64"
-HOSTBUILD="aarch64-apple-darwin"
-HOMEBREWDIR=/opt/homebrew
-```
-and launch the script to build for arm64. Keep a copy of the built 'gdb' binary.
-
-And then, in the same script (after), uncomment:
-```
-export MACOSX_DEPLOYMENT_TARGET=10.6
-ARCHS="-arch x86_64"
-HOSTBUILD="x86_64-apple-darwin"
-HOMEBREWDIR=/usr/local/homebrew
-```
-and launch the script to build for intel. Keep a copy of the built 'gdb' binary.
-
-Here the full script:
+And then, run the following script:
 ```
 #!/bin/sh
 
@@ -527,43 +509,23 @@ Here the full script:
 # Run this script in the binutils-gdb repository.
 
 # Multi arch with Homebrew on M1+ (https://codetinkering.com/switch-homebrew-arm-x86/)
-# In ARM64:
-# 	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-# 	eval "$(/opt/homebrew/bin/brew shellenv)"
+# For ARM64:
+#	/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#	eval "$(/opt/homebrew/bin/brew shellenv)"
 # 	brew install wget cmake gmp mpfr libmpc texinfo
 # For x86_64:
 # 	arch -x86_64 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 # 	eval "$(/usr/local/homebrew/bin/brew shellenv)"
 # 	brew install gmp mpfr
 
-
-# Uncomment the following to build for arm64:
-# export MACOSX_DEPLOYMENT_TARGET=11
-# # ARCHS="-arch arm64"
-# HOSTBUILD="aarch64-apple-darwin"
-# HOMEBREWDIR=/opt/homebrew
-
-# Uncomment the following to build for x86_64:
-export MACOSX_DEPLOYMENT_TARGET=10.6
-ARCHS="-arch x86_64"
-HOSTBUILD="x86_64-apple-darwin"
-HOMEBREWDIR=/usr/local/homebrew
+# (If needed, to switch xcode version: > sudo xcode-select --switch /Applications/Xcode-14.0.1.app )
 
 
-# And then, build the universal binary 
-# lipo -create gdb-arm64 -create gdb-x86_64 -output m68k-atari-mintelf-gdb
+set -e # Stop script on error
+set -x # Enable trace mode
 
-# Verify architectures and dependencies:
-# otool -L gdb/gdb
-# lipo -info gdb/gdb
-# objdump -a gdb/gdb
-# file gdb/gdb
-
-
-
-
-# Stop script on error
-set -e
+# Build for MacOS 11
+export MACOSX_DEPLOYMENT_TARGET=11
 
 PACKAGENAME=binutils
 VERSION=-2.45
@@ -571,64 +533,99 @@ VERSIONPATCH=-20250812
 REVISION="GNU Binutils for MiNT ELF ${VERSIONPATCH#-}"
 
 configure_build() {
-    cd $1
-    ./configure \
-        MAKEINFO="echo texinfo 7.0" \
-        --host=$HOSTBUILD \
-        --target=m68k-atari-mintelf \
-        --enable-targets=$HOSTBUILD,m68k-atari-mint \
-        --with-pkgversion="$REVISION" \
-        --with-gdb-datadir=/usr/share/gdb \
-        --with-jit-reader-dir=/usr/lib/gdb \
-        --without-expat \
-        --without-libunwind-ia64 \
-        --without-lzma \
-        --without-babeltrace \
-        --without-intel-pt \
-        --without-xxhash \
-        --without-python \
-        --without-python-libdir \
-        --without-debuginfod \
-        --with-curses \
-        --without-guile \
-        --without-amd-dbgapi \
-        --disable-source-highlight \
-        --disable-threading \
-        --enable-tui \
-        --enable-static \
-        --without-system-readline \
-        --with-separate-debug-dir=/usr/lib/debug \
-        --with-sysroot=/usr/m68k-atari-mintelf/sys-root \
-        --disable-werror \
-        --enable-lto \
-        --enable-plugins \
-        CFLAGS="-O2 ${ARCHS}" \
-        CXXFLAGS="-O2 ${ARCHS}" \
-        LDFLAGS="-s ${ARCHS}" \
-        --with-gmp="$HOMEBREWDIR" \
-        GMPINC=-I$HOMEBREWDIR/include \
-        GMPLIBS="$HOMEBREWDIR/lib/libgmp.a $HOMEBREWDIR/lib/libmpfr.a"
-    make -j$(sysctl -n hw.ncpu)
-    cd ..
+	cd $1
+	echo "Configuring $1"
+	./configure \
+		MAKEINFO="echo texinfo 7.0" \
+		--host=$HOSTBUILD \
+		--target=m68k-atari-mintelf \
+		--enable-targets=$HOSTBUILD,m68k-atari-mint \
+		--with-pkgversion="$REVISION" \
+		--with-gdb-datadir=/usr/share/gdb \
+		--with-jit-reader-dir=/usr/lib/gdb \
+		--without-expat \
+		--without-libunwind-ia64 \
+		--without-lzma \
+		--without-babeltrace \
+		--without-intel-pt \
+		--without-xxhash \
+		--without-python \
+		--without-python-libdir \
+		--without-debuginfod \
+		--with-curses \
+		--without-guile \
+		--without-amd-dbgapi \
+		--disable-source-highlight \
+		--disable-threading \
+		--enable-tui \
+		--enable-static \
+		--without-system-readline \
+		--with-separate-debug-dir=/usr/lib/debug \
+		--with-sysroot=/usr/m68k-atari-mintelf/sys-root \
+		--disable-werror \
+		--enable-lto \
+		--enable-plugins \
+		CFLAGS="-O2 ${ARCHS} -Dthread_local=" \
+		CXXFLAGS="-O2 ${ARCHS} -Dthread_local=" \
+		LDFLAGS="-s ${ARCHS}" \
+		--with-gmp="$HOMEBREWDIR" \
+		GMPINC=-I$HOMEBREWDIR/include \
+		GMPLIBS="$HOMEBREWDIR/lib/libgmp.a $HOMEBREWDIR/lib/libmpfr.a"
+	echo "Making $1"
+	make -k -j$(sysctl -n hw.ncpu)
+	cd ..
 }
 
-configure_build gnulib
-configure_build libbacktrace
-configure_build libdecnumber
-configure_build gdbsupport
-configure_build libiberty
-configure_build libsframe
-configure_build opcodes
-configure_build bfd
-configure_build sim
-configure_build libctf
-configure_build readline
-configure_build gdb
-```
+my_clean() {
+	cd $1
+	make clean
+	make distclean
+	cd ..
+}
 
-And then, you can generate the universal binary with:
-```
+
+MY_BUILD_DIRS=(gnulib libbacktrace libdecnumber gdbsupport libiberty libsframe bfd opcodes sim libctf readline gdb)
+
+# Build for arm64:
+echo "Building for arm64"
+export ARCHS="-arch arm64"
+export HOSTBUILD="aarch64-apple-darwin"
+export HOMEBREWDIR=/opt/homebrew
+for dir in "${MY_BUILD_DIRS[@]}"; do
+	configure_build "$dir"
+done
+echo "cp gdb/gdb ./gdb-arm64"
+cp gdb/gdb ./gdb-arm64
+echo "Cleaning in reverse order"
+for ((i=${#MY_BUILD_DIRS[@]}-1; i>=0; i--)); do
+	my_clean "${MY_BUILD_DIRS[$i]}"
+done
+
+# Build for x86_64:
+echo "Building for x86_64"
+export ARCHS="-arch x86_64"
+export HOSTBUILD="x86_64-apple-darwin"
+export HOMEBREWDIR=/usr/local/homebrew
+for my_dir in "${MY_BUILD_DIRS[@]}"; do
+	configure_build "$my_dir"
+done
+echo "cp gdb/gdb ./gdb-x86_64"
+cp gdb/gdb ./gdb-x86_64
+cp gdb/gdb-add-index ./m68k-atari-mintelf-gdb-add-index
+echo "Cleaning in reverse order"
+for ((i=${#MY_BUILD_DIRS[@]}-1; i>=0; i--)); do
+	my_clean "${MY_BUILD_DIRS[$i]}"
+done
+
+# And then, build the universal binary
+echo "Building the universal binary"
 lipo -create gdb-arm64 -create gdb-x86_64 -output m68k-atari-mintelf-gdb
+
+# Verify dependencies
+echo "Verify dependencies"
+otool -L m68k-atari-mintelf-gdb
+otool -l ./m68k-atari-mintelf-gdb|grep minos
+lipo -info m68k-atari-mintelf-gdb
+# objdump -x m68k-atari-mintelf-gdb
+file m68k-atari-mintelf-gdb
 ```
-
-
