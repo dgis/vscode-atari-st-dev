@@ -16,6 +16,14 @@
 			"path": "05GEM"
 		}
 	],
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"ms-vscode.hexeditor",
+			"gigabates.68kcounter",
+			"gigabates.m68k-lsp"
+		]
+	},
 	"settings": {
 		"atariSTDev.activate": true
 	}
