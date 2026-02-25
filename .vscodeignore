@@ -12,3 +12,4 @@ vsc-extension-quickstart.md
 **/.vscode-test.*
 misc/**
 out/test/**
+.nvmrc
