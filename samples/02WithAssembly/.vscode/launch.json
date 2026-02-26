@@ -8,7 +8,7 @@
             "name": "Debug in Hatari",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/main.prg",
+            "program": "${workspaceFolder}${/}main.prg",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",

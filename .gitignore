@@ -4,5 +4,5 @@
 package-lock.json
 *.vsix
 .DS_Store
-*.prg
-*.o
+/sample/0*/*.prg
+/sample/0*/*.o

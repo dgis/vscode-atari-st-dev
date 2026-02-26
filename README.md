@@ -16,11 +16,11 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 
 
 **Quick Start**
-1. **Open an empty folder:** Open an empty folder.
+1. **Open an empty folder:** Open an empty folder (Spaces in path does NOT work on Windows).
 
 2. **Copy samples:** Run the command `atariSTDev.getSamples` (Command Palette). This will copy the sample projects into your workspace and open the sample workspace (samples are available here too: https://github.com/dgis/vscode-atari-st-dev/tree/main/samples ).
 
-3. **Open Run & Debug:** Press `Ctrl+Shift+D` and select a sample debug configuration (the extension supports `cppdbg` configurations). Start debugging with `F5`. You can debug a mix of C, C++ or 68k assembly files.
+3. **Open Run & Debug:** Press `Ctrl+Shift+D` and select a sample debug configuration (the extension supports `cppdbg` configurations). Start debugging with `F5` (you need to install the 'make' command on Linux and MacOS). You can debug a mix of C, C++ or 68k assembly files.
 
 4. **Open views while debugging:** Open the `Atari ST: CPU` view (Debug view) to see registers, open `Memory1` to inspect memory, and open `Atari ST: Hardware` to view hardware addresses and values.
 
