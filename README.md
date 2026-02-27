@@ -109,7 +109,7 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 This Visual Code extension is a puzzle whose pieces mostly come from:
 * Hatari HRDB (http://clarets.org/steve/projects/hrdb.html https://github.com/tattlemuss/hatari),
 * Hatari (https://www.hatari-emu.org/ https://framagit.org/hatari/hatari),
-* Thorsen Otto (https://tho-otto.de/crossmint.php),
+* Thorsten Otto (https://tho-otto.de/crossmint.php),
 * Vincent Riviere (http://vincent.riviere.free.fr/soft/m68k-atari-mintelf/),
 * Freemint project (https://freemint.github.io/),
 * Vasm (http://sun.hasenbraten.de/vasm/),
@@ -424,7 +424,6 @@ git clone https://sourceware.org/git/binutils-gdb.git
 cd binutils-gdb
 git checkout binutils-2_45-branch
 git apply --3way ../patches/binutils/binutils-2.45-mint-20250812.patch
-git apply ../patches/binutils/binutils-m68k-segmentalign.patch
 ```
 
 
@@ -497,7 +496,6 @@ git clone https://sourceware.org/git/binutils-gdb.git
 cd binutils-gdb
 git checkout binutils-2_45-branch
 git apply --3way ../patches/binutils/binutils-2.45-mint-20250812.patch
-git apply ../patches/binutils/binutils-m68k-segmentalign.patch
 ```
 
 
