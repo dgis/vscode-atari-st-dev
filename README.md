@@ -412,35 +412,26 @@ To build GDB with m68k-atari-mintelf support
 ##### On Linux
 
 ```
-sudo apt install wget git gcc libgmp-dev libmpfr-dev texinfo
+sudo apt install wget git gcc g++ libgmp-dev libmpfr-dev texinfo bison flex
+git clone https://github.com/th-otto/binutils.git
+cd binutils
+git checkout binutils-2_45-mint
 ```
 
-From https://tho-otto.de/crossmint.php:
+and then, run the following script:
 ```
-wget https://tho-otto.de/download/mint/binutils-2.45-mint-20250812.tar.xz
-tar -xf binutils-2.45-mint-20250812.tar.xz
+#!/bin/sh
 
-git clone https://sourceware.org/git/binutils-gdb.git
-cd binutils-gdb
-git checkout binutils-2_45-branch
-git apply --3way ../patches/binutils/binutils-2.45-mint-20250812.patch
-```
+set -e # Stop script on error
+set -x # Enable trace mode
 
-
-In the file: "include/libcwrap.h", you need to comment out the following line of code:
-`SYMVER(__fdelt_chk, GLIBC_DONT_USE_THIS_VERSION_2.15)`
-in:
-`// SYMVER(__fdelt_chk, GLIBC_DONT_USE_THIS_VERSION_2.15)`
-
-Then:
-```
-./configure --host=x86_64-pc-linux-gnu --target=m68k-atari-mintelf \
+./configure \
+    --host=x86_64-pc-linux-gnu \
+    --target=m68k-atari-mintelf \
     --enable-targets=x86_64-pc-linux-gnu,m68k-atari-mint \
-    --with-auto-load-dir=$debugdir:$datadir/auto-load \
-    --with-auto-load-safe-path=$debugdir:$datadir/auto-load \
-    --without-expat \
     --with-gdb-datadir=/usr/share/gdb \
     --with-jit-reader-dir=/usr/lib/gdb \
+    --without-expat \
     --without-libunwind-ia64 \
     --without-lzma \
     --without-babeltrace \
@@ -449,19 +440,22 @@ Then:
     --without-python \
     --without-python-libdir \
     --without-debuginfod \
-    --with-curses \
+    --without-curses \
     --without-guile \
     --without-amd-dbgapi \
     --disable-source-highlight \
     --disable-threading \
-    --enable-tui \
+    --disable-tui \
     --without-system-readline \
     --with-separate-debug-dir=/usr/lib/debug \
     --with-sysroot=/usr/m68k-atari-mintelf/sys-root \
-    --disable-werror
+    --disable-werror \
+    CFLAGS="-O2 -D__LIBC_CUSTOM_BINDINGS_H__" \
+    CXXFLAGS="-O2 -D__LIBC_CUSTOM_BINDINGS_H__" \
+    LDFLAGS="-s"
+
 make -j$(getconf _NPROCESSORS_ONLN)
 
-strip gdb/gdb
 cp gdb/gdb $ATARIST_SDK/tools/linux/opt/cross-mint/bin/m68k-atari-mintelf-gdb
 cp gdb/gdb-add-index $ATARIST_SDK/tools/linux/opt/cross-mint/bin/m68k-atari-mintelf-gdb-add-index
 ```
