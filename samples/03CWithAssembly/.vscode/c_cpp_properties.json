@@ -6,9 +6,19 @@
             "cStandard": "c99",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x86",
+            "defines": ["__MINT__", "__M68K__"],
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../libcmini-elf/include"
+                "${workspaceFolder}/../libcmini-elf/include",
+
+                "${config:atariSTDev.path}/opt/cross-mint/m68k-atari-mintelf/sys-root/usr/include", // Linux and MacOS 
+                "${config:atariSTDev.path}/opt/cross-mint/usr/m68k-atari-mintelf/sys-root/usr/include", // Windows
+
+                "${config:atariSTDev.path}/opt/cross-mint/lib64/gcc/m68k-atari-mintelf/15/include", // Linux
+                "${config:atariSTDev.path}/opt/cross-mint/lib64/gcc/m68k-atari-mintelf/15/include-fixed", // Linux
+
+                "${config:atariSTDev.path}/opt/cross-mint/lib/gcc/m68k-atari-mintelf/15/include", // Windows and MacOS
+                "${config:atariSTDev.path}/opt/cross-mint/lib/gcc/m68k-atari-mintelf/15/include-fixed" // Windows and MacOS
             ]
         }
     ],

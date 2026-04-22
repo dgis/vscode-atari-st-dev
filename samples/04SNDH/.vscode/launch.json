@@ -33,6 +33,13 @@
                 "debugServerPath": "${config:atariSTDev.path}/hatari/hatari",
                 "debugServerArgs": "--tos \"${config:atariSTDev.path}/hatari/etos512fr.img\" --confirm-quit no --memsize 1 --fast-forward yes --parse \"${config:atariSTDev.path}/hatari/db.ini\" \"${workspaceFolder}/main.prg\"",
             },
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
             "preLaunchTask": "Atari ST: make",
             // "logging": {
             //     "engineLogging": true
