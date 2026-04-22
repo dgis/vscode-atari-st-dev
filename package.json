@@ -6,7 +6,7 @@
   "repository": {
     "url": "https://github.com/dgis/vscode-atari-st-dev"
   },
-  "version": "0.1.2",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.105.0"
   },
@@ -223,6 +223,18 @@
         "title": "Refresh Graphic Inspector2",
         "category": "Atari ST",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "atariSTDev.saveGraphicInspectorBitmap1",
+        "title": "Save Bitmap",
+        "category": "Atari ST",
+        "icon": "$(save)"
+      },
+      {
+        "command": "atariSTDev.saveGraphicInspectorBitmap2",
+        "title": "Save Bitmap",
+        "category": "Atari ST",
+        "icon": "$(save)"
       }
     ],
     "views": {
@@ -347,6 +359,14 @@
         {
           "submenu": "atariSTDev/showInMemory",
           "when": "webviewSection == 'to-memory-view' && (webviewId == atariSTDev.CPUView || webviewId == atariSTDev.memoryView1 || webviewId == atariSTDev.memoryView2 || webviewId == atariSTDev.memoryView3 || webviewId == atariSTDev.memoryView4)"
+        },
+        {
+          "command": "atariSTDev.saveGraphicInspectorBitmap1",
+          "when": "webviewSection == 'save-graphic-inspector-bitmap' && webviewId == atariSTDev.graphicInspectorView1"
+        },
+        {
+          "command": "atariSTDev.saveGraphicInspectorBitmap2",
+          "when": "webviewSection == 'save-graphic-inspector-bitmap' && webviewId == atariSTDev.graphicInspectorView2"
         }
       ],
       "atariSTDev/showInMemory": [

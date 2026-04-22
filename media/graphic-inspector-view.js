@@ -73,6 +73,16 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
         requestReadMemory(symbolToAddress(screenAddressInput.value), symbolToAddress(paletteAddressInput.value));
     }
 
+    function clickSaveBitmapButton() {
+        debug && console.log("clickSaveBitmapButton()");
+
+        // Get the bitmap data as a data URL
+        vscode.postMessage({
+            type: "bitmapSaved",
+            dataURL: screenCanvas.toDataURL("image/png")
+        });
+    }
+
     screenAddressInput.addEventListener("keydown", (event) => {
         switch(event.key) {
             case "Enter":
@@ -297,6 +307,10 @@ import { makeDeferred, attachSymbolSuggester } from "./helpers.js";
             case "refreshMemory":
                 clickRefreshButton();
                 break;
+            case "saveBitmap":
+                clickSaveBitmapButton();
+                break;
+                
         }
     });
 

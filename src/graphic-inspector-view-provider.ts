@@ -79,6 +79,24 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 				}
 			} else if (data.type === "contextSelection") {
 				this.lastContextSelection = data.selection;
+			} else if (data.type === "bitmapSaved") {
+				const now = new Date();
+				const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}-${now.getSeconds().toString().padStart(2, '0')}`;
+				const uri = await vscode.window.showSaveDialog({
+					filters: {
+						"PNG Image": ["png"]
+					},
+					defaultUri: vscode.Uri.file(`atari-screenshot-${formattedDate}.png`)
+				});
+				if (uri) {
+					// Save the bitmap data to the selected URI
+					// Extract base64 data from dataURL
+					const base64Data = data.dataURL.split(',')[1];
+					// Decode base64 to Uint8Array
+					const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+					// Write to the selected file
+					await vscode.workspace.fs.writeFile(uri, binaryData);
+				}
 			} else
 				debuggerService.onDidReceiveMessage(this.debuggerContext, data);
 		});
@@ -98,6 +116,12 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 	public async refreshMemory() {
 		if (this.view) {
 			this.view?.webview.postMessage({ type: "refreshMemory" } );
+		}
+	}
+
+	public async saveBitmap() {
+		if (this.view) {
+			this.view?.webview.postMessage({ type: "saveBitmap" } );
 		}
 	}
 
@@ -151,7 +175,7 @@ export class GraphicInspectorViewProvider implements vscode.WebviewViewProvider 
 					<input class="inspector-bytes-per-line-input" placeholder="Bytes/line (160)" title="Bytes/line (160)" type="text">
 					<input class="inspector-height-input" placeholder="Height (200)" title="Height (200)" type="text">
 				</fieldset>
-				<div class="inspector-screen-container">
+				<div class="inspector-screen-container" data-vscode-context='{"webviewSection": "save-graphic-inspector-bitmap"}'>
 					<canvas class="inspector-screen-canvas" width="320" height="200"></canvas>
 				</div>
 				<fieldset class="inspector-palette-toolbar">

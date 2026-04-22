@@ -156,6 +156,9 @@ export async function activateExtension(context: vscode.ExtensionContext) {
 			context.subscriptions.push(vscode.commands.registerCommand(`atariSTDev.refreshGraphicInspector${graphicInspectorViewProvider.index}`, () => {
 				graphicInspectorViewProvider.refreshMemory();
 			}));
+			context.subscriptions.push(vscode.commands.registerCommand(`atariSTDev.saveGraphicInspectorBitmap${graphicInspectorViewProvider.index}`, () => {
+				graphicInspectorViewProvider.saveBitmap();
+			}));
 		}
 	});
 
