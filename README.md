@@ -16,7 +16,7 @@ Atari ST Dev is a Visual Studio Code extension for building, running and debuggi
 
 
 **Quick Start**
-1. **Open an empty folder:** Open an empty folder (Spaces in path does NOT work on Windows).
+1. **Open an empty folder:** Open an empty folder.
 
 2. **Copy samples:** Run the command `atariSTDev.getSamples` (Command Palette). This will copy the sample projects into your workspace and open the sample workspace (samples are available here too: https://github.com/dgis/vscode-atari-st-dev/tree/main/samples ).
 
@@ -255,27 +255,20 @@ wget https://tho-otto.de/download/mint/binutils-2.45-mintelf-20250812-bin-macos.
 wget https://tho-otto.de/download/mint/gcc-15.2.0-mintelf-20250810-bin-cygwin64.tar.xz
 wget https://tho-otto.de/download/mint/gcc-15.2.0-mintelf-20250810-bin-linux64.tar.xz
 wget https://tho-otto.de/download/mint/gcc-15.2.0-mintelf-20250810-bin-macos.tar.xz
-
-wget https://tho-otto.de/download/mint/gdb-17.0-mintelf-20250812-bin-cygwin64.tar.xz
-wget https://tho-otto.de/download/mint/gdb-17.0-mintelf-20250812-bin-linux64.tar.xz
 ```
-(This package does not have a dynamic library; therefore, it must be compiled under Ubuntu. Similarly, for macOS, no binary package is available; it must also be recompiled).
 ```
 tar -xf binutils-2.45-mintelf-20250812-bin-cygwin64.tar.xz -C $ATARIST_SDK/tools/win32
 tar -xf gcc-15.2.0-mintelf-20250810-bin-cygwin64.tar.xz -C $ATARIST_SDK/tools/win32
-tar -xf gdb-17.0-mintelf-20250812-bin-cygwin64.tar.xz -C $ATARIST_SDK/tools/win32
 
 tar -xf binutils-2.45-mintelf-20250812-bin-linux64.tar.xz -C $ATARIST_SDK/tools/linux
 tar -xf gcc-15.2.0-mintelf-20250810-bin-linux64.tar.xz -C $ATARIST_SDK/tools/linux
-```
-Need to build GDB or if it works for you: `tar -xf gdb-17.0-mintelf-20250812-bin-linux64.tar.xz -C $ATARIST_SDK/tools/linux`
-```
+
 tar -xf binutils-2.45-mintelf-20250812-bin-macos.tar.xz -C $ATARIST_SDK/tools/darwin
 tar -xf gcc-15.2.0-mintelf-20250810-bin-macos.tar.xz -C $ATARIST_SDK/tools/darwin
 ```
-Need to build GDB for macOS.
+GDB must be compiled under Ubuntu, macOS and Windows.
 
-For Windows, we also need to copy the Cygwin DLLs that the processes require.
+For Windows, we also need to copy the Cygwin and Mingw64 DLLs that the processes require.
 
 #### To build HATARI
 To build Hatari with HRDB and GDB (Server) support.

@@ -4,6 +4,13 @@ All notable changes to the "Atari ST Dev" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.2.0] - 2026-04-23
+
+- Allow to save the bitmap from the graphic inspector view.
+- Adjust samples configurations.
+- Rebuild GDB with Mingw64 for Windows to resolve path space issues during debugging.
+
+
 ## [0.1.2] - 2026-03-14
 
 - Fix Thorsten typo and following Thorsten hints, simplify binutils (for gdb) build in the README.md .
