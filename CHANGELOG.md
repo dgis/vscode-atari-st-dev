@@ -4,7 +4,7 @@ All notable changes to the "Atari ST Dev" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [0.2.0] - 2026-04-23
+## [0.2.0] - 2026-04-29
 
 - Allow to save the bitmap from the graphic inspector view.
 - Adjust samples configurations.
