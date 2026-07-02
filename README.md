@@ -158,7 +158,7 @@ npm test
 ```
 This runs `npm run compile` and executes the extension tests using the VS Code test runner.
 
-### 5) Create a VSIX package
+### 5) Create a VSIX package (From a unix machine else the executable permissions will be lost when done from Windows)
 Option A — using npx (no global install required):
 ```bash
 npx -y @vscode/vsce package

@@ -172,7 +172,7 @@ export async function openSamplesInNewWorkspace(context: vscode.ExtensionContext
 	}
 
 	try {
-		let workscapeFileUri = null;
+		let workspaceFileUri = null;
 		const sourcePath = path.join(context.extensionPath, "samples");
 		const sourceUri = vscode.Uri.file(sourcePath);
 		const destinationUri = vscode.workspace.workspaceFolders[0].uri;
@@ -190,20 +190,20 @@ export async function openSamplesInNewWorkspace(context: vscode.ExtensionContext
 				await vscode.workspace.fs.copy(childSourceUri, childDestinationUri, { overwrite: true });
 			}
 			if (fileType === vscode.FileType.File && name.endsWith(".code-workspace")) {
-				workscapeFileUri = childDestinationUri;
+				workspaceFileUri = childDestinationUri;
 			}
 		}
 
 		vscode.window.showInformationMessage(`Atari ST samples copied to workspace folder.`);
-		if (workscapeFileUri) {
+		if (workspaceFileUri) {
 			// Queue the walkthrough to open in the newly opened window.
 			await context.globalState.update(PENDING_WALKTHROUGH_KEY, {
-				workspaceFile: workscapeFileUri.toString(),
+				workspaceFile: workspaceFileUri.toString(),
 				walkthrough: "dgis.atari-st-dev#atariSTDev.gettingStarted"
 			});
 			// Open the workspace in a new window. The extension in that window
 			// will read the flag and open the walkthrough on activation.
-			await vscode.commands.executeCommand('vscode.openFolder', workscapeFileUri, false);
+			await vscode.commands.executeCommand('vscode.openFolder', workspaceFileUri, false);
 		}
 	} catch(error) {
 		vscode.window.showErrorMessage(`Failed to copy samples. ${(error as Error).toString()}`);

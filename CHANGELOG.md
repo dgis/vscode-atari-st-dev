@@ -4,6 +4,11 @@ All notable changes to the "Atari ST Dev" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.2.1] - 2026-07-02
+
+- Regenerate installation package from a non Windows environment to keep the executable permissions.
+
+
 ## [0.2.0] - 2026-04-29
 
 - Allow to save the bitmap from the graphic inspector view.
