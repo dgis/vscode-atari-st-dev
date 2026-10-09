@@ -6,7 +6,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Run Extension",
+			"name": "Debug extension",
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
@@ -16,6 +16,17 @@
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
+		},
+		{
+			"name": "Debug packaging script (Linux x64)",
+			"program": "${workspaceFolder}/scripts/package-platform.js",
+			"args": [ "linux-x64" ],
+			"request": "launch",
+			"skipFiles": [
+				"<node_internals>/**"
+			],
+			"type": "node"
 		}
+
 	]
 }

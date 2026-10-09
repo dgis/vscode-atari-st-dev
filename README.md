@@ -170,6 +170,29 @@ vsce package
 ```
 Either command produces a `*.vsix` file (for example `atari-st-dev-0.5.0.vsix`) which you can install in VS Code (`Extensions: Install from VSIX...`) or publish.
 
+Platform-specific packaging
+---------------------------
+
+This repository includes large platform-specific SDKs under `sdk/`. Use the included helper to create platform-specific VSIX packages that contain only the matching SDK subtree.
+
+Examples (run from the repository root):
+
+```bash
+# Package for the current platform as a fallback (monolithic):
+npx -y @vscode/vsce package
+
+# Package platform-specific VSIX artifacts using the helper script:
+npm run package:win32      # creates a win32-x64 VSIX
+npm run package:linux      # creates a linux-x64 VSIX
+npm run package:darwin:x64 # creates a darwin-x64 VSIX
+npm run package:darwin:arm64 # creates a darwin-arm64 VSIX
+
+# Or build all at once:
+npm run package:all
+```
+
+Each produced VSIX will be named with the target suffix (for example `atari-st-dev-0.2.1-win32-x64.vsix`). Install the appropriate VSIX on the matching OS, and VS Code will automatically pick the platform-specific package.
+
 To publish to the Visual Studio Marketplace, follow `vsce` documentation — publishing requires configuring a publisher and authentication token.
 
 
@@ -246,15 +269,15 @@ To build this SDK, we need binutils, GCC, GDB and a special Hatari emulator vers
 
 #### To obtain binutils, GCC and GDB
 
-From https://tho-otto.de/crossmint.php :
+From https://tho-otto.m68k.eu/crossmint.php :
 ```
-wget https://tho-otto.de/download/mint/binutils-2.45-mintelf-20250812-bin-cygwin64.tar.xz
-wget https://tho-otto.de/download/mint/binutils-2.45-mintelf-20250812-bin-linux64.tar.xz
-wget https://tho-otto.de/download/mint/binutils-2.45-mintelf-20250812-bin-macos.tar.xz
+wget https://tho-otto.m68k.eu/download/mint/binutils-2.45-mintelf-20250812-bin-cygwin64.tar.xz
+wget https://tho-otto.m68k.eu/download/mint/binutils-2.45-mintelf-20250812-bin-linux64.tar.xz
+wget https://tho-otto.m68k.eu/snapshots/crossmint/macos/binutils/binutils-2.45-mintelf-20250812-bin-macos.tar.xz
 
-wget https://tho-otto.de/download/mint/gcc-15.2.0-mintelf-20250810-bin-cygwin64.tar.xz
-wget https://tho-otto.de/download/mint/gcc-15.2.0-mintelf-20250810-bin-linux64.tar.xz
-wget https://tho-otto.de/download/mint/gcc-15.2.0-mintelf-20250810-bin-macos.tar.xz
+wget https://tho-otto.m68k.eu/download/mint/gcc-15.2.0-mintelf-20250810-bin-cygwin64.tar.xz
+wget https://tho-otto.m68k.eu/download/mint/gcc-15.2.0-mintelf-20250810-bin-linux64.tar.xz
+wget https://tho-otto.m68k.eu/snapshots/crossmint/macos/gcc-15/gcc-15.2.0-mintelf-20250810-bin-macos.tar.xz
 ```
 ```
 tar -xf binutils-2.45-mintelf-20250812-bin-cygwin64.tar.xz -C $ATARIST_SDK/tools/win32

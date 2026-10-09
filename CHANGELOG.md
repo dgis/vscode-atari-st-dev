@@ -4,6 +4,13 @@ All notable changes to the "Atari ST Dev" extension will be documented in this f
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+
+## [0.3.0] - 2026-10-10
+
+- Generate packages by platform.
+- Update the GCC executable on macOS to switch from x86_64 to an x86_64+arm64 universal (fat) binary.
+
+
 ## [0.2.1] - 2026-07-02
 
 - Regenerate installation package from a non Windows environment to keep the executable permissions.

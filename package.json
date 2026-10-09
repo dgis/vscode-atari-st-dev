@@ -6,7 +6,7 @@
   "repository": {
     "url": "https://github.com/dgis/vscode-atari-st-dev"
   },
-  "version": "0.2.1",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.105.0"
   },
@@ -423,8 +423,15 @@
     "languages": [
       {
         "id": "m68k",
-        "aliases": ["68k Assembly"],
-        "extensions": [".s", ".S", ".asm", ".ASM"]
+        "aliases": [
+          "68k Assembly"
+        ],
+        "extensions": [
+          ".s",
+          ".S",
+          ".asm",
+          ".ASM"
+        ]
       }
     ],
     "breakpoints": [
@@ -439,19 +446,24 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package:win32": "node ./scripts/package-platform.js win32-x64",
+    "package:linux": "node ./scripts/package-platform.js linux-x64",
+    "package:darwin:x64": "node ./scripts/package-platform.js darwin-x64",
+    "package:darwin:arm64": "node ./scripts/package-platform.js darwin-arm64",
+    "package:all": "npm run package:win32 && npm run package:linux && npm run package:darwin:x64 && npm run package:darwin:arm64"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22",
-    "@types/sinon": "^21.0.0",
+    "@types/node": "^24",
+    "@types/sinon": "^22.0.0",
     "@types/vscode": "^1.105.0",
-    "@typescript-eslint/eslint-plugin": "^8.45.0",
-    "@typescript-eslint/parser": "^8.45.0",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.36.0",
-    "sinon": "^21.0.0",
-    "typescript": "^5.9.3"
+    "@typescript-eslint/eslint-plugin": "^8.71.1",
+    "@typescript-eslint/parser": "^8.71.1",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "eslint": "^10.12.0",
+    "sinon": "^22.1.0",
+    "typescript": "^6.0.3"
   }
 }
