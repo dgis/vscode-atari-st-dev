@@ -37,6 +37,7 @@ function shouldCopy(absPath) {
   if (rel.startsWith('.git')) return false;
   if (rel.startsWith('.vscode-test')) return false;
   if (rel.startsWith('out/test')) return false;
+  if (rel.endsWith('.vsix')) return false;
 
   // Handle sdk: only copy sdk/<sdkName> and the sdk root itself
   if (rel === 'sdk') return true;
@@ -110,12 +111,11 @@ if (res.error || res.status !== 0) {
 }
 
 // Move resulting VSIX to repository root and name it with the target
-const vsixFiles = fs.readdirSync(workDir).filter(n => n.endsWith('.vsix'));
-if (vsixFiles.length === 0) {
-  die('No .vsix produced in ' + workDir);
-}
-const vsix = vsixFiles[0];
+const vsix = `atari-st-dev-${target}-${version}.vsix`;
 const srcVsix = path.join(workDir, vsix);
+if (!fs.existsSync(srcVsix)) {
+  die('Expected VSIX was not produced: ' + srcVsix);
+}
 const destVsix = path.join(repoRoot, `atari-st-dev-${version}-${target}.vsix`);
 fs.copyFileSync(srcVsix, destVsix);
 console.log('Produced', destVsix);
